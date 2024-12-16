@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include "Circle.hpp"
+#include "RodTriangular.hpp"
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT     messageSeverity,
@@ -81,13 +82,14 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createSynchronization();
         
         _uboViewProjection.projection = glm::perspective(glm::radians(45.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //_uboViewProjection.view = glm::lookAt(glm::vec3(100.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
         _uboViewProjection.projection[1][1] *= 1;
         
-        Circle circle0(0.0f, 0.0f, 0.001f, 2.0f, 3000);
-        std::vector<Vertex> mesh0Vertices  = circle0.getVertices();
-        std::vector<uint32_t> mesh0Indices = circle0.getIndices();
+        RodTriangular leg0{glm::vec3{0.5f, 0, -0.33f}, glm::vec3{0.5f, 0, -0.33f}, glm::vec3{0.5f, 0, -0.33f}, 40.0f};
+        std::vector<Vertex> mesh0Vertices  = leg0.getVertices();
+        std::vector<uint32_t> mesh0Indices = leg0.getIndices();
         
         Mesh mesh0 = Mesh(_mainDevice.physicalDevice,
                           _mainDevice.logicalDevice,
@@ -95,44 +97,8 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                           _graphicsCommandPool,
                           &mesh0Vertices, &mesh0Indices,
                           createTexture("blackLineR2.jpg"));
-        
-        Circle circle1(0.0f, 0.0f, 0.01f, 2.0f, 3000);
-        std::vector<Vertex> mesh1Vertices  = circle1.getVertices();
-        std::vector<uint32_t> mesh1Indices = circle1.getIndices();
-        
-        Mesh mesh1 = Mesh(_mainDevice.physicalDevice,
-                          _mainDevice.logicalDevice,
-                          _graphicsQueue,
-                          _graphicsCommandPool,
-                          &mesh1Vertices, &mesh1Indices,
-                          createTexture("blackLineR2.jpg"));
-        
-        Circle circle2(0.0f, 0.0f, 0.0f, 3.0f, 3000);
-        std::vector<Vertex> mesh2Vertices  = circle2.getVertices();
-        std::vector<uint32_t> mesh2Indices = circle2.getIndices();
-        
-        Mesh mesh2 = Mesh(_mainDevice.physicalDevice,
-                          _mainDevice.logicalDevice,
-                          _graphicsQueue,
-                          _graphicsCommandPool,
-                          &mesh2Vertices, &mesh2Indices,
-                          createTexture("blackLineR3.jpg"));
-        
-        Circle circle3(0.0f, 0.0f, 1e-5f, 0.5f, 3000);
-        std::vector<Vertex> mesh3Vertices = circle3.getVertices();
-        std::vector<uint32_t> mesh3Indices = circle3.getIndices();
-        
-        Mesh mesh3 = Mesh(_mainDevice.physicalDevice,
-                          _mainDevice.logicalDevice,
-                          _graphicsQueue,
-                          _graphicsCommandPool,
-                          &mesh3Vertices, &mesh3Indices,
-                          createTexture("blackLineR_5.jpg"));
-                          
+                                  
         _meshList.push_back(mesh0); 
-        _meshList.push_back(mesh1);                   
-        _meshList.push_back(mesh2);     
-        _meshList.push_back(mesh3);
         
     }
     catch (const std::runtime_error &e)
