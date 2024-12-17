@@ -73,22 +73,22 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createCommandPool();
         
         _uboViewProjection.projection = glm::perspective(glm::radians(45.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
         _uboViewProjection.projection[1][1] *= -1;
-        
+        //
         /*
         std::vector<Vertex> meshVertices = {
-            { { -0.4, 0.4, 0.0 },{ 1.0f, 0.0f, 0.0f } },   // 0
-            { { -0.4, -0.4, 0.0 },{ 1.0f, 0.0f, 0.0f } },    // 1
-            { { 0.4, -0.4, 0.0 },{ 1.0f, 0.0f, 0.0f } },    // 2
-            { { 0.4, 0.4, 0.0 },{ 1.0f, 0.0f, 0.0f } },   // 3
+            { { -0.4, 0.4, -0.5 },{ 1.0f, 0.0f, 0.0f } },   // 0
+            { { -0.4, -0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } }, // 1
+            { { 0.4, -0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } },  // 2
+            { { 0.4, 0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } },   // 3
         };
 
         std::vector<Vertex> meshVertices2 = {
             { { -0.25, 0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },   // 0
-            { { -0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },    // 1
-            { { 0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },    // 2
+            { { -0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },  // 1
+            { { 0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },  // 2
             { { 0.25, 0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },   // 3
         };
 
@@ -108,22 +108,22 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                                _graphicsCommandPool,
                                &meshVertices2, &meshIndices);
         
-        _meshList.push_back(firstMesh);
-        _meshList.push_back(secondMesh);
-        */
+        //_meshList.push_back(firstMesh);
+       // _meshList.push_back(secondMesh);
+       */
         
-        RodTriangular leg{glm::vec3{0.0, -0.5, 0}, glm::vec3{1.0, -0.5, 0.0}, glm::vec3{0.5, -0.5, 1.0}, 1};
+        RodTriangular leg{glm::vec3{0.0, 0.5, 0}, glm::vec3{1.0, 0.5, 0.0}, glm::vec3{0.5, 0.5, 1.0}, 1};
         
         std::vector<Vertex> legVertices = leg.getVertices();
         std::vector<uint32_t> legIndices = leg.getIndices();
 
-        Mesh firstMesh = Mesh(_mainDevice.physicalDevice,
+        Mesh legMesh = Mesh(_mainDevice.physicalDevice,
                               _mainDevice.logicalDevice,
                               _graphicsQueue,
                               _graphicsCommandPool,
                               &legVertices, &legIndices);
         
-        _meshList.push_back(firstMesh);
+        _meshList.push_back(legMesh);
         
         
         
@@ -533,7 +533,7 @@ void VulkanRenderer::createGraphicsPipeline()
     viewportStateCI.pViewports                        = &viewport;
     viewportStateCI.scissorCount                      = 1;
     viewportStateCI.pScissors                         = &scissor;
-//
+
     // -- DYNAMIC STATES --
     // Dynamic states to enable
     //std::vector<VkDynamicState> dynamicStateEnables;
@@ -553,7 +553,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.rasterizerDiscardEnable = VK_FALSE;
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
-    rasterizerCI.cullMode                = VK_CULL_MODE_FRONT_BIT;
+    rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
     rasterizerCI.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
 
