@@ -42,6 +42,7 @@ int main()
     float deltaTime = 0.0f;
     float lastTime  = 0.0f;
     
+    int count = 0;
     // Loop until closed
     while (!glfwWindowShouldClose(window))
     {
@@ -61,26 +62,50 @@ int main()
         glm::mat4 modelB(1.0f);
         glm::mat4 modelC(1.0f);
         
-        if(angle >= 30.0f)
-        {
-            angle = 30.0f;
-        }
-
-        modelA = glm::translate(modelA, glm::vec3(3.0f, 0.0f, 0.0f)); // red
+        //modelB= glm::translate(modelB, glm::vec3(3.0f, 0.0f, 0.0f));
         //modelB = glm::rotate(modelB, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
-        //modelC = glm::rotate(modelC, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
         
-        //secondModel = glm::translate(secondModel, glm::vec3(0.0f, 0.0f, -3.0f)); // blue
-        //secondModel = glm::rotate(secondModel, glm::radians(-angle * 25), glm::vec3(0.0f, 0.0f, 1.0f));
-
+        float rotateA = 20.0f;
+        float rotateB = 60.0f;
+        float rotateC = 30.0f;
+        
+        modelC = glm::rotate   (modelC, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelC = glm::translate(modelC, glm::vec3(0.0f, 5.0f, 0.0f));
+        modelC = glm::rotate   (modelC, glm::radians(rotateB), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelC = glm::translate(modelC, glm::vec3(0.0f, 8.0f, 0.0f));
+        modelC = glm::rotate   (modelC, glm::radians(rotateC), glm::vec3(1.0f, 0.0f, 0.0f)); // c rotate
+       
+        modelB = glm::rotate   (modelB, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));
+        modelB = glm::rotate   (modelB, glm::radians(rotateB), glm::vec3(1.0f, 0.0f, 0.0f)); // b rotate
+        
+    
+        modelA = glm::rotate   (modelA, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
+        
         vulkanRenderer.updateModel(0, modelA);
-        //vulkanRenderer.updateModel(1, modelB);
-        //vulkanRenderer.updateModel(2, modelC);
+        vulkanRenderer.updateModel(1, modelB);
+        vulkanRenderer.updateModel(2, modelC);
 
         vulkanRenderer.draw();
+        
+        
+        ++count;
     }
 
     vulkanRenderer.cleanup();
+    
+    /*
+    modelB = glm::rotate   (modelB, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));
+    modelB = glm::rotate   (modelB, glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // b rotate
+        
+    
+    modelA = glm::rotate   (modelA, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
+    */
+    
+    
+    
+    
 
     // Destroy GLFW window and stop GLFW
     glfwDestroyWindow(window);
