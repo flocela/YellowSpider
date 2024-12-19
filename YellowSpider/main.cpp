@@ -25,7 +25,7 @@ void initWindow(std::string wName = "Test Window", const int width = 800, const 
 
     window = glfwCreateWindow(width, height, wName.c_str(), nullptr, nullptr);
 }
-
+//
 int main()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -51,22 +51,31 @@ int main()
         deltaTime = now - lastTime;
         lastTime = now;
         
-        angle += 10.0f * deltaTime;
+        angle += 2.0f * deltaTime;
         if(angle > 360.0f)
         {
             angle -= 360.0f;
         }
-        glm::mat4 firstModel(1.0f);
-        glm::mat4 secondModel(1.0f);
-//
-        //firstModel = glm::translate(firstModel, glm::vec3(0.0f, 0.0f, -2.5f)); // red
-        //firstModel = glm::rotate(firstModel, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        
+        glm::mat4 modelA(1.0f);
+        glm::mat4 modelB(1.0f);
+        glm::mat4 modelC(1.0f);
+        
+        if(angle >= 30.0f)
+        {
+            angle = 30.0f;
+        }
 
+        modelA = glm::translate(modelA, glm::vec3(3.0f, 0.0f, 0.0f)); // red
+        //modelB = glm::rotate(modelB, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
+        //modelC = glm::rotate(modelC, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
+        
         //secondModel = glm::translate(secondModel, glm::vec3(0.0f, 0.0f, -3.0f)); // blue
         //secondModel = glm::rotate(secondModel, glm::radians(-angle * 25), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        vulkanRenderer.updateModel(0, firstModel);
-        vulkanRenderer.updateModel(1, secondModel);
+        vulkanRenderer.updateModel(0, modelA);
+        //vulkanRenderer.updateModel(1, modelB);
+        //vulkanRenderer.updateModel(2, modelC);
 
         vulkanRenderer.draw();
     }

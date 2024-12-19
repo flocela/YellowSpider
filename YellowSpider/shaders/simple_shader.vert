@@ -23,7 +23,8 @@ layout(push_constant) uniform PushModel
 layout(location = 0) out vec3 fragCol;
 
 void main() {
-    gl_Position = uboViewProjection.projection * uboViewProjection.view * pushModel.model * vec4(pos, 1.0);
     
+    gl_Position = uboViewProjection.projection * uboViewProjection.view * pushModel.model * vec4(pos, 1.0);
+    	
     fragCol = col;
 }

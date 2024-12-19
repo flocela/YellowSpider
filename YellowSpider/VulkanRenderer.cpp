@@ -55,7 +55,7 @@ VulkanRenderer::~VulkanRenderer()
 int VulkanRenderer::init(GLFWwindow * newWindow)
 {
     _window = newWindow;
-
+//
     try
     {
         createInstance();
@@ -71,17 +71,19 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createDepthBufferImage();
         createFramebuffers();
         createCommandPool();
-        
+        //
         _uboViewProjection.projection = glm::perspective(glm::radians(45.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        _uboViewProjection.projection[1][1] *= 1;
+        _uboViewProjection.projection[1][1] *= -1;
         
-        RodTriangular legA{glm::vec3{0.0, 0.0, 0.0}, glm::vec3{1.0, 0.0, 0.0}, glm::vec3{0.5, 0.0, 1.0}, -3.0};
-        
+        RodTriangular legA{glm::vec3{0.0, 0.0, 0.0}, glm::vec3{1.0, 0.0, 0.0}, glm::vec3{0.5, 0.0, 1.0},
+                           glm::vec3{0.0, 3.0, 0.0}, glm::vec3{1.0, 3.0, 0.0}, glm::vec3{0.5, 3.0, 1.0}};
         std::vector<Vertex> legAVertices = legA.getVertices();
         std::vector<uint32_t> legAIndices = legA.getIndices();
 
+        std::cout << legAVertices.size() << std::endl;
+        std::cout << legAIndices.size() << std::endl;
         Mesh legAMesh = Mesh(_mainDevice.physicalDevice,
                               _mainDevice.logicalDevice,
                               _graphicsQueue,
@@ -545,7 +547,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
     rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
-    rasterizerCI.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizerCI.frontFace               = VK_FRONT_FACE_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
 
     // -- MULTISAMPLING --

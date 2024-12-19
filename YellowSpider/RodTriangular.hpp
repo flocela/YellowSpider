@@ -10,7 +10,14 @@ class RodTriangular
 {
     public:
         RodTriangular() = delete;
-        RodTriangular(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, float height);
+        RodTriangular(
+            glm::vec3 point0,
+            glm::vec3 point1,
+            glm::vec3 point2,
+            glm::vec3 point3,
+            glm::vec3 point4,
+            glm::vec3 point5
+        );
         RodTriangular(const RodTriangular& o) = default;
         RodTriangular(RodTriangular&& o) noexcept = default;
         RodTriangular& operator=(const RodTriangular& o) = default;
@@ -26,8 +33,6 @@ class RodTriangular
         glm::vec3 _point3;
         glm::vec3 _point4;
         glm::vec3 _point5;
-        glm::vec3 _point6;
-        glm::vec3 _point7;
         float     _height;
         
         std::vector<Vertex>   _vertices{};

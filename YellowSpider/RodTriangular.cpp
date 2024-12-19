@@ -2,34 +2,35 @@
 
 using std::vector;
 
-RodTriangular::RodTriangular(glm::vec3 point0, glm::vec3 point1, glm::vec3 point2, float height)
+RodTriangular::RodTriangular(
+    glm::vec3 point0,
+    glm::vec3 point1,
+    glm::vec3 point2,
+    glm::vec3 point3,
+    glm::vec3 point4,
+    glm::vec3 point5
+    )
 : _point0{point0},
   _point1{point1},
   _point2{point2},
-  _height{height}
+  _point3{point3},
+  _point4{point4},
+  _point5{point5}
 {
-    _point3 = glm::vec3(_point0.x + 0.01f, _point0.y, _point0.z + 0.01f);
-    _point4 = glm::vec3(_point3.x, _point3.y - _height, _point3.z);
-    _point5 = glm::vec3(_point2.x, _point2.y - _height, _point2.z);
-    _point6 = glm::vec3(_point1.x, _point1.y - _height, _point1.z);
-    _point7 = glm::vec3(_point0.x, _point0.y - _height, _point0.z);
-    
-    _vertices = { { _point0, {1.0f, 0.0f, 0.0f}},
-                  { _point1, {0.0f, 1.0f, 0.0f}},
-                  { _point2, {0.0f, 0.0f, 1.0f}},
+    _vertices = { { _point0, {0.0f, 0.0f, 0.0f}},
+                  { _point1, {0.0f, 0.0f, 0.0f}},
+                  { _point2, {0.0f, 0.0f, 0.0f}},
                   { _point3, {1.0f, 0.0f, 0.0f}},
-                  { _point4, {1.0f, 0.0f, 0.0f}},
-                  { _point5, {0.0f, 0.0f, 1.0f}},
-                  { _point6, {0.0f, 1.0f, 0.0f}},
-                  { _point7, {1.0f, 0.0f, 0.0f}}
+                  { _point4, {0.0f, 1.0f, 0.0f}},
+                  { _point5, {0.0f, 0.0f, 1.0f}}
                 };
                  
-    _indices = { 0, 1, 6,
-                 0, 6, 7,
+    _indices = { 0, 1, 4,
+                 0, 4, 3,
                  1, 2, 5,
-                 1, 5, 6,
-                 2, 3, 4,
-                 2, 4, 5,
+                 1, 5, 4,
+                 2, 3, 5,
+                 2, 0, 3
                 };
 }
 
