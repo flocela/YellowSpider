@@ -73,58 +73,49 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createCommandPool();
         
         _uboViewProjection.projection = glm::perspective(glm::radians(45.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        _uboViewProjection.projection[1][1] *= -1;
-        //
+        _uboViewProjection.projection[1][1] *= 1;
+        
+        RodTriangular legA{glm::vec3{0.0, 0.0, 0.0}, glm::vec3{1.0, 0.0, 0.0}, glm::vec3{0.5, 0.0, 1.0}, -3.0};
+        
+        std::vector<Vertex> legAVertices = legA.getVertices();
+        std::vector<uint32_t> legAIndices = legA.getIndices();
+
+        Mesh legAMesh = Mesh(_mainDevice.physicalDevice,
+                              _mainDevice.logicalDevice,
+                              _graphicsQueue,
+                              _graphicsCommandPool,
+                              &legAVertices, &legAIndices);
+        
+        _meshList.push_back(legAMesh);
         /*
-        std::vector<Vertex> meshVertices = {
-            { { -0.4, 0.4, -0.5 },{ 1.0f, 0.0f, 0.0f } },   // 0
-            { { -0.4, -0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } }, // 1
-            { { 0.4, -0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } },  // 2
-            { { 0.4, 0.4, -0.5  },{ 1.0f, 0.0f, 0.0f } },   // 3
-        };
+        RodTriangular legB{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66}, -5};
+        
+        std::vector<Vertex> legBVertices = legB.getVertices();
+        std::vector<uint32_t> legBIndices = legB.getIndices();
 
-        std::vector<Vertex> meshVertices2 = {
-            { { -0.25, 0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },   // 0
-            { { -0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },  // 1
-            { { 0.25, -0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },  // 2
-            { { 0.25, 0.6, 0.0 },{ 0.0f, 0.0f, 1.0f } },   // 3
-        };
-
-        // Index Data
-        std::vector<uint32_t> meshIndices = {
-            0, 1, 2,
-            2, 3, 0
-        };
-        Mesh firstMesh = Mesh(_mainDevice.physicalDevice,
+        Mesh legBMesh = Mesh(_mainDevice.physicalDevice,
                               _mainDevice.logicalDevice,
                               _graphicsQueue,
                               _graphicsCommandPool,
-                              &meshVertices, &meshIndices);
-        Mesh secondMesh = Mesh(_mainDevice.physicalDevice,
-                               _mainDevice.logicalDevice,
-                               _graphicsQueue,
-                               _graphicsCommandPool,
-                               &meshVertices2, &meshIndices);
+                              &legBVertices, &legBIndices);
         
-        //_meshList.push_back(firstMesh);
-       // _meshList.push_back(secondMesh);
-       */
+        //_meshList.push_back(legBMesh);
         
-        RodTriangular leg{glm::vec3{0.0, 0.5, 0}, glm::vec3{1.0, 0.5, 0.0}, glm::vec3{0.5, 0.5, 1.0}, 1};
+        RodTriangular legC{glm::vec3{-0.5, -5.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66}, -5};
         
-        std::vector<Vertex> legVertices = leg.getVertices();
-        std::vector<uint32_t> legIndices = leg.getIndices();
+        std::vector<Vertex> legCVertices = legC.getVertices();
+        std::vector<uint32_t> legCIndices = legC.getIndices();
 
-        Mesh legMesh = Mesh(_mainDevice.physicalDevice,
+        Mesh legCMesh = Mesh(_mainDevice.physicalDevice,
                               _mainDevice.logicalDevice,
                               _graphicsQueue,
                               _graphicsCommandPool,
-                              &legVertices, &legIndices);
+                              &legCVertices, &legCIndices);
         
-        _meshList.push_back(legMesh);
-        
+        //_meshList.push_back(legCMesh);
+        */
         
         
         createCommandBuffers();
