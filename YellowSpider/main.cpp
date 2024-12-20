@@ -42,7 +42,10 @@ int main()
     float deltaTime = 0.0f;
     float lastTime  = 0.0f;
     
-    int count = 0;
+    float rotateA = 20.0f;
+    float rotateB = 4.0 * rotateA;
+    float rotateC = 5.0 * rotateA;
+    
     // Loop until closed
     while (!glfwWindowShouldClose(window))
     {
@@ -52,11 +55,29 @@ int main()
         deltaTime = now - lastTime;
         lastTime = now;
         
-        angle += 2.0f * deltaTime;
-        if(angle > 360.0f)
+        angle += 10.0f * deltaTime;
+        float updatedARotation = angle * 1.0f;
+        float updatedBRotation = angle * 2.0f;
+        float updatedCRotation = angle * 3.0f;
+    
+        if(updatedARotation > 360.0f)
         {
-            angle -= 360.0f;
+            updatedARotation -= 360.0f;
         }
+        
+        if(updatedBRotation > 360.0f)
+        {
+            updatedBRotation -= 360.0f;
+        }
+        
+        if(updatedCRotation > 360.0f)
+        {
+            updatedCRotation -= 360.0f;
+        }
+        
+        updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
+        updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
+        updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
         
         glm::mat4 modelA(1.0f);
         glm::mat4 modelB(1.0f);
@@ -65,22 +86,18 @@ int main()
         //modelB= glm::translate(modelB, glm::vec3(3.0f, 0.0f, 0.0f));
         //modelB = glm::rotate(modelB, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
         
-        float rotateA = 20.0f;
-        float rotateB = 60.0f;
-        float rotateC = 30.0f;
-        
-        modelC = glm::rotate   (modelC, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelC = glm::rotate   (modelC, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelC = glm::translate(modelC, glm::vec3(0.0f, 5.0f, 0.0f));
-        modelC = glm::rotate   (modelC, glm::radians(rotateB), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelC = glm::rotate   (modelC, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelC = glm::translate(modelC, glm::vec3(0.0f, 8.0f, 0.0f));
-        modelC = glm::rotate   (modelC, glm::radians(rotateC), glm::vec3(1.0f, 0.0f, 0.0f)); // c rotate
+        modelC = glm::rotate   (modelC, glm::radians(updatedCRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // c rotate
        
-        modelB = glm::rotate   (modelB, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelB = glm::rotate   (modelB, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));
-        modelB = glm::rotate   (modelB, glm::radians(rotateB), glm::vec3(1.0f, 0.0f, 0.0f)); // b rotate
+        modelB = glm::rotate   (modelB, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // b rotate
         
     
-        modelA = glm::rotate   (modelA, glm::radians(rotateA), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
+        modelA = glm::rotate   (modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f)); // a rotate
         
         vulkanRenderer.updateModel(0, modelA);
         vulkanRenderer.updateModel(1, modelB);
@@ -88,8 +105,6 @@ int main()
 
         vulkanRenderer.draw();
         
-        
-        ++count;
     }
 
     vulkanRenderer.cleanup();
