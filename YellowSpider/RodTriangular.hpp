@@ -22,6 +22,7 @@ class RodTriangular
         RodTriangular(RodTriangular&& o) noexcept = default;
         RodTriangular& operator=(const RodTriangular& o) = default;
         RodTriangular& operator=(RodTriangular&& o) noexcept = default;
+        ~RodTriangular() = default;
         
         std::vector<Vertex> getVertices();
         std::vector<uint32_t> getIndices();

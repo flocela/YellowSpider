@@ -42,10 +42,10 @@ int main()
     float deltaTime = 0.0f;
     float lastTime  = 0.0f;
     
-    float rotateA = 20.0f;
+    float rotateA = 30.0f;
     float rotateB = 4.0 * rotateA;
-    float rotateC = 5.0 * rotateA;
-    
+    float rotateC = 2.0 * rotateA;
+    //
     // Loop until closed
     while (!glfwWindowShouldClose(window))
     {
@@ -58,7 +58,7 @@ int main()
         angle += 10.0f * deltaTime;
         float updatedARotation = angle * 1.0f;
         float updatedBRotation = angle * 2.0f;
-        float updatedCRotation = angle * 3.0f;
+        float updatedCRotation = angle * 5.0f;
     
         if(updatedARotation > 360.0f)
         {
@@ -74,34 +74,49 @@ int main()
         {
             updatedCRotation -= 360.0f;
         }
-        
+        //
         updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
         updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
         updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
-        
+        //
         glm::mat4 modelA(1.0f);
+        
+        /*
         glm::mat4 modelB(1.0f);
         glm::mat4 modelC(1.0f);
         
         //modelB= glm::translate(modelB, glm::vec3(3.0f, 0.0f, 0.0f));
         //modelB = glm::rotate(modelB, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
-        
+        //modelC = glm::translate(modelC, glm::vec3(10.0f, 10.0f, 5.0f));
         modelC = glm::rotate   (modelC, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelC = glm::translate(modelC, glm::vec3(0.0f, 5.0f, 0.0f));
         modelC = glm::rotate   (modelC, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelC = glm::translate(modelC, glm::vec3(0.0f, 8.0f, 0.0f));
         modelC = glm::rotate   (modelC, glm::radians(updatedCRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // c rotate
        
+        //modelB = glm::translate(modelB, glm::vec3(10.0f, 10.0f, 5.0f));
         modelB = glm::rotate   (modelB, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
         modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));
         modelB = glm::rotate   (modelB, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // b rotate
         
-    
+        
+        //modelA = glm::translate(modelA, glm::vec3(10.0f, 10.0f, 5.0f));
         modelA = glm::rotate   (modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f)); // a rotate
         
+        
+        
+        //modelA = glm::translate(modelA, glm::vec3(7.0f, 0.0f, 0.0f));
+        //modelB = glm::translate(modelB, glm::vec3(7.0f, 0.0f, 0.0f));
+        //modelC = glm::translate(modelC, glm::vec3(7.0f, 0.0f, 0.0f));
+        
+        //
+        //
+        
+        */
         vulkanRenderer.updateModel(0, modelA);
-        vulkanRenderer.updateModel(1, modelB);
-        vulkanRenderer.updateModel(2, modelC);
+        //vulkanRenderer.updateModel(1, modelB);
+        //vulkanRenderer.updateModel(2, modelC);
+        
 
         vulkanRenderer.draw();
         

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 #include "RodTriangular.hpp"
+#include "SpiderBody.hpp"
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT     messageSeverity,
         VkDebugUtilsMessageTypeFlagsEXT            messageType,
@@ -71,14 +73,14 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createDepthBufferImage();
         createFramebuffers();
         createCommandPool();
-        
+        //
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(20.0f, 0.0f, 60.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
+        _uboViewProjection.view = glm::lookAt(glm::vec3(80.0f, 20.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        
         _uboViewProjection.projection[1][1] *= -1;
-        
+    
         /****************************************/
-        
+        /*
         RodTriangular legA{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
                            glm::vec3{-0.5, 5.0, -0.33}, glm::vec3{0.5, 5.0, -0.33}, glm::vec3{0.0, 5.0, 0.66}};
         std::vector<Vertex> legAVertices = legA.getVertices();
@@ -92,9 +94,9 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         
         _meshList.push_back(legAMesh);
         
-        
+        */
         /****************************************/
-        
+        /*
         RodTriangular legB{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
                            glm::vec3{-0.5, 8.0, -0.33}, glm::vec3{0.5, 8.0, -0.33}, glm::vec3{0.0, 8.0, 0.66}};
         std::vector<Vertex> legBVertices = legB.getVertices();
@@ -108,9 +110,9 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         
         _meshList.push_back(legBMesh);
         
-        
+        */
      /****************************************/
-        
+        /*
         RodTriangular legC{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
                            glm::vec3{-0.5, 8.0, -0.33}, glm::vec3{0.5, 8.0, -0.33}, glm::vec3{0.0, 8.0, 0.66}};
         std::vector<Vertex> legCVertices = legC.getVertices();
@@ -123,8 +125,20 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               &legCVertices, &legCIndices);
         
         _meshList.push_back(legCMesh);
-        
+        */
         /***************************************/
+        
+        SpiderBody spiderBody{};
+        std::vector<Vertex> spiderBodyVertices = spiderBody.getVertices();
+        std::vector<uint32_t> spiderBodyIndices = spiderBody.getIndices();
+
+        Mesh spiderBodyMesh = Mesh(_mainDevice.physicalDevice,
+                                   _mainDevice.logicalDevice,
+                                   _graphicsQueue,
+                                   _graphicsCommandPool,
+                                   &spiderBodyVertices, &spiderBodyIndices);
+                              
+        _meshList.push_back(spiderBodyMesh);
         
         
         createCommandBuffers();
@@ -553,7 +567,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.rasterizerDiscardEnable = VK_FALSE;
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
-    rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
+    rasterizerCI.cullMode                = VK_CULL_MODE_NONE;
     rasterizerCI.frontFace               = VK_FRONT_FACE_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
 
