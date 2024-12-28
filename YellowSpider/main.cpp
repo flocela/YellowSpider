@@ -80,6 +80,7 @@ int main()
         updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
         //
         glm::mat4 modelA(1.0f);
+        modelA = glm::rotate(modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
         
         /*
         glm::mat4 modelB(1.0f);
