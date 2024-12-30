@@ -43,6 +43,9 @@ class SpiderBody
         std::vector<Vertex>   _vertices{};
         std::vector<uint32_t> _indices;
         
+        // vertices rows are from bottom to top.
+        // vertices go in a +y rotation direction
+        void populateIndices(int numOfSides, int numOfRows);
 };
 
 #endif /* SpiderBody_hpp */

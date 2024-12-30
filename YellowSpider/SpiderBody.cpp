@@ -1,151 +1,81 @@
 #include "SpiderBody.hpp"
+#include "UtilityCircles.hpp"
+
 #include <iostream>
 const float  PI_F=3.14159265358979f;
 
 using std::vector;
-
+//
 SpiderBody::SpiderBody()
 {
-    // TODO declare _vertices as _vertices(26, Vertex{_point0,     {1.0f, 0.0f, 0.0f}})
-    _vertices.reserve(42);
-    for(int ii=0; ii<42; ++ii)
+    int32_t numOfSides = 8;
+    _vertices.reserve(numOfSides * 7);
+    
+    glm::vec3 point0A{0.0f, 0.0f, -4.5f};
+    glm::vec3 point0B{0.0f, 0.0f, 4.5f};
+    std::vector<glm::vec4> circle0 = UtilityCircles::getVerticesFromDiameter( point0A, point0B, numOfSides, glm::vec3{0.0f, point0B.z - point0A.z, point0A.y - point0B.y} );
+    
+    glm::vec3 point1A{0.0f, 0.1f, -5.0f};
+    glm::vec3 point1B{0.0f, 2.5f, 7.0f};
+    std::vector<glm::vec4> circle1 = UtilityCircles::getVerticesFromDiameter( point1A, point1B, numOfSides, glm::vec3{0.0f, point1B.z - point1A.z, point1A.y - point1B.y} );
+    
+    glm::vec3 point2A{0.0f, 5.0f, -9.0f};
+    glm::vec3 point2B{0.0f, 7.5f, 8.0f};
+    std::vector<glm::vec4> circle2 = UtilityCircles::getVerticesFromDiameter( point2A, point2B, numOfSides, glm::vec3{0.0f, point2B.z - point2A.z, point2A.y - point2B.y} );
+    
+    glm::vec3 point3A{0.0f, 7.0f, -7.0f};
+    glm::vec3 point3B{0.0f, 10.0f, 2.5f};
+    std::vector<glm::vec4> circle3 = UtilityCircles::getVerticesFromDiameter( point3A, point3B, numOfSides, glm::vec3{0.0f, point3B.z - point3A.z, point3A.y - point3B.y} );
+    
+    glm::vec3 point4A{0.0f, 12.0f, -12.0f};
+    glm::vec3 point4B{0.0f, 17.0f, 3.0f};
+    std::vector<glm::vec4> circle4 = UtilityCircles::getVerticesFromDiameter( point4A, point4B, numOfSides, glm::vec3{0.0f, point4B.z - point4A.z, point4A.y - point4B.y} );
+    
+    glm::vec3 point5A{0.0f, 23.0f, -16.0f};
+    glm::vec3 point5B{0.0f, 25.0f, 0.1f};
+    std::vector<glm::vec4> circle5 = UtilityCircles::getVerticesFromDiameter( point5A, point5B, numOfSides, glm::vec3{0.0f, point5B.z - point5A.z, point5A.y - point5B.y} );
+    
+    glm::vec3 point6A{0.0f, 26.0f, -14.0f};
+    glm::vec3 point6B{0.0f, 28.0f, -7.0f};
+    std::vector<glm::vec4> circle6 = UtilityCircles::getVerticesFromDiameter( point6A, point6B, numOfSides, glm::vec3{0.0f, point6B.z - point6A.z, point6A.y - point6B.y} );
+    
+    //
+    for(int ii=0; ii<numOfSides; ++ii)
     {
-        _vertices.push_back({ _pointTop0,     {1.0f, 0.0f, 0.0f}});
+        _vertices.emplace_back( glm::vec3{circle0[ii].x, circle0[ii].y, circle0[ii].z}, glm::vec3{1.0f, 0.0f, 0.0f} );
     }
     
-    int startIdx = 40;
-    int endIdx   = 41;
-    _vertices[startIdx] = { _startPoint, {0.0f, 0.0f, 0.0f} };
-    _vertices[endIdx]   = { _endPoint,   {0.0f, 0.0f, 0.0f} };
-    
-    /*****     TOP      *****/
-    _vertices[0]  = { _pointTop0, {1.0f, 0.0f, 0.0f} };
-    _vertices[10] = { _pointTop1, {0.0f,  1.0f, 0.0f}};
-    _vertices[20] = { _pointTop2, {0.0f, 0.0f, 1.0f} };
-    _vertices[30] = { _pointTop3, {1.0f, 0.0f, 0.0f} };
-    
-    int offset = 6;
-    _vertices[6]  = { _pointBot0, {1.0f, 0.0f, 0.0f} };
-    _vertices[16] = { _pointBot1, {0.0f, 1.0f, 0.0f}};
-    _vertices[26] = { _pointBot2, {0.0f, 0.0f, 1.0f} };
-    _vertices[36] = { _pointBot3, {1.0f, 0.0f, 0.0f} };
-    
-    uint32_t numOfNodes = 10;
-    float radiansPerSection = 2*180.0f/(numOfNodes) * PI_F/180.0f;
-    for(int ii=0; ii<4; ++ii)
+    for(int ii=0; ii<numOfSides; ++ii)
     {
-        float radiusTop   = _vertices[ii*numOfNodes].pos.y;
-        float radiusBot   = _vertices[(ii*numOfNodes) + offset].pos.y;
-        float zValTop     = _vertices[ii*numOfNodes].pos.z;
-        float zValBot     = _vertices[(ii*numOfNodes) + offset].pos.z;
-        glm::vec3 ringCol = _vertices[ii*numOfNodes].col;
-        for(int jj=0; jj<numOfNodes; ++jj)
-        {
-            if(jj <= 5)
-            {
-                std::cout << "jj: " << jj << "angle: " << "radiansPerSection * jj:" << (radiansPerSection * jj * 180.0f/PI_F) << std::endl;
-                _vertices[(ii*numOfNodes)+jj] = 
-                { glm::vec3{radiusTop * cos(radiansPerSection * jj),
-                            radiusTop * sin(radiansPerSection * jj),
-                            zValTop},
-                  ringCol
-                };
-            }
-            else
-            {
-                std::cout << "jj: " << jj << "angle: " << "radiansPerSection * jj: " << (radiansPerSection * jj * 180.0f/PI_F) << std::endl;
-                _vertices[(ii*numOfNodes)+jj] = 
-                { glm::vec3{radiusBot * cos(radiansPerSection * jj),
-                            radiusBot * sin(radiansPerSection * jj),
-                            zValBot},
-                  ringCol
-                };
-            }
-        }
+        _vertices.emplace_back( glm::vec3{circle1[ii].x, circle1[ii].y, circle1[ii].z}, glm::vec3{0.0f, 1.0f, 0.0f} );
     }
     
-        
-    for(int ii=0; ii<_vertices.size(); ++ii)
+    for(int ii=0; ii<numOfSides; ++ii)
     {
-        std::cout << ii << ":: " << _vertices[ii].pos.x << ", " << _vertices[ii].pos.y << ", " << _vertices[ii].pos.z << std::endl;
-    }
-
-    
-    for(int ii=0; ii<3; ++ii)
-    {
-        for(int jj=0; jj<numOfNodes; ++jj)
-        {
-            if(jj != numOfNodes - 1)
-            {
-                _indices.push_back(( (ii)   * numOfNodes ) + jj    );
-                _indices.push_back(( (ii+1) * numOfNodes ) + jj    );
-                _indices.push_back(( (ii)   * numOfNodes ) + jj + 1);
-                
-                _indices.push_back(( (ii)   * numOfNodes ) + jj + 1);
-                _indices.push_back(( (ii+1) * numOfNodes ) + jj    );
-                _indices.push_back(( (ii+1) * numOfNodes ) + jj + 1);
-            }
-            else
-            {
-                _indices.push_back(( (ii)   * numOfNodes ) + jj    );
-                _indices.push_back(( (ii+1) * numOfNodes ) + jj    );
-                _indices.push_back(( (ii)   * numOfNodes ) + 0     );
-                
-                _indices.push_back(( (ii)   * numOfNodes ) + 0     );
-                _indices.push_back(( (ii+1) * numOfNodes ) + jj    );
-                _indices.push_back(( (ii+1) * numOfNodes ) + 0     );
-            }
-        }
-    }
-
-    for(int ii=0; ii<numOfNodes; ++ii)
-    {
-        if(ii != numOfNodes - 1)
-        {
-            _indices.push_back(startIdx);
-            _indices.push_back(ii);
-            _indices.push_back(ii+1);
-        }
-        else
-        {
-            _indices.push_back(startIdx);
-            _indices.push_back(ii);
-            _indices.push_back(0);
-        }
+        _vertices.emplace_back( glm::vec3{circle2[ii].x, circle2[ii].y, circle2[ii].z}, glm::vec3{0.0f, 0.0f, 1.0f} );
     }
     
-    for(int ii=0; ii<numOfNodes; ++ii)
+    for(int ii=0; ii<numOfSides; ++ii)
     {
-        if(ii != numOfNodes - 1)
-        {
-            _indices.push_back((3*numOfNodes) + ii);
-            _indices.push_back(endIdx);
-            _indices.push_back((3*numOfNodes) + ii+1);
-        }
-        else
-        {
-            _indices.push_back((3*numOfNodes) + ii);
-            _indices.push_back(endIdx);
-            _indices.push_back(3*numOfNodes);
-        }
+        _vertices.emplace_back( glm::vec3{circle3[ii].x, circle3[ii].y, circle3[ii].z}, glm::vec3{0.0f, 1.0f, 0.0f} );
     }
     
-    for(int ii=0; ii<_indices.size(); ii+=3)
+    for(int ii=0; ii<numOfSides; ++ii)
     {
-        int one = _indices[ii];
-        int two = _indices[ii+1];
-        int three = _indices[ii+2];
-        
-        if (one == 40 || one == 41 ||
-            two == 40 || two == 41 ||
-            three == 40 || three == 41)
-        {
-            std::cout << "indices: " << one << ", " << two << ", " << three << std::endl;
-        }
-        
+        _vertices.emplace_back( glm::vec3{circle4[ii].x, circle4[ii].y, circle4[ii].z}, glm::vec3{0.0f, 0.0f, 1.0f} );
     }
-        
-        
+    
+    for(int ii=0; ii<numOfSides; ++ii)
+    {
+        _vertices.emplace_back( glm::vec3{circle5[ii].x, circle5[ii].y, circle5[ii].z}, glm::vec3{1.0f, 0.0f, 0.0f} );
+    }
+    
+    for(int ii=0; ii<numOfSides; ++ii)
+    {
+        _vertices.emplace_back( glm::vec3{circle6[ii].x, circle6[ii].y, circle6[ii].z}, glm::vec3{0.0f, 1.0f, 0.0f} );
+    }
+    
+    populateIndices(numOfSides, 7);
     
 }
 
@@ -157,4 +87,40 @@ vector<Vertex> SpiderBody::getVertices()
     std::vector<uint32_t> SpiderBody::getIndices()
 {
     return _indices;
+}
+
+void SpiderBody::populateIndices(int numOfSides, int numOfRows)
+{
+    for(int rr=1; rr<numOfRows; ++rr)
+    {
+        for(int jj=0; jj<numOfSides; ++jj)
+        {
+            if(jj != (numOfSides-1))
+            {
+                _indices.push_back( (numOfSides*rr)     + (jj)  );
+                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
+                _indices.push_back( (numOfSides*rr)     + (jj+1));
+                
+                _indices.push_back( (numOfSides*rr)     + (jj+1));
+                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
+                _indices.push_back( (numOfSides*(rr-1)) + (jj+1));
+            }
+            else
+            {
+                _indices.push_back( (numOfSides*rr)     + (jj)  );
+                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
+                _indices.push_back( (numOfSides*rr)     + (0)   );
+                
+                _indices.push_back( (numOfSides*rr)     + (0)   );
+                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
+                _indices.push_back( (numOfSides*(rr-1)) + (0)   );
+            }
+        }
+    }
+    
+    for(int ii=2; ii<_indices.size(); ++ii)
+    {
+        std::cout << _indices[ii-2] << ", " << _indices[ii-1] << ", " << _indices[ii] << std::endl;
+        ++ii;
+    }
 }

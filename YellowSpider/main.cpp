@@ -10,7 +10,7 @@
 #include <thread>
 
 #include "VulkanRenderer.hpp"
-
+//
 GLFWwindow* window;
 VulkanRenderer vulkanRenderer;
 
@@ -80,8 +80,8 @@ int main()
         updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
         //
         glm::mat4 modelA(1.0f);
-        modelA = glm::rotate(modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
-        
+        //modelA = glm::rotate(modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
+        //modelA= glm::translate(modelA, glm::vec3(3.0f, 0.0f, 0.0f));
         /*
         glm::mat4 modelB(1.0f);
         glm::mat4 modelC(1.0f);
