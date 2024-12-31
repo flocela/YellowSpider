@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "RodTriangular.hpp"
 #include "SpiderBody.hpp"
+#include "SpiderHead.hpp"
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT     messageSeverity,
@@ -53,11 +54,11 @@ VulkanRenderer::VulkanRenderer()
 
 VulkanRenderer::~VulkanRenderer()
 {}
-//
+
 int VulkanRenderer::init(GLFWwindow * newWindow)
 {
     _window = newWindow;
-//
+
     try
     {
         createInstance();
@@ -75,7 +76,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createCommandPool();
         //
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(-50.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(-20.0f, 15.0f, 80.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
     
@@ -137,8 +138,20 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                                    _graphicsQueue,
                                    _graphicsCommandPool,
                                    &spiderBodyVertices, &spiderBodyIndices);
-                              
         _meshList.push_back(spiderBodyMesh);
+        
+        
+        
+        SpiderHead spiderHead{};
+        std::vector<Vertex> spiderHeadVertices = spiderHead.getVertices();
+        std::vector<uint32_t> spiderHeadIndices = spiderHead.getIndices();
+
+        Mesh spiderHeadMesh = Mesh(_mainDevice.physicalDevice,
+                                   _mainDevice.logicalDevice,
+                                   _graphicsQueue,
+                                   _graphicsCommandPool,
+                                   &spiderHeadVertices, &spiderHeadIndices);
+        _meshList.push_back(spiderHeadMesh);
         
         
         createCommandBuffers();

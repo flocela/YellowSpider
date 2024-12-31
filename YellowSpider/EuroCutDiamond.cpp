@@ -101,7 +101,6 @@ void EuroCutDiamond::populateIndices()
                     _indices.push_back( topLevelStartNode + (0)          );
                 }
             }
-            std::cout << "line 106" << std::endl;
         }
         else if ( (level==2) || (level ==5) )
         {
@@ -148,7 +147,6 @@ void EuroCutDiamond::populateIndices()
                     _indices.push_back( botLevelStartNode + (0)          );
                 }
             }
-            std::cout << "line 153" << std::endl;
         }
         else
         {
@@ -182,7 +180,6 @@ void EuroCutDiamond::populateIndices()
                     _indices.push_back( botLevelStartNode + (0)      );
                 }
             }
-            std::cout << "line 187" << std::endl;
         }
     }
 }

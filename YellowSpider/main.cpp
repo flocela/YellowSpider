@@ -75,11 +75,11 @@ int main()
             updatedCRotation -= 360.0f;
         }
         //
-        updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
-        updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
-        updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
+        //updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
+        //updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
+        //updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
         //
-        glm::mat4 modelA(1.0f);
+        //glm::mat4 modelA(1.0f);
         //modelA = glm::rotate(modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
         //modelA= glm::translate(modelA, glm::vec3(3.0f, 0.0f, 0.0f));
         /*
@@ -114,7 +114,18 @@ int main()
         //
         
         */
-        vulkanRenderer.updateModel(0, modelA);
+        
+        glm::mat4 modelBody(1.0f);
+        modelBody = glm::translate(modelBody, glm::vec3(0.0f, 7.0f,-0.5f));
+        modelBody = glm::rotate(modelBody, glm::radians(-22.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        
+        glm::mat4 modelHead(1.0f);
+        modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.2f, 0.0f));
+        modelHead = glm::rotate(modelHead, glm::radians(-4.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        
+        
+        vulkanRenderer.updateModel(0, modelBody);
+        vulkanRenderer.updateModel(1, modelHead);
         //vulkanRenderer.updateModel(1, modelB);
         //vulkanRenderer.updateModel(2, modelC);
         

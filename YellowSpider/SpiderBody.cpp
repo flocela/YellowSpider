@@ -9,16 +9,23 @@ using std::vector;
 
 SpiderBody::SpiderBody()
 {
-    
-    EuroCutDiamond head{0.0f, 8.0f,
-                        1.6f, 10.0f,
-                        3.2f, 12.0f,
-                        4.8f, 12.0f,
-                        6.4f, 10.0f,
-                        8.0f, 8.0f};
-                        
-    _vertices = head.getVertices();
-    _indices = head.getIndices();
+/*
+    EuroCutDiamond body{8.0f,  4.0f,
+                        13.0f, 8.0f,
+                        19.0f, 11.5f,
+                        23.0f, 12.0f,
+                        30.0f, 11.0f,
+                        34.0f, 6.0f};
+*/
+    EuroCutDiamond body{0.0f,  4.0f,
+                        5.0f, 8.0f,
+                        11.0f, 11.5f,
+                        15.0f, 12.0f,
+                        22.0f, 11.0f,
+                        26.0f, 6.0f};
+    _vertices = body.getVertices();
+    _indices = body.getIndices();
+
 }
 
 vector<Vertex> SpiderBody::getVertices()
@@ -33,36 +40,4 @@ vector<Vertex> SpiderBody::getVertices()
 
 void SpiderBody::populateIndices(int numOfSides, int numOfRows)
 {
-    for(int rr=1; rr<numOfRows; ++rr)
-    {
-        for(int jj=0; jj<numOfSides; ++jj)
-        {
-            if(jj != (numOfSides-1))
-            {
-                _indices.push_back( (numOfSides*rr)     + (jj)  );
-                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
-                _indices.push_back( (numOfSides*rr)     + (jj+1));
-                
-                _indices.push_back( (numOfSides*rr)     + (jj+1));
-                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
-                _indices.push_back( (numOfSides*(rr-1)) + (jj+1));
-            }
-            else
-            {
-                _indices.push_back( (numOfSides*rr)     + (jj)  );
-                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
-                _indices.push_back( (numOfSides*rr)     + (0)   );
-                
-                _indices.push_back( (numOfSides*rr)     + (0)   );
-                _indices.push_back( (numOfSides*(rr-1)) + (jj)  );
-                _indices.push_back( (numOfSides*(rr-1)) + (0)   );
-            }
-        }
-    }
-    
-    for(int ii=2; ii<_indices.size(); ++ii)
-    {
-        std::cout << _indices[ii-2] << ", " << _indices[ii-1] << ", " << _indices[ii] << std::endl;
-        ++ii;
-    }
 }
