@@ -19,6 +19,11 @@ SpiderHead::SpiderHead()
                         
     _vertices = head.getVertices();
     _indices = head.getIndices();
+    
+    for(int ii=0; ii<_vertices.size(); ++ii)
+    {
+        std::cout << _vertices[ii].pos[0] << ", " << _vertices[ii].pos[1] << ", " << _vertices[ii].pos[2] << std::endl;
+    }
 
 }
 

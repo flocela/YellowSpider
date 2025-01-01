@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "VulkanRenderer.hpp"
+#include "Leg.hpp"
 //
 GLFWwindow* window;
 VulkanRenderer vulkanRenderer;
@@ -75,59 +76,22 @@ int main()
             updatedCRotation -= 360.0f;
         }
         
-        //updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
-        //updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
-        //updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
-        //
-        //glm::mat4 modelA(1.0f);
-        //modelA = glm::rotate(modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
-        //modelA= glm::translate(modelA, glm::vec3(3.0f, 0.0f, 0.0f));
-        /*
-        glm::mat4 modelB(1.0f);
-        glm::mat4 modelC(1.0f);
-        
-        //modelB= glm::translate(modelB, glm::vec3(3.0f, 0.0f, 0.0f));
-        //modelB = glm::rotate(modelB, glm::radians(angle), glm::vec3(1.0f, 0.0f, 1.0f));
-        //modelC = glm::translate(modelC, glm::vec3(10.0f, 10.0f, 5.0f));
-        modelC = glm::rotate   (modelC, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
-        modelC = glm::translate(modelC, glm::vec3(0.0f, 5.0f, 0.0f));
-        modelC = glm::rotate   (modelC, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f));
-        modelC = glm::translate(modelC, glm::vec3(0.0f, 8.0f, 0.0f));
-        modelC = glm::rotate   (modelC, glm::radians(updatedCRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // c rotate
-       
-        //modelB = glm::translate(modelB, glm::vec3(10.0f, 10.0f, 5.0f));
-        modelB = glm::rotate   (modelB, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f));
-        modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));
-        modelB = glm::rotate   (modelB, glm::radians(updatedBRotation), glm::vec3(1.0f, 0.0f, 1.0f)); // b rotate
-        
-        
-        //modelA = glm::translate(modelA, glm::vec3(10.0f, 10.0f, 5.0f));
-        modelA = glm::rotate   (modelA, glm::radians(updatedARotation), glm::vec3(1.0f, 0.0f, 1.0f)); // a rotate
-        
-        
-        
-        //modelA = glm::translate(modelA, glm::vec3(7.0f, 0.0f, 0.0f));
-        //modelB = glm::translate(modelB, glm::vec3(7.0f, 0.0f, 0.0f));
-        //modelC = glm::translate(modelC, glm::vec3(7.0f, 0.0f, 0.0f));
-        
-        //
-        //
-        
-        */
-        
         glm::mat4 modelBody(1.0f);
         modelBody = glm::translate(modelBody, glm::vec3(0.0f, 2.0f,2.0f));
         modelBody = glm::rotate(modelBody, glm::radians(-28.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
         glm::mat4 modelHead(1.0f);
         modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.2f, 0.0f));
-        modelHead = glm::rotate(modelHead, glm::radians(-4.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelHead = glm::rotate(modelHead, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
+        Leg leg{10.0f, 11.0f, 18.0f};
+        std::vector<glm::mat4> legModels = leg.getModels();
         
         vulkanRenderer.updateModel(0, modelBody);
         vulkanRenderer.updateModel(1, modelHead);
-        //vulkanRenderer.updateModel(1, modelB);
-        //vulkanRenderer.updateModel(2, modelC);
+        //vulkanRenderer.updateModel(0, legModels[0]);
+        //vulkanRenderer.updateModel(1, legModels[1]);
+        //vulkanRenderer.updateModel(2, legModels[2]);
         
 
         vulkanRenderer.draw();
