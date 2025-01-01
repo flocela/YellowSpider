@@ -65,14 +65,13 @@ void EuroCutDiamond::populateIndices()
             // startIndexLevel_3 =  (level_0 nodes) + (level_1 nodes) + (level_2);
             int startIndexLevel_3 = (_numOfSides) + (_numOfSides * 2) + _numOfSides;
             int startIndexLevel_4 = startIndexLevel_3 + _numOfSides;
-            
+            //
             int topLevelStartNode = (level==4) ? (startIndexLevel_4) : (startIndexLevel_1);
             int botLevelStartNode = (level==4) ? (startIndexLevel_3) : (startIndexLevel_0);
-            
             int numOfTopSides = _numOfSides*2;
             for (int ii=0; ii<numOfTopSides; ii+=2)
             {
-                if (ii != (numOfTopSides - 1))
+                if (ii != (numOfTopSides - 2))
                 {
                     _indices.push_back( topLevelStartNode + (ii)         );
                     _indices.push_back( botLevelStartNode + (ii/2)       );
@@ -115,7 +114,6 @@ void EuroCutDiamond::populateIndices()
             int topLevelStartNode = (level==2) ? (startIndexLevel_2) : (startIndexLevel_5);
             int botLevelStartNode = (level==2) ? (startIndexLevel_1) : (startIndexLevel_4);
             
-            int numOfBotSides = _numOfSides*2;
             for (int ii=0; ii<_numOfSides; ++ii)
             {
                 if (ii != (_numOfSides - 1))

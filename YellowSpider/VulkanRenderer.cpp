@@ -76,11 +76,10 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createCommandPool();
         //
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(15.0f, 15.0f, -90.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(-60.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
     
-        
         
         SpiderBody spiderBody{};
         std::vector<Vertex> spiderBodyVertices = spiderBody.getVertices();
@@ -104,7 +103,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                                    _graphicsQueue,
                                    _graphicsCommandPool,
                                    &spiderHeadVertices, &spiderHeadIndices);
-        _meshList.push_back(spiderHeadMesh);
+        //_meshList.push_back(spiderHeadMesh);
         
         /****************************************/
         
@@ -582,7 +581,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.rasterizerDiscardEnable = VK_FALSE;
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
-    rasterizerCI.cullMode                = VK_CULL_MODE_NONE;
+    rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
     rasterizerCI.frontFace               = VK_FRONT_FACE_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
 
