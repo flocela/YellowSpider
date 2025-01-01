@@ -19,7 +19,6 @@ SpiderHead::SpiderHead()
                         
     _vertices = head.getVertices();
     _indices = head.getIndices();
-
 }
 
 vector<Vertex> SpiderHead::getVertices()

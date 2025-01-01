@@ -17,12 +17,13 @@ SpiderBody::SpiderBody()
                         30.0f, 11.0f,
                         34.0f, 6.0f};
 */
-    EuroCutDiamond body{0.0f,  0.5f,
-                        5.0f, 2.5f,
-                        11.0f, 7.0f,
-                        15.0f, 7.5f,
-                        22.0f, 5.5f,
-                        26.0f, 1.5};
+    EuroCutDiamond body{0.0f,  2.5f,
+                        2.0f, 3.5f,
+                        6.0f, 5.5f,
+                        10.0f, 7.0f,
+                        16.5f, 7.5f,
+                        20.0f, 5.5};
+                        
     _vertices = body.getVertices();
     _indices = body.getIndices();
 

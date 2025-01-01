@@ -74,12 +74,23 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createDepthBufferImage();
         createFramebuffers();
         createCommandPool();
-        //
+        
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(-60.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 80.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
     
+         SpiderHead spiderHead{};
+        std::vector<Vertex> spiderHeadVertices = spiderHead.getVertices();
+        std::vector<uint32_t> spiderHeadIndices = spiderHead.getIndices();
+
+        Mesh spiderHeadMesh = Mesh(_mainDevice.physicalDevice,
+                                   _mainDevice.logicalDevice,
+                                   _graphicsQueue,
+                                   _graphicsCommandPool,
+                                   &spiderHeadVertices, &spiderHeadIndices);
+        _meshList.push_back(spiderHeadMesh);
+        
         
         SpiderBody spiderBody{};
         std::vector<Vertex> spiderBodyVertices = spiderBody.getVertices();
@@ -94,16 +105,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         
         
         
-        SpiderHead spiderHead{};
-        std::vector<Vertex> spiderHeadVertices = spiderHead.getVertices();
-        std::vector<uint32_t> spiderHeadIndices = spiderHead.getIndices();
-
-        Mesh spiderHeadMesh = Mesh(_mainDevice.physicalDevice,
-                                   _mainDevice.logicalDevice,
-                                   _graphicsQueue,
-                                   _graphicsCommandPool,
-                                   &spiderHeadVertices, &spiderHeadIndices);
-        //_meshList.push_back(spiderHeadMesh);
+       
         
         /****************************************/
         
@@ -582,7 +584,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
     rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
-    rasterizerCI.frontFace               = VK_FRONT_FACE_CLOCKWISE;
+    rasterizerCI.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
 
     // -- MULTISAMPLING --
