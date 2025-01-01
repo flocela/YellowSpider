@@ -74,9 +74,9 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createDepthBufferImage();
         createFramebuffers();
         createCommandPool();
-        
+        //
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 80.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 60.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
     
@@ -120,13 +120,13 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               _graphicsCommandPool,
                               &legAVertices, &legAIndices);
         
-        //_meshList.push_back(legAMesh);
+        _meshList.push_back(legAMesh);
         
         
         /****************************************/
         
         RodTriangular legB{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
-                           glm::vec3{-0.5, 11.0, -0.33}, glm::vec3{0.5, 11.0, -0.33}, glm::vec3{0.0, 11.0, 0.66}};
+                           glm::vec3{-0.5, 15.0, -0.33}, glm::vec3{0.5, 15.0, -0.33}, glm::vec3{0.0, 15.0, 0.66}};
         std::vector<Vertex> legBVertices = legB.getVertices();
         std::vector<uint32_t> legBIndices = legB.getIndices();
 
@@ -136,13 +136,13 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               _graphicsCommandPool,
                               &legBVertices, &legBIndices);
         
-        //_meshList.push_back(legBMesh);
+        _meshList.push_back(legBMesh);
         
         
      /****************************************/
         
         RodTriangular legC{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
-                           glm::vec3{-0.5, 18.0, -0.33}, glm::vec3{0.5, 18.0, -0.33}, glm::vec3{0.0, 18.0, 0.66}};
+                           glm::vec3{-0.5, 12.0, -0.33}, glm::vec3{0.5, 12.0, -0.33}, glm::vec3{0.0, 12.0, 0.66}};
         std::vector<Vertex> legCVertices = legC.getVertices();
         std::vector<uint32_t> legCIndices = legC.getIndices();
 
@@ -152,7 +152,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               _graphicsCommandPool,
                               &legCVertices, &legCIndices);
         
-        //_meshList.push_back(legCMesh);
+        _meshList.push_back(legCMesh);
         
         /***************************************/
         

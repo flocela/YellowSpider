@@ -84,15 +84,15 @@ int main()
         modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.0f, 0.0f));
         modelHead = glm::rotate(modelHead, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
-        Leg leg{10.0f, 11.0f, 18.0f};
+        Leg leg{10.0f, 15.0f, 12.0f};
         std::vector<glm::mat4> legModels = leg.getModels();
         
         vulkanRenderer.updateModel(0, modelHead);
         vulkanRenderer.updateModel(1, modelBody);
         
-        //vulkanRenderer.updateModel(2, legModels[0]);
-        //vulkanRenderer.updateModel(3, legModels[1]);
-        //vulkanRenderer.updateModel(4, legModels[2]);
+        vulkanRenderer.updateModel(2, legModels[0]);
+        vulkanRenderer.updateModel(3, legModels[1]);
+        vulkanRenderer.updateModel(4, legModels[2]);
         
 
         vulkanRenderer.draw();
