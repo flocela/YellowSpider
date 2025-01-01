@@ -74,7 +74,7 @@ int main()
         {
             updatedCRotation -= 360.0f;
         }
-        //
+        
         //updatedARotation = (updatedARotation > rotateA) ? (rotateA) : (updatedARotation);
         //updatedBRotation = (updatedBRotation > rotateB) ? (rotateB) : (updatedBRotation);
         //updatedCRotation = (updatedCRotation > rotateC) ? (rotateC) : (updatedCRotation);
@@ -116,8 +116,8 @@ int main()
         */
         
         glm::mat4 modelBody(1.0f);
-        modelBody = glm::translate(modelBody, glm::vec3(0.0f, 7.0f,-0.5f));
-        modelBody = glm::rotate(modelBody, glm::radians(-22.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelBody = glm::translate(modelBody, glm::vec3(0.0f, 2.0f,2.0f));
+        modelBody = glm::rotate(modelBody, glm::radians(-28.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
         glm::mat4 modelHead(1.0f);
         modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.2f, 0.0f));

@@ -10,12 +10,12 @@ using std::vector;
 SpiderHead::SpiderHead()
 {
     
-    EuroCutDiamond head{0.0f, 6.8f,
-                        1.6f, 8.8f,
-                        3.2f, 10.8f,
-                        5.6f, 10.8f,
-                        7.2f, 8.8f,
-                        8.8f, 6.8f};
+    EuroCutDiamond head{0.0f, 3.8f,
+                        1.6f, 4.8f,
+                        3.2f, 6.0f,
+                        5.6f, 6.8f,
+                        7.2f, 6.3f,
+                        8.8f, 4.3f};
                         
     _vertices = head.getVertices();
     _indices = head.getIndices();
