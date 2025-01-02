@@ -46,7 +46,7 @@ int main()
     float rotateA = 30.0f;
     float rotateB = 4.0 * rotateA;
     float rotateC = 2.0 * rotateA;
-    //
+    
     // Loop until closed
     while (!glfwWindowShouldClose(window))
     {
@@ -84,7 +84,7 @@ int main()
         modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.0f, 0.0f));
         modelHead = glm::rotate(modelHead, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
-        Leg leg{10.0f, 15.0f, 12.0f};
+        Leg leg{12.0f, 15.0f, 12.0f};
         std::vector<glm::mat4> legModels = leg.getModels();
         
         vulkanRenderer.updateModel(0, modelHead);

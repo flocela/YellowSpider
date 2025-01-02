@@ -16,7 +16,7 @@ std::vector<glm::mat4> Leg::getModels()
     glm::mat4 model1(1.0f);
     glm::mat4 model2(1.0f);
     
-    float rotate0_deg = 60.0f;
+    float rotate0_deg = 65.0f;
     float rotate1_deg = 60.0f;
     float rotate2_deg = 90.0f;
     

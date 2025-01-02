@@ -110,7 +110,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         /****************************************/
         
         RodTriangular legA{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
-                           glm::vec3{-0.5, 10.0, -0.33}, glm::vec3{0.5, 10.0, -0.33}, glm::vec3{0.0, 10.0, 0.66}};
+                           glm::vec3{-0.5, 12.0, -0.33}, glm::vec3{0.5, 12.0, -0.33}, glm::vec3{0.0, 12.0, 0.66}};
         std::vector<Vertex> legAVertices = legA.getVertices();
         std::vector<uint32_t> legAIndices = legA.getIndices();
 
