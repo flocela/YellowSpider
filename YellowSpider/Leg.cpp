@@ -7,7 +7,13 @@ Leg::Leg(float seg0, float seg1, float seg2)
     _seg1Length{seg1},
     _seg2Length{seg2}
 {}
-//
+
+std::vector<std::vector<Vertex>> getVertices()
+{
+    return std::vector<std::vector<Vertex>>{};
+}
+
+
 std::vector<glm::mat4> Leg::getModels()
 {
     std::vector<glm::mat4> models{};

@@ -55,7 +55,7 @@ VulkanRenderer::VulkanRenderer()
 VulkanRenderer::~VulkanRenderer()
 {}
 
-int VulkanRenderer::init(GLFWwindow * newWindow)
+int VulkanRenderer::init(GLFWwindow * newWindow, std::vector<ModelGeometry> modelGeometries)
 {
     _window = newWindow;
 
@@ -75,11 +75,35 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         createFramebuffers();
         createCommandPool();
         //
-        _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 100.0f);
-        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 60.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 120.0f);
+        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 100.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
-    
+        
+        std::cout << "VulkanRenderer modelGeometries.size(): " << modelGeometries.size() << std::endl;
+        for(int ii=0; ii<modelGeometries.size(); ++ii)
+        {
+            std::vector<Vertex>  vertices = modelGeometries[ii].getVertices();
+            std::vector<uint32_t> indices = modelGeometries[ii].getIndices();
+            
+            for(int ii=0; ii<vertices.size(); ++ii)
+            {
+                std::cout << vertices[ii].pos.y << ", ";
+            }
+            std::cout << std::endl;
+            
+            // TODO use emplace back
+            // TODO don't pass a reference to an object that is going to disapear at the end of this method.
+            _meshList.push_back(Mesh(_mainDevice.physicalDevice,
+                                   _mainDevice.logicalDevice,
+                                   _graphicsQueue,
+                                   _graphicsCommandPool,
+                                   &vertices,
+                                   &indices));
+        }
+        
+        std::cout << "renderer _meshList.size(): " << _meshList.size() << std::endl;
+    /*
          SpiderHead spiderHead{};
         std::vector<Vertex> spiderHeadVertices = spiderHead.getVertices();
         std::vector<uint32_t> spiderHeadIndices = spiderHead.getIndices();
@@ -108,8 +132,8 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
        
         
         /****************************************/
-        
-        RodTriangular legA{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
+        /*
+        RodTriangular legA{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{-0.5, 0.0, -0.33},
                            glm::vec3{-0.5, 12.0, -0.33}, glm::vec3{0.5, 12.0, -0.33}, glm::vec3{0.0, 12.0, 0.66}};
         std::vector<Vertex> legAVertices = legA.getVertices();
         std::vector<uint32_t> legAIndices = legA.getIndices();
@@ -121,10 +145,10 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               &legAVertices, &legAIndices);
         
         _meshList.push_back(legAMesh);
-        
+        */
         
         /****************************************/
-        
+        /*
         RodTriangular legB{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
                            glm::vec3{-0.5, 15.0, -0.33}, glm::vec3{0.5, 15.0, -0.33}, glm::vec3{0.0, 15.0, 0.66}};
         std::vector<Vertex> legBVertices = legB.getVertices();
@@ -138,9 +162,9 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         
         _meshList.push_back(legBMesh);
         
-        
+        */
      /****************************************/
-        
+        /*
         RodTriangular legC{glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66},
                            glm::vec3{-0.5, 12.0, -0.33}, glm::vec3{0.5, 12.0, -0.33}, glm::vec3{0.0, 12.0, 0.66}};
         std::vector<Vertex> legCVertices = legC.getVertices();
@@ -153,7 +177,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
                               &legCVertices, &legCIndices);
         
         _meshList.push_back(legCMesh);
-        
+        */
         /***************************************/
         
         
@@ -170,11 +194,14 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         return EXIT_FAILURE;
     }
 
+    std::cout << "renderer 119 _meshList.size(): " << _meshList.size() << std::endl;
     return 0;
 }
 
 void VulkanRenderer::cleanup()
 {
+
+    std::cout << "CLEANUP renderer: " << std::endl;
     vkDeviceWaitIdle(_mainDevice.logicalDevice);
     
     vkDestroyImageView(_mainDevice.logicalDevice, _depthBufferVkImageView, nullptr);
@@ -1156,7 +1183,10 @@ void VulkanRenderer::createSynchronization()
 
 void VulkanRenderer::updateModel(int modelId, glm::mat4 newModel)
 {
-    if (modelId >= _meshList.size()) return;
+    if (modelId >= _meshList.size())
+    {
+        return;
+    }
 
     _meshList[modelId].setModel(newModel);
 }

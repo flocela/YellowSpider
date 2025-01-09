@@ -32,7 +32,6 @@ Circle::Circle (float x, float y, float z, float radius, uint32_t numOfTriangles
             _indices.push_back(index);
             _indices.push_back(1);
         }
-        
     }
 }
 

@@ -10,7 +10,8 @@
 #include <thread>
 
 #include "VulkanRenderer.hpp"
-#include "Leg.hpp"
+#include "Spider.hpp"
+#include "Direction.hpp"
 //
 GLFWwindow* window;
 VulkanRenderer vulkanRenderer;
@@ -32,9 +33,14 @@ int main()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     // Create Window
     initWindow("Test Window", 800, 600);
+    
+    Spider spider{static_cast<float>(glfwGetTime())};
+    std::vector<ModelGeometry> spiderGeometries = spider.getModelGeometries();
+    
+    std::cout << "main line 40 spiderGeometries.size(): " << spiderGeometries.size() << std::endl;
 
     // Create Vulkan Renderer instance
-    if (vulkanRenderer.init(window) == EXIT_FAILURE)
+    if (vulkanRenderer.init(window, spiderGeometries) == EXIT_FAILURE)
     {
         return EXIT_FAILURE;
     }
@@ -56,47 +62,13 @@ int main()
         deltaTime = now - lastTime;
         lastTime = now;
         
-        angle += 10.0f * deltaTime;
-        float updatedARotation = angle * 1.0f;
-        float updatedBRotation = angle * 2.0f;
-        float updatedCRotation = angle * 5.0f;
-    
-        if(updatedARotation > 360.0f)
+        std::vector<glm::mat4> models = spider.getModels(now, Direction::Forward);
+        for(int ii=0; ii<models.size(); ++ii)
         {
-            updatedARotation -= 360.0f;
+            vulkanRenderer.updateModel(ii, models[ii]);
         }
         
-        if(updatedBRotation > 360.0f)
-        {
-            updatedBRotation -= 360.0f;
-        }
-        
-        if(updatedCRotation > 360.0f)
-        {
-            updatedCRotation -= 360.0f;
-        }
-        
-        glm::mat4 modelBody(1.0f);
-        modelBody = glm::translate(modelBody, glm::vec3(0.0f, 5.0f, 2.0f));
-        modelBody = glm::rotate(modelBody, glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        
-        glm::mat4 modelHead(1.0f);
-        modelHead = glm::translate(modelHead, glm::vec3(0.0f, 0.0f, 0.0f));
-        modelHead = glm::rotate(modelHead, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        
-        Leg leg{12.0f, 15.0f, 12.0f};
-        std::vector<glm::mat4> legModels = leg.getModels();
-        
-        vulkanRenderer.updateModel(0, modelHead);
-        vulkanRenderer.updateModel(1, modelBody);
-        
-        vulkanRenderer.updateModel(2, legModels[0]);
-        vulkanRenderer.updateModel(3, legModels[1]);
-        vulkanRenderer.updateModel(4, legModels[2]);
-        
-
         vulkanRenderer.draw();
-        
     }
 
     vulkanRenderer.cleanup();

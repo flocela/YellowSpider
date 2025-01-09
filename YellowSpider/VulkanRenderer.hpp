@@ -10,6 +10,7 @@
 #include <set>
 #include <array>
 
+#include "ModelGeometry.hpp"
 #include "Utilities.hpp"
 #include "Mesh.hpp"
 class VulkanRenderer
@@ -17,7 +18,7 @@ class VulkanRenderer
     public:
         VulkanRenderer();
 
-        int init(GLFWwindow * newWindow);
+        int init(GLFWwindow * newWindow, std::vector<ModelGeometry> modelGeometries);
         void updateModel(int modelId, glm::mat4 newModel);
         void draw();
         void cleanup();

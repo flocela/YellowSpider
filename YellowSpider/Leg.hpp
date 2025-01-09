@@ -18,6 +18,8 @@ class Leg
     ~Leg() = default;
     
     std::vector<glm::mat4> getModels();
+    std::vector<std::vector<uint32_t>> getIndices();
+    std::vector<std::vector<Vertex>> getVertices();
     
     private:
     
