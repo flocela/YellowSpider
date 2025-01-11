@@ -32,6 +32,7 @@ Spider::Spider(float time)
         _legLengths.push_back(std::vector<float>{10.0f, 12.0f, 15.0f});
     }
     
+    // Leg (per index) rotate about these axes.
     _legRotations = {
         glm::vec3{-2.0f, 0.0f, 3.0f}, // 0
         glm::vec3{ 0.0f, 0.0f, 1.0f}, // 1
@@ -54,15 +55,15 @@ Spider::Spider(float time)
         legModelGeometry.setIndices(leg0Indices[ii]);
         _modelGeometries.push_back(legModelGeometry);
     }
-    //
+    
     _legStateMap.insert({ 0, LegMotion{std::vector<float>{0.0f, 0.0f, 0.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        0}
     });
     
-    _legStateMap.insert({ 1, LegMotion{std::vector<float>{-2.0f, -6.87f, -1.36f},
-                                       glm::vec3{3.0f, 0.0f, 0.0f},
+    _legStateMap.insert({ 1, LegMotion{std::vector<float>{-15.0f, 10.45f, -26.52f},
+                                       glm::vec3{6.0f, 0.0f, 0.0f},
                                        3.0f,
                                        1}
     });
@@ -73,36 +74,36 @@ Spider::Spider(float time)
                                        2}
     });
     
-    _legStateMap.insert({ 3, LegMotion{std::vector<float>{0.0f, -2.13f, 0.0f},
+    _legStateMap.insert({ 3, LegMotion{std::vector<float>{-3.0f, -2.0f, -1.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        3}
     });
     
-    _legStateMap.insert({ 4, LegMotion{std::vector<float>{2.0f, 9.0f, 1.4f},
+    _legStateMap.insert({ 4, LegMotion{std::vector<float>{28.0f, -8.45f, 27.22f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        4}
     });
     
-    _legStateMap.insert({ 5, LegMotion{std::vector<float>{-2.0f, 0.0f, 0.0f},
+    _legStateMap.insert({ 5, LegMotion{std::vector<float>{-6.0f, -6.0f, -6.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        5}
     });
     
     _legStateMap.insert({ 6, LegMotion{std::vector<float>{0.0f, 0.0f, 0.0f},
-                                       glm::vec3{3.0f, 0.0f, 0.0f},
+                                       glm::vec3{6.0f, 0.0f, 0.0f},
                                        3.0f,
                                        6}
     });
     
-    _legStateMap.insert({ 7, LegMotion{std::vector<float>{2.0f, 0.0f, 0.0f},
+    _legStateMap.insert({ 7, LegMotion{std::vector<float>{6.0f, 6.0f, 6.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        7}
     });
-    
+    //
     _legStateMap.insert({ 8, LegMotion{std::vector<float>{0.0f, 0.0f, 0.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
@@ -112,9 +113,9 @@ Spider::Spider(float time)
     _legStateMap.insert({ 9, LegMotion{std::vector<float>{0.0f, 0.0f, 0.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
-                                       8}
+                                       9}
     });
-    
+    //
     _subsequentStatesPerState.insert({0,  {1,  10}});
     _subsequentStatesPerState.insert({1,  {2,  0 }});
     _subsequentStatesPerState.insert({2,  {3,  1 }});
@@ -136,7 +137,7 @@ Spider::Spider(float time)
         
     std::cout << "line 110" << std::endl;
 }
-//
+
 std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
 {
     std::vector<glm::mat4> models{};
