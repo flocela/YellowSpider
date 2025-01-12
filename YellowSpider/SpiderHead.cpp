@@ -4,7 +4,7 @@
 
 #include <iostream>
 const float  PI_F=3.14159265358979f;
-//
+
 using std::vector;
 
 SpiderHead::SpiderHead()

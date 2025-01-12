@@ -62,7 +62,6 @@ Spider::Spider(float time)
         _headStateMap.at(0)}
 {
 
-    std::cout << "Spider 65" << std::endl;
     SpiderHead head{};
     ModelGeometry headMG{};
     headMG.setVertices(head.getVertices());
@@ -77,7 +76,7 @@ Spider::Spider(float time)
     //_modelGeometries.push_back(bodyMG);
     _bodyModel = &_modelGeometries[_modelGeometries.size()-1];
     
-    for(int ii=0; ii<1; ++ii)
+    for(int ii=0; ii<8; ++ii)
     {
         _legLengths.push_back(std::vector<float>{10.0f, 12.0f, 15.0f});
     }
@@ -88,23 +87,29 @@ Spider::Spider(float time)
         glm::vec3{ 0.0f, 0.0f, 1.0f}, // 1
         glm::vec3{ 1.0f, 0.0f, 3.0f}, // 2
         glm::vec3{ 3.0f, 0.0f, 1.0f}, // 3
-        glm::vec3{ 3.0f, 0.0f, -1.0f}, // 4
+        glm::vec3{ -1.0f, 0.0f, -3.0f}, // 4
         glm::vec3{ 1.0f, 0.0f, -3.0f}, // 5
         glm::vec3{ 0.0f, 0.0f, -1.0f}, // 6
-        glm::vec3{ 2.0f, 0.0f,  3.0f}, // 7
+        glm::vec3{ -2.0f, 0.0f,  -3.0f}, // 7
     };
     
-    SpiderLeg spiderLeg0{_legLengths[0][0], _legLengths[0][1], _legLengths[0][2],
+    // generic spider leg size
+    SpiderLeg spiderLeg{_legLengths[0][0], _legLengths[0][1], _legLengths[0][2],
                          glm::vec3{-0.5, 0.0, -0.33}, glm::vec3{0.0, 0.0, 0.66}, glm::vec3{0.5, 0.0, -0.33}};
-    std::vector<std::vector<Vertex>>   leg0Vertices = spiderLeg0.getSegmentVertices();
-    std::vector<std::vector<uint32_t>> leg0Indices  = spiderLeg0.getSegmentIndices();
-    for(int ii=0; ii<3; ++ii)
+    std::vector<std::vector<Vertex>>   leg0Vertices = spiderLeg.getSegmentVertices();
+    std::vector<std::vector<uint32_t>> leg0Indices  = spiderLeg.getSegmentIndices();
+    for(int ii=0; ii<8; ++ii)
     {
-        ModelGeometry legModelGeometry{};
-        legModelGeometry.setVertices(leg0Vertices[ii]);;
-        legModelGeometry.setIndices(leg0Indices[ii]);
-        _modelGeometries.push_back(legModelGeometry);
+        for(int segment=0; segment<3; ++segment)
+        {
+            ModelGeometry legModelGeometry{};
+            legModelGeometry.setVertices(leg0Vertices[segment]);;
+            legModelGeometry.setIndices(leg0Indices[segment]);
+            _modelGeometries.push_back(legModelGeometry);
+        }
     }
+    
+    
     
     _legStateMap.insert({ 0, LegMotion{std::vector<float>{0.0f, 0.0f, 0.0f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
@@ -180,10 +185,59 @@ Spider::Spider(float time)
     // TODO emplace_back
     _legMarkers.push_back(LegMarker{
         std::vector<float>{45.0f, 78.0f, 90.0f},
-        glm::vec3(-2.3f, 7.2f, -5.84f),
+        glm::vec3(-4.57f, 7.2f, -3.05f),
         time,
         Direction::None,
         _legStateMap.at(0)});
+    
+    _legMarkers.push_back(LegMarker{
+        std::vector<float>{45.0f, 78.0f, 90.0f},
+        glm::vec3(-5.5f, 7.2f, 0.0f),
+        time,
+        Direction::None,
+        _legStateMap.at(5)});
+        
+    _legMarkers.push_back(LegMarker{
+        std::vector<float>{45.0f, 78.0f, 90.0f},
+        glm::vec3(-5.21f, 7.2f, 1.74f),
+        time,
+        Direction::None,
+        _legStateMap.at(0)});
+        
+    _legMarkers.push_back(LegMarker{
+    std::vector<float>{45.0f, 78.0f, 90.0f},
+    glm::vec3(-1.74, 7.2f, 5.51f),
+    time,
+    Direction::None,
+    _legStateMap.at(5)});
+    
+    _legMarkers.push_back(LegMarker{
+    std::vector<float>{45.0f, 78.0f, 90.0f},
+    glm::vec3(1.74, 7.2f, 5.51f),
+    time,
+    Direction::None,
+    _legStateMap.at(5)});
+    
+    _legMarkers.push_back(LegMarker{
+    std::vector<float>{45.0f, 78.0f, 90.0f},
+    glm::vec3(5.21, 7.2f, 1.74f),
+    time,
+    Direction::None,
+    _legStateMap.at(0)});
+    
+    _legMarkers.push_back(LegMarker{
+    std::vector<float>{45.0f, 78.0f, 90.0f},
+    glm::vec3(5.5, 7.2f, 0.0f),
+    time,
+    Direction::None,
+    _legStateMap.at(5)});
+    
+    _legMarkers.push_back(LegMarker{
+    std::vector<float>{45.0f, 78.0f, 90.0f},
+    glm::vec3(4.57, 7.2f, -3.05f),
+    time,
+    Direction::None,
+    _legStateMap.at(0)});
         
 }
 
@@ -243,6 +297,7 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
         models.push_back(modelHead);
     
         //    LEGS    //
+        std::cout << "_legLengths.size() :" << _legLengths.size();
         for(int ii=0; ii<_legLengths.size(); ++ii)
         {
             glm::mat4 model0(1.0f);
