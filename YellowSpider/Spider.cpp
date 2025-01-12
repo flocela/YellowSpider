@@ -59,6 +59,54 @@ Spider::Spider(float time)
         glm::vec3{0.0f, 4.4f, 0.0f}, 
         time,
         Direction::None,
+        _headStateMap.at(0)},
+    _bodyStateMap{
+        {0, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       0}},
+        {1, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{6.0f, 0.0f, 0.0f},
+                       3.0f,
+                       1}},
+        {2, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       2}},
+        {3, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       3}},
+        {4, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       4}},
+        {5, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       5}},
+        {6, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{6.0f, 0.0f, 0.0f},
+                       3.0f,
+                       6}},
+        {7, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       7}},
+        {8, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       8}},
+        {9, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       9}}
+    },
+    _bodyMarker{ 
+        glm::vec3{-10.0f, 0.0f, 0.0f},
+        glm::vec3{0.0f, 7.0f, 0.0f}, 
+        time,
+        Direction::None,
         _headStateMap.at(0)}
 {
 
@@ -73,7 +121,7 @@ Spider::Spider(float time)
     ModelGeometry bodyMG{};
     bodyMG.setVertices(body.getVertices());
     bodyMG.setIndices(body.getIndices());
-    //_modelGeometries.push_back(bodyMG);
+    _modelGeometries.push_back(bodyMG);
     _bodyModel = &_modelGeometries[_modelGeometries.size()-1];
     
     for(int ii=0; ii<8; ++ii)
@@ -295,9 +343,55 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
         
         modelHead = glm::translate(modelHead, headPos);
         models.push_back(modelHead);
+        
+        //   BODY   //
+        glm::mat4 modelBody(1.0f);
+        if(endTime < time)
+        {
+            int nextBodyMotion = _subsequentStatesPerState.at(_bodyMarker.getMotionType()).first;
+            std::cout << "CHANGE BODY: bodyHead: " << nextBodyMotion << std::endl;
+            
+            
+            _bodyMarker = HeadMarker{
+                glm::vec3{_bodyMarker.getStartGlobalRotationX() + _bodyMarker.getDeltaRotationX(),
+                          _bodyMarker.getStartGlobalRotationY() + _bodyMarker.getDeltaRotationY(),
+                          _bodyMarker.getStartGlobalRotationZ() + _bodyMarker.getDeltaRotationZ()},
+                glm::vec3{_bodyMarker.getStartGlobalPosX() + _bodyMarker.getDeltaXPos(),
+                          _bodyMarker.getStartGlobalPosY() + _bodyMarker.getDeltaYPos(),
+                          _bodyMarker.getStartGlobalPosZ() + _bodyMarker.getDeltaZPos()},
+                endTime,
+                direction,
+                _bodyStateMap.at(nextBodyMotion)};
+        }
+        //
+        timeDiff = time - _bodyMarker.getStartGlobalTime();
+        diffX         = timeDiff * _bodyMarker.getDeltaXPos() / _bodyMarker.getMotionTotalTime();
+        diffY         = timeDiff * _bodyMarker.getDeltaYPos() / _bodyMarker.getMotionTotalTime();
+        diffZ         = timeDiff * _bodyMarker.getDeltaZPos() / _bodyMarker.getMotionTotalTime();
+        diffRotationX = timeDiff * _bodyMarker.getDeltaRotationX() / _bodyMarker.getMotionTotalTime();
+        diffRotationY = timeDiff * _bodyMarker.getDeltaRotationY() / _bodyMarker.getMotionTotalTime();
+        diffRotationZ = timeDiff * _bodyMarker.getDeltaRotationZ() / _bodyMarker.getMotionTotalTime();
+        //std::cout << "rotations: " << diffRotationX << ", " << diffRotationY << ", " << diffRotationZ << std::endl;
+        
+        glm::vec3 bodyPos{_bodyMarker.getStartGlobalPosX() + diffX,
+                          _bodyMarker.getStartGlobalPosY() + diffY,
+                          _bodyMarker.getStartGlobalPosZ() + diffZ};
+                          
+        //std::cout << "startRotations: " << _headMarker.getStartGlobalRotationX() << ", " << _headMarker.getStartGlobalRotationY() << ", " << _headMarker.getStartGlobalRotationZ() << std::endl;
+        
+        rotationX = _bodyMarker.getStartGlobalRotationX() + diffRotationX;
+        rotationY = _bodyMarker.getStartGlobalRotationY() + diffRotationY;
+        rotationZ = _bodyMarker.getStartGlobalRotationZ() + diffRotationZ;
+        
+        std::cout << "rotationX: " << rotationX << std::endl;
+        modelBody = glm::rotate(modelBody, glm::radians(rotationX), glm::vec3{1.0f, 0.0f, 0.0f});
+        modelBody = glm::rotate(modelBody, glm::radians(rotationY), glm::vec3{0.0f, 1.0f, 0.0f});
+        modelBody = glm::rotate(modelBody, glm::radians(rotationZ), glm::vec3{0.0f, 0.0f, 1.0f});
+        
+        modelBody = glm::translate(modelBody, bodyPos);
+        models.push_back(modelBody);
     
         //    LEGS    //
-        std::cout << "_legLengths.size() :" << _legLengths.size();
         for(int ii=0; ii<_legLengths.size(); ++ii)
         {
             glm::mat4 model0(1.0f);
@@ -315,7 +409,6 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
                     std::cout << "CHANGE ROTATIONS" << std::endl;
                     
                     int nextLegMotion = _subsequentStatesPerState.at(_legMarkers[ii].getMotionType()).first;
-                    std::cout << "nextLegMotion: " << nextLegMotion << std::endl;
                     
                     float diffX         = _legMarkers[ii].getDeltaXPos();
                     float diffRotation0 = _legMarkers[ii].getDeltaRotation0();
@@ -368,9 +461,9 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
                 
                 if(change)
                 {
-                    std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
-                    std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-                    std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
+                    //std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
+                    //std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+                    //std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
                 }
 
             }

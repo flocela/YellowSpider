@@ -39,6 +39,9 @@ class Spider
     std::unordered_map<int, HeadMotion>          _headStateMap{};
     HeadMarker                                   _headMarker;
     
+    std::unordered_map<int, HeadMotion>          _bodyStateMap{};
+    HeadMarker                                   _bodyMarker;
+    
     std::vector<std::vector<float>>              _legLengths{};
     std::vector<glm::vec3>                       _legRotations{};
     
