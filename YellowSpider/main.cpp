@@ -33,7 +33,7 @@ int main()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     // Create Window
     initWindow("Test Window", 800, 600);
-    
+    std::cout << "main 36" << std::endl;
     Spider spider{static_cast<float>(glfwGetTime())};
     std::vector<ModelGeometry> spiderGeometries = spider.getModelGeometries();
     
@@ -45,13 +45,8 @@ int main()
         return EXIT_FAILURE;
     }
 
-    float angle     = 0.0f;
     float deltaTime = 0.0f;
     float lastTime  = 0.0f;
-    
-    float rotateA = 30.0f;
-    float rotateB = 4.0 * rotateA;
-    float rotateC = 2.0 * rotateA;
     
     // Loop until closed
     while (!glfwWindowShouldClose(window))

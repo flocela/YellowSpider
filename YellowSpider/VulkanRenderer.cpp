@@ -86,12 +86,6 @@ int VulkanRenderer::init(GLFWwindow * newWindow, std::vector<ModelGeometry> mode
             std::vector<Vertex>  vertices = modelGeometries[ii].getVertices();
             std::vector<uint32_t> indices = modelGeometries[ii].getIndices();
             
-            for(int ii=0; ii<vertices.size(); ++ii)
-            {
-                std::cout << vertices[ii].pos.y << ", ";
-            }
-            std::cout << std::endl;
-            
             // TODO use emplace back
             // TODO don't pass a reference to an object that is going to disapear at the end of this method.
             _meshList.push_back(Mesh(_mainDevice.physicalDevice,

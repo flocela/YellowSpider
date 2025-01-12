@@ -11,21 +11,71 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Spider::Spider(float time)
+:   
+    _headStateMap{
+        {0, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       0}},
+        {1, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{6.0f, 0.0f, 0.0f},
+                       3.0f,
+                       1}},
+        {2, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       2}},
+        {3, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       3}},
+        {4, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       4}},
+        {5, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       5}},
+        {6, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{6.0f, 0.0f, 0.0f},
+                       3.0f,
+                       6}},
+        {7, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       7}},
+        {8, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       8}},
+        {9, HeadMotion{glm::vec3{0.0f, 0.0f, 0.0f},
+                       glm::vec3{0.0f, 0.0f, 0.0f},
+                       3.0f,
+                       9}}
+    },
+    _headMarker{ 
+        glm::vec3{10.0f, 0.0f, 0.0f},
+        glm::vec3{0.0f, 4.4f, 0.0f}, 
+        time,
+        Direction::None,
+        _headStateMap.at(0)}
 {
-    
+
+    std::cout << "Spider 65" << std::endl;
     SpiderHead head{};
     ModelGeometry headMG{};
     headMG.setVertices(head.getVertices());
     headMG.setIndices(head.getIndices());
-    //_modelGeometries.push_back(headMG);
-    //_headModel = &_modelGeometries[_modelGeometries.size()-1];
+    _modelGeometries.push_back(headMG);
+    _headModel = &_modelGeometries[_modelGeometries.size()-1];
     
     SpiderBody body{};
     ModelGeometry bodyMG{};
     bodyMG.setVertices(body.getVertices());
     bodyMG.setIndices(body.getIndices());
     //_modelGeometries.push_back(bodyMG);
-    //_bodyModel = &_modelGeometries[_modelGeometries.size()-1];
+    _bodyModel = &_modelGeometries[_modelGeometries.size()-1];
     
     for(int ii=0; ii<1; ++ii)
     {
@@ -135,93 +185,144 @@ Spider::Spider(float time)
         Direction::None,
         _legStateMap.at(0)});
         
-    std::cout << "line 110" << std::endl;
 }
 
 std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
 {
     std::vector<glm::mat4> models{};
-    for(int ii=0; ii<_legLengths.size(); ++ii)
+    
+
+    float endTime = _headMarker.getEndTime();
+    if( _lastDirection == Direction::Forward)
     {
-        glm::mat4 model0(1.0f);
-        glm::mat4 model1(1.0f);
-        glm::mat4 model2(1.0f);
-        
-        float endTime = _legMarkers[ii].getEndTime();
-        
-        if (_lastDirection == Direction::Forward)
+        //   HEAD    //
+        glm::mat4 modelHead(1.0f);
+        if(endTime < time)
         {
-            // TODO is this less than or less than or equal to?
-            if (endTime < time)
-            {
-                std::cout << "CHANGE ROTATIONS" << std::endl;
-                
-                int nextLegMotion = _subsequentStatesPerState.at(_legMarkers[ii].getMotionType()).first;
-                std::cout << "nextLegMotion: " << nextLegMotion << std::endl;
-                
-                float diffX         = _legMarkers[ii].getDeltaXPos();
-                float diffRotation0 = _legMarkers[ii].getDeltaRotation0();
-                float diffRotation1 = _legMarkers[ii].getDeltaRotation1();
-                float diffRotation2 = _legMarkers[ii].getDeltaRotation2();
-                
-                _legMarkers[ii] = LegMarker{
-                    std::vector<float>{_legMarkers[ii].getStartRotation0() + diffRotation0,
-                                       _legMarkers[ii].getStartRotation1() + diffRotation1,
-                                       _legMarkers[ii].getStartRotation2() + diffRotation2},
-                    glm::vec3{_legMarkers[ii].getStartGlobalPosX() + diffX,
-                              _legMarkers[ii].getStartGlobalPosY(),
-                              _legMarkers[ii].getStartGlobalPosZ()},
-                    endTime,
-                    direction,
-                    _legStateMap.at(nextLegMotion)
-                };
-                std::cout << "Spider 147" << std::endl;
-            }
+            int nextHeadMotion = _subsequentStatesPerState.at(_headMarker.getMotionType()).first;
+            std::cout << "CHANGE HEAD: nextHead: " << nextHeadMotion << std::endl;
             
-            float timeDiff = time - _legMarkers[ii].getStartGlobalTime();
             
-            float diffX         = timeDiff * _legMarkers[ii].getDeltaXPos()      / _legMarkers[ii].getMotionTotalTime();
-            float diffRotation0 = timeDiff * _legMarkers[ii].getDeltaRotation0() / _legMarkers[ii].getMotionTotalTime();
-            float diffRotation1 = timeDiff * _legMarkers[ii].getDeltaRotation1() / _legMarkers[ii].getMotionTotalTime();
-            float diffRotation2 = timeDiff * _legMarkers[ii].getDeltaRotation2() / _legMarkers[ii].getMotionTotalTime();
-            
-            glm::vec3 pos{
-                _legMarkers[ii].getStartGlobalPosX() + diffX,
-                _legMarkers[ii].getStartGlobalPosY(), 
-                _legMarkers[ii].getStartGlobalPosZ()};
-            
-            float rotation0_deg = _legMarkers[ii].getStartRotation0() + diffRotation0;
-            float rotation1_deg = _legMarkers[ii].getStartRotation1() + diffRotation1;
-            float rotation2_deg = _legMarkers[ii].getStartRotation2() + diffRotation2;
-            
-            model2 = glm::translate(model2, pos); // TODO this needs to change per leg 
-            model2 = glm::rotate   (model2, glm::radians(rotation0_deg), _legRotations[ii]); 
-            model2 = glm::translate(model2, glm::vec3(0.0f, _legLengths[0][0], 0.0f));
-            model2 = glm::rotate   (model2, glm::radians(rotation1_deg), _legRotations[ii]); 
-            model2 = glm::translate(model2, glm::vec3(0.0f, _legLengths[0][1], 0.0f));
-            model2 = glm::rotate   (model2, glm::radians(rotation2_deg), _legRotations[ii]);  // c rotate
-           
-            model1 = glm::translate(model1, pos);
-            model1 = glm::rotate   (model1, glm::radians(rotation0_deg), _legRotations[ii]);
-            model1 = glm::translate(model1, glm::vec3(0.0f, _legLengths[0][0], 0.0f));
-            model1 = glm::rotate   (model1, glm::radians(rotation1_deg), _legRotations[ii]);  // b rotate
-            
-            model0 = glm::translate(model0, pos);
-            model0 = glm::rotate   (model0, glm::radians(rotation0_deg), _legRotations[ii]);
-            
-            std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
-            std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-            std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
+            _headMarker = HeadMarker{
+                glm::vec3{_headMarker.getStartGlobalRotationX()+_headMarker.getDeltaRotationX(),
+                          _headMarker.getStartGlobalRotationY()+_headMarker.getDeltaRotationY(),
+                          _headMarker.getStartGlobalRotationZ()+_headMarker.getDeltaRotationZ()},
+                glm::vec3{_headMarker.getStartGlobalPosX() + _headMarker.getDeltaXPos(),
+                          _headMarker.getStartGlobalPosY() + _headMarker.getDeltaYPos(),
+                          _headMarker.getStartGlobalPosZ() + _headMarker.getDeltaZPos()},
+                endTime,
+                direction,
+                _headStateMap.at(nextHeadMotion)};
         }
-        models.push_back(model0);
-        models.push_back(model1);
-        models.push_back(model2);
+        //
+        float timeDiff = time - _headMarker.getStartGlobalTime();
+        float diffX         = timeDiff * _headMarker.getDeltaXPos() / _headMarker.getMotionTotalTime();
+        float diffY         = timeDiff * _headMarker.getDeltaYPos() / _headMarker.getMotionTotalTime();
+        float diffZ         = timeDiff * _headMarker.getDeltaZPos() / _headMarker.getMotionTotalTime();
+        float diffRotationX = timeDiff * _headMarker.getDeltaRotationX() / _headMarker.getMotionTotalTime();
+        float diffRotationY = timeDiff * _headMarker.getDeltaRotationY() / _headMarker.getMotionTotalTime();
+        float diffRotationZ = timeDiff * _headMarker.getDeltaRotationZ() / _headMarker.getMotionTotalTime();
+        std::cout << "rotations: " << diffRotationX << ", " << diffRotationY << ", " << diffRotationZ << std::endl;
+        
+        glm::vec3 headPos{_headMarker.getStartGlobalPosX() + diffX,
+                          _headMarker.getStartGlobalPosY() + diffY,
+                          _headMarker.getStartGlobalPosZ() + diffZ};
+                          
+        std::cout << "startRotations: " << _headMarker.getStartGlobalRotationX() << ", " << _headMarker.getStartGlobalRotationY() << ", " << _headMarker.getStartGlobalRotationZ() << std::endl;
+        
+        float rotationX = _headMarker.getStartGlobalRotationX() + diffRotationX;
+        float rotationY = _headMarker.getStartGlobalRotationY() + diffRotationY;
+        float rotationZ = _headMarker.getStartGlobalRotationZ() + diffRotationZ;
+        
+        std::cout << "rotationX: " << rotationX << std::endl;
+        modelHead = glm::rotate(modelHead, glm::radians(rotationX), glm::vec3{1.0f, 0.0f, 0.0f});
+        modelHead = glm::rotate(modelHead, glm::radians(rotationY), glm::vec3{0.0f, 1.0f, 0.0f});
+        modelHead = glm::rotate(modelHead, glm::radians(rotationZ), glm::vec3{0.0f, 0.0f, 1.0f});
+        
+        modelHead = glm::translate(modelHead, headPos);
+        models.push_back(modelHead);
+    
+        //    LEGS    //
+        for(int ii=0; ii<_legLengths.size(); ++ii)
+        {
+            glm::mat4 model0(1.0f);
+            glm::mat4 model1(1.0f);
+            glm::mat4 model2(1.0f);
+            
+            float endTime = _legMarkers[ii].getEndTime();
+            
+            if (_lastDirection == Direction::Forward)
+            {
+                // TODO is this less than or less than or equal to?
+                if (endTime < time)
+                {
+                    std::cout << "CHANGE ROTATIONS" << std::endl;
+                    
+                    int nextLegMotion = _subsequentStatesPerState.at(_legMarkers[ii].getMotionType()).first;
+                    std::cout << "nextLegMotion: " << nextLegMotion << std::endl;
+                    
+                    float diffX         = _legMarkers[ii].getDeltaXPos();
+                    float diffRotation0 = _legMarkers[ii].getDeltaRotation0();
+                    float diffRotation1 = _legMarkers[ii].getDeltaRotation1();
+                    float diffRotation2 = _legMarkers[ii].getDeltaRotation2();
+                    
+                    _legMarkers[ii] = LegMarker{
+                        std::vector<float>{_legMarkers[ii].getStartRotation0() + diffRotation0,
+                                           _legMarkers[ii].getStartRotation1() + diffRotation1,
+                                           _legMarkers[ii].getStartRotation2() + diffRotation2},
+                        glm::vec3{_legMarkers[ii].getStartGlobalPosX() + diffX,
+                                  _legMarkers[ii].getStartGlobalPosY(),
+                                  _legMarkers[ii].getStartGlobalPosZ()},
+                        endTime,
+                        direction,
+                        _legStateMap.at(nextLegMotion)
+                    };
+                }
+                
+                float timeDiff = time - _legMarkers[ii].getStartGlobalTime();
+                
+                float diffX         = timeDiff * _legMarkers[ii].getDeltaXPos()      / _legMarkers[ii].getMotionTotalTime();
+                float diffRotation0 = timeDiff * _legMarkers[ii].getDeltaRotation0() / _legMarkers[ii].getMotionTotalTime();
+                float diffRotation1 = timeDiff * _legMarkers[ii].getDeltaRotation1() / _legMarkers[ii].getMotionTotalTime();
+                float diffRotation2 = timeDiff * _legMarkers[ii].getDeltaRotation2() / _legMarkers[ii].getMotionTotalTime();
+                
+                glm::vec3 pos{
+                    _legMarkers[ii].getStartGlobalPosX() + diffX,
+                    _legMarkers[ii].getStartGlobalPosY(), 
+                    _legMarkers[ii].getStartGlobalPosZ()};
+                
+                float rotation0_deg = _legMarkers[ii].getStartRotation0() + diffRotation0;
+                float rotation1_deg = _legMarkers[ii].getStartRotation1() + diffRotation1;
+                float rotation2_deg = _legMarkers[ii].getStartRotation2() + diffRotation2;
+                
+                model2 = glm::translate(model2, pos); // TODO this needs to change per leg 
+                model2 = glm::rotate   (model2, glm::radians(rotation0_deg), _legRotations[ii]); 
+                model2 = glm::translate(model2, glm::vec3(0.0f, _legLengths[0][0], 0.0f));
+                model2 = glm::rotate   (model2, glm::radians(rotation1_deg), _legRotations[ii]); 
+                model2 = glm::translate(model2, glm::vec3(0.0f, _legLengths[0][1], 0.0f));
+                model2 = glm::rotate   (model2, glm::radians(rotation2_deg), _legRotations[ii]);  // c rotate
+               
+                model1 = glm::translate(model1, pos);
+                model1 = glm::rotate   (model1, glm::radians(rotation0_deg), _legRotations[ii]);
+                model1 = glm::translate(model1, glm::vec3(0.0f, _legLengths[0][0], 0.0f));
+                model1 = glm::rotate   (model1, glm::radians(rotation1_deg), _legRotations[ii]);  // b rotate
+                
+                model0 = glm::translate(model0, pos);
+                model0 = glm::rotate   (model0, glm::radians(rotation0_deg), _legRotations[ii]);
+                
+                //std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
+                //std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+                //std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
+            }
+            models.push_back(model0);
+            models.push_back(model1);
+            models.push_back(model2);
+        }
     }
     //
     _lastTime = time;
     _lastDirection = direction;
     
-    std::cout << "Spider 164" << std::endl;
     return models;
 
 }
@@ -230,3 +331,4 @@ std::vector<ModelGeometry> Spider::getModelGeometries()
 {
     return _modelGeometries;
 }
+
