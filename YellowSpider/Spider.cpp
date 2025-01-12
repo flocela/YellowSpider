@@ -130,7 +130,7 @@ Spider::Spider(float time)
                                        3}
     });
     
-    _legStateMap.insert({ 4, LegMotion{std::vector<float>{28.0f, -8.45f, 27.22f},
+    _legStateMap.insert({ 4, LegMotion{std::vector<float>{18.0f, -8.45f, 27.22f},
                                        glm::vec3{0.0f, 0.0f, 0.0f},
                                        3.0f,
                                        4}
@@ -222,19 +222,19 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
         float diffRotationX = timeDiff * _headMarker.getDeltaRotationX() / _headMarker.getMotionTotalTime();
         float diffRotationY = timeDiff * _headMarker.getDeltaRotationY() / _headMarker.getMotionTotalTime();
         float diffRotationZ = timeDiff * _headMarker.getDeltaRotationZ() / _headMarker.getMotionTotalTime();
-        std::cout << "rotations: " << diffRotationX << ", " << diffRotationY << ", " << diffRotationZ << std::endl;
+        //std::cout << "rotations: " << diffRotationX << ", " << diffRotationY << ", " << diffRotationZ << std::endl;
         
         glm::vec3 headPos{_headMarker.getStartGlobalPosX() + diffX,
                           _headMarker.getStartGlobalPosY() + diffY,
                           _headMarker.getStartGlobalPosZ() + diffZ};
                           
-        std::cout << "startRotations: " << _headMarker.getStartGlobalRotationX() << ", " << _headMarker.getStartGlobalRotationY() << ", " << _headMarker.getStartGlobalRotationZ() << std::endl;
+        //std::cout << "startRotations: " << _headMarker.getStartGlobalRotationX() << ", " << _headMarker.getStartGlobalRotationY() << ", " << _headMarker.getStartGlobalRotationZ() << std::endl;
         
         float rotationX = _headMarker.getStartGlobalRotationX() + diffRotationX;
         float rotationY = _headMarker.getStartGlobalRotationY() + diffRotationY;
         float rotationZ = _headMarker.getStartGlobalRotationZ() + diffRotationZ;
         
-        std::cout << "rotationX: " << rotationX << std::endl;
+        //std::cout << "rotationX: " << rotationX << std::endl;
         modelHead = glm::rotate(modelHead, glm::radians(rotationX), glm::vec3{1.0f, 0.0f, 0.0f});
         modelHead = glm::rotate(modelHead, glm::radians(rotationY), glm::vec3{0.0f, 1.0f, 0.0f});
         modelHead = glm::rotate(modelHead, glm::radians(rotationZ), glm::vec3{0.0f, 0.0f, 1.0f});
@@ -250,12 +250,13 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
             glm::mat4 model2(1.0f);
             
             float endTime = _legMarkers[ii].getEndTime();
-            
+            bool change = false;
             if (_lastDirection == Direction::Forward)
             {
                 // TODO is this less than or less than or equal to?
                 if (endTime < time)
                 {
+                    change = true;
                     std::cout << "CHANGE ROTATIONS" << std::endl;
                     
                     int nextLegMotion = _subsequentStatesPerState.at(_legMarkers[ii].getMotionType()).first;
@@ -310,9 +311,13 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
                 model0 = glm::translate(model0, pos);
                 model0 = glm::rotate   (model0, glm::radians(rotation0_deg), _legRotations[ii]);
                 
-                //std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
-                //std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-                //std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
+                if(change)
+                {
+                    std::cout << "r0, r1, r2: " << rotation0_deg << ", " << rotation1_deg << ", " << rotation2_deg << std::endl;
+                    std::cout << "px, py, pz: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+                    std::cout << "len0, 1, 2: " << _legLengths[0][0] << ", " << _legLengths[0][1] << ", " << _legLengths[0][2] << std::endl;
+                }
+
             }
             models.push_back(model0);
             models.push_back(model1);
