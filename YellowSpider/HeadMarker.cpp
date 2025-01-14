@@ -6,7 +6,7 @@ HeadMarker::HeadMarker(
     glm::vec3 startGlobalPos,
     float startGlobalTime,
     Direction direction,
-    HeadMotion headMotion)
+    ElementMotion headMotion)
 :   _startGlobalRotation{startGlobalRotation},
     _startGlobalPos{startGlobalPos},
     _startGlobalTime{startGlobalTime},

@@ -8,7 +8,7 @@
 #include "Direction.hpp"
 #include "LegMotion.hpp"
 #include "LegMarker.hpp"
-#include "HeadMotion.hpp"
+#include "ElementMotion.hpp"
 #include "HeadMarker.hpp"
 
 class Spider
@@ -36,16 +36,17 @@ class Spider
     ModelGeometry* _headModel = nullptr;
     std::vector<ModelGeometry>                   _modelGeometries;
     
-    std::unordered_map<int, HeadMotion>          _headStateMap{};
+    std::unordered_map<int, ElementMotion>       _headMotionMap{};
     HeadMarker                                   _headMarker;
     
-    std::unordered_map<int, HeadMotion>          _bodyStateMap{};
+    std::unordered_map<int, ElementMotion>       _bodyMotionMap{};
     HeadMarker                                   _bodyMarker;
     
     std::vector<std::vector<float>>              _legLengths{};
-    std::vector<glm::vec3>                       _legRotations{};
+    std::vector<glm::vec3>                       _legAxesOfRotations{};
     
-    std::unordered_map<int, LegMotion>           _legStateMap{};
+    std::unordered_map<int, LegMotion>           _legRightMotionMap{};
+    std::unordered_map<int, LegMotion>           _legLeftMotionMap{};
     std::unordered_map<int, std::pair<int, int>> _subsequentStatesPerState{};
     std::vector<LegMarker>                       _legMarkers{};
     float                                        _lastTime = -1;

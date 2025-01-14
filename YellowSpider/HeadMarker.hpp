@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "Direction.hpp"
-#include "HeadMotion.hpp"
+#include "ElementMotion.hpp"
 
 class HeadMarker
 {
@@ -17,7 +17,7 @@ class HeadMarker
         glm::vec3 startGlobalPos,
         float startGlobalTime,
         Direction direction,
-        HeadMotion headMotion);
+        ElementMotion headMotion);
         
     HeadMarker(const HeadMarker& o) = default;
     HeadMarker(HeadMarker&& o) noexcept = default;
@@ -51,7 +51,7 @@ class HeadMarker
     glm::vec3  _startGlobalPos;
     float      _startGlobalTime;
     Direction  _direction;
-    HeadMotion _headMotion;
+    ElementMotion _headMotion;
 
 };
 
