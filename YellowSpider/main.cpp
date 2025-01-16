@@ -12,6 +12,7 @@
 #include "VulkanRenderer.hpp"
 #include "Spider.hpp"
 #include "Direction.hpp"
+#include "Egg.hpp"
 //
 GLFWwindow* window;
 VulkanRenderer vulkanRenderer;
@@ -34,13 +35,15 @@ int main()
     // Create Window
     initWindow("Test Window", 800, 600);
     std::cout << "main 36" << std::endl;
-    Spider spider{static_cast<float>(glfwGetTime())};
-    std::vector<ModelGeometry> spiderGeometries = spider.getModelGeometries();
+    float now = static_cast<float>(glfwGetTime());
+    //Spider spider{now};
+    Egg egg{now};
     
-    std::cout << "main line 40 spiderGeometries.size(): " << spiderGeometries.size() << std::endl;
-
+    //std::vector<ModelGeometry> spiderGeometries = spider.getModelGeometries();
+    std::vector<ModelGeometry> eggGeometries = egg.getModelGeometries();
+    
     // Create Vulkan Renderer instance
-    if (vulkanRenderer.init(window, spiderGeometries) == EXIT_FAILURE)
+    if (vulkanRenderer.init(window, eggGeometries) == EXIT_FAILURE)
     {
         return EXIT_FAILURE;
     }
@@ -53,11 +56,11 @@ int main()
     {
         glfwPollEvents();
         
-        float now = glfwGetTime();
+        now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
         
-        std::vector<glm::mat4> models = spider.getModels(now, Direction::Forward);
+        std::vector<glm::mat4> models = egg.getModels(now, Direction::Forward);
         for(int ii=0; ii<models.size(); ++ii)
         {
             vulkanRenderer.updateModel(ii, models[ii]);
