@@ -18,6 +18,12 @@ class EggShape
     
     std::vector<Vertex> getVertices();
     std::vector<uint32_t> getIndices();
+    std::vector<float> getRotations();
+    glm::vec3 getPos(int index);
+    float     getRotation(int index);
+    
+    int getNumOfRotations();
+    std::vector<glm::vec3> getEggOutline();
     
     private:
     
@@ -29,8 +35,11 @@ class EggShape
     float _rMedium          = 0.0f;
     float _rSmall           = 0.0f;
     
+    std::vector<glm::vec3> _eggOutline{};
     std::vector<Vertex>   _vertices{};
     std::vector<uint32_t> _indices{};
+    std::vector<float>    _rotations{};
+    
     
 };
 

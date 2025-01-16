@@ -462,7 +462,7 @@ std::vector<glm::mat4> Spider::getModels(float time, Direction direction)
         
         modelBody = glm::translate(modelBody, bodyPos);
         models.push_back(modelBody);
-        std::cout << "line 409: " << std::endl; 
+        
         //    LEGS    //
         for(int ii=0; ii<_legLengths.size(); ++ii)
         {

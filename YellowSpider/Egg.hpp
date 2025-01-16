@@ -22,17 +22,20 @@ class Egg
     
     std::vector<glm::mat4> getModels(float time, Direction direction);
     std::vector<std::vector<Vertex>> getVertices(); 
+    
     std::vector<std::vector<uint32_t>> getIndices();
     std::vector<ModelGeometry> getModelGeometries();
     
     private:
     
+    // TODO Make in initializer list (here I'm making it twice.
     EggShape _eggShape{};
     
     std::vector<ModelGeometry> _modelGeometries;
     
     float _lastTime = -1;
     Direction _lastDirection = Direction::None;
+    int   _tempCounter = 0;
     
 };
 

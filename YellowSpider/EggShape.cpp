@@ -2,10 +2,13 @@
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 const float  PI_F=3.14159265358979f;
 
 EggShape::EggShape()
 {
+    std::cout << "Create EggShape" << std::endl;
     _numOfSectionsAboutY = 20;
     _numOfSectionsAboutZ = 10;
     _rLarge              = 10.0f;
@@ -22,7 +25,6 @@ EggShape::EggShape()
     
     glm::vec3 rotationAxis{0.0f, 1.0f, 0.0f};
     glm::mat4 transformMatrix{1.0f};
-    
     // FIRST SECTION
     // Theta is from theta = 270.0 to theta < 360.0. But there are no points at theta = 270. There's really only one point there
     // because the radius is zero.
@@ -31,11 +33,14 @@ EggShape::EggShape()
     float deltaTheta_rad = deltaTheta_deg * PI_F / 180.0f;
     float theta_rad = (270.0f * PI_F / 180.0f) + deltaTheta_rad; // bottom level of points
     
+    
     int level = 0;
     // Bottom circle of points.
     float radius    = (cos(theta_rad) * _rMedium);
     float y         = (sin(theta_rad) * _rMedium) + _rMedium;
     glm::vec3 point = {radius, y, 0.0f};
+    _rotations.push_back(theta_rad);
+    _eggOutline.push_back(point);
     
     for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
     {
@@ -55,6 +60,9 @@ EggShape::EggShape()
         radius = cos(theta_rad) * _rMedium;
         y      = (sin(theta_rad) * _rMedium) + _rMedium;
         point  = {radius, y, 0.0f};
+        _rotations.push_back(theta_rad);
+        _eggOutline.push_back(point);
+        std::cout << "_rotations: " << _rotations[_rotations.size()-1] * 180.0f/PI_F << std::endl;
         
         for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
         {
@@ -89,12 +97,15 @@ EggShape::EggShape()
     // Theta is from theta = 0.0 to theta < 45.0 deg.
     deltaTheta_rad = (deltaTheta_rad) * _rMedium / _rLarge;
     colorCount = 0;
-    theta_rad = 0.0f; // 360.0 deg equals 0.0 deg.
-    while(theta_rad < (45.0f * PI_F / 180.0f))
+    //theta_rad = 0.0f; // 360.0 deg equals 0.0 deg.
+    while(theta_rad < (405.0f * PI_F / 180.0f))
     {
         radius = cos(theta_rad) * _rLarge - _rMedium;
         y      = (sin(theta_rad) * _rLarge) + _rMedium;
         point = {radius, y, 0.0f};
+        _rotations.push_back(theta_rad);
+        _eggOutline.push_back(point);
+        std::cout << "_rotations: " << _rotations[_rotations.size()-1] * 180.0f/PI_F << std::endl;
         
         for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
         {
@@ -128,12 +139,14 @@ EggShape::EggShape()
     // Theta is from 45.0 to 90.0 deg.
     deltaTheta_rad = ((deltaTheta_rad) * _rLarge / _rMedium) * (_rSmall / _rMedium);
     colorCount = 0;
-    while(theta_rad < (90.0f * PI_F / 180.0f))
+    while(theta_rad < (450.0f * PI_F / 180.0f))
     {
         radius = cos(theta_rad) * _rSmall;
         y      = (sin(theta_rad) * _rSmall) + (2 * _rMedium);
         point = {radius, y, 0.0f};
-        
+        _rotations.push_back(theta_rad);
+        _eggOutline.push_back(point);
+        std::cout << "_rotations: " << _rotations[_rotations.size()-1] * 180.0f/PI_F << std::endl;
         for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
         {
             _vertices.push_back(Vertex{ 
@@ -161,6 +174,11 @@ EggShape::EggShape()
         theta_rad = theta_rad + deltaTheta_rad;
         ++level;
     }
+    
+    for(int ii=0; ii<_rotations.size(); ++ii)
+    {
+        //std::cout << "rotations: " << (_rotations[ii] * 180.0f / PI_F) << std::endl;
+    }
 }
 
 
@@ -171,5 +189,20 @@ std::vector<Vertex> EggShape::getVertices()
 std::vector<uint32_t> EggShape::getIndices()
 {
     return _indices;
+}
+
+glm::vec3 EggShape::getPos(int index)
+{
+    return _eggOutline[index];
+}
+
+float EggShape::getRotation(int index)
+{
+    return _rotations[index];
+}
+
+int EggShape::getNumOfRotations()
+{
+    return _rotations.size();
 }
 
