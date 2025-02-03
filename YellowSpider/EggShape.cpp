@@ -25,17 +25,19 @@ EggShape::EggShape()
     
     glm::vec3 rotationAxis{0.0f, 1.0f, 0.0f};
     glm::mat4 transformMatrix{1.0f};
+    
     // FIRST SECTION
-    // Theta is from theta = 270.0 to theta < 360.0. But there are no points at theta = 270. There's really only one point there
-    // because the radius is zero.
+    //   Theta range is [270.0, 360.0).
     
     float deltaTheta_deg = (360.0f - 270.0f)/_numOfSectionsAboutZ;
     float deltaTheta_rad = deltaTheta_deg * PI_F / 180.0f;
-    float theta_rad = (270.0f * PI_F / 180.0f) + deltaTheta_rad; // bottom level of points
+    float theta_rad      = (270.0f * PI_F / 180.0f) + deltaTheta_rad; // bottom level of points
     
     
     int level = 0;
-    // Bottom circle of points.
+    
+    //   Bottom circle of points.
+    //   There's really only one point there because the radius about y is zero. It's the tippy tippy bottom.
     float radius    = (cos(theta_rad) * _rMedium);
     float y         = (sin(theta_rad) * _rMedium) + _rMedium;
     glm::vec3 point = {radius, y, 0.0f};
@@ -51,7 +53,7 @@ EggShape::EggShape()
     
     }
     
-    // Second level of points to theta < 360.0 deg.
+    //   Theta range = (0, 360.0).
     level = 1;
     theta_rad = theta_rad + deltaTheta_rad;
     int colorCount = 0;

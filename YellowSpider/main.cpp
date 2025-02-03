@@ -43,6 +43,7 @@ int main()
     std::vector<ModelGeometry> eggGeometries = egg.getModelGeometries();
     
     // Create Vulkan Renderer instance
+    //if (vulkanRenderer.init(window, spiderGeometries) == EXIT_FAILURE)
     if (vulkanRenderer.init(window, eggGeometries) == EXIT_FAILURE)
     {
         return EXIT_FAILURE;
@@ -60,6 +61,7 @@ int main()
         deltaTime = now - lastTime;
         lastTime = now;
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        //std::vector<glm::mat4> models = spider.getModels(now, Direction::Forward);
         std::vector<glm::mat4> models = egg.getModels(now, Direction::Forward);
         for(int ii=0; ii<models.size(); ++ii)
         {
@@ -70,7 +72,7 @@ int main()
     }
 
     vulkanRenderer.cleanup();
-    
+    //
     /*
     modelB = glm::rotate   (modelB, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     modelB = glm::translate(modelB, glm::vec3(0.0f, 5.0f, 0.0f));

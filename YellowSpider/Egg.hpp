@@ -20,11 +20,10 @@ class Egg
     
     void setTime(float time);
     
-    std::vector<glm::mat4> getModels(float time, Direction direction);
-    std::vector<std::vector<Vertex>> getVertices(); 
-    
+    std::vector<glm::mat4>             getModels(float time, Direction direction);
+    std::vector<std::vector<Vertex>>   getVertices(); 
     std::vector<std::vector<uint32_t>> getIndices();
-    std::vector<ModelGeometry> getModelGeometries();
+    std::vector<ModelGeometry>         getModelGeometries();
     
     private:
     
@@ -35,7 +34,7 @@ class Egg
     
     float _lastTime = -1;
     Direction _lastDirection = Direction::None;
-    int   _tempCounter = 0;
+    int       _tempCounter   = 0;
     
 };
 
