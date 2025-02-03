@@ -32,7 +32,6 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
     float rSmall  = rLarge - (1.414 * rMedium);
     
     float rotation_rad = _eggShape.getRotation(_tempCounter);
-    float rotation_deg = rotation_rad * 180.0f/PI_F;
     
     float x = _eggShape.getPos(_tempCounter).x;
     float y = _eggShape.getPos(_tempCounter).y;
@@ -43,94 +42,73 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
     std::cout << "rotationCorrected, x, y , z: " << rotationCorrected_deg << ", " << x << ", "<< y << ", " << z << std::endl;
     
     // Translations are from cycloid movement
-    float xTranslation0 = (rotationCorrected_rad * rMedium) - (rMedium * sin(rotationCorrected_rad));
-    float yTranslation0 = rMedium - (rMedium * cos(rotationCorrected_rad));
+    float xTranslationCycloid90MR = (ninety_rad * rMedium) - (rMedium * sin(ninety_rad));
+    float yTranslationCycloid90MR = rMedium - (rMedium * cos(ninety_rad));
     
-    float xTranslation90 = (ninety_rad * rMedium) - (rMedium * sin(ninety_rad));
-    float yTranslation90 = rMedium - (rMedium * cos(ninety_rad));
+    float xTranslationCycloid45LR = (fortyFive_rad * rLarge) - (rLarge * sin(fortyFive_rad));
+    float yTranslationCycloid45LR = rLarge - (rLarge * cos(fortyFive_rad));
     
-    float xTranslation10L45Deg = (fortyFive_rad * rLarge) - (rLarge * sin(fortyFive_rad));
-    float yTranslation10L45Deg = rLarge - (rLarge * cos(fortyFive_rad));
-    
-    float xTranslationSmallL45Deg = (fortyFive_rad * rSmall) - (rSmall * sin(fortyFive_rad));
-    float yTranslationSmallL45Deg = rSmall - (rSmall * cos(fortyFive_rad));
+    float xTranslationCycloid45SR = (fortyFive_rad * rSmall) - (rSmall * sin(fortyFive_rad));
+    float yTranslationCycloid45SR = rSmall - (rSmall * cos(fortyFive_rad));
     
     if(rotationCorrected_deg > 135.0f)
     {
-
-        
+        // Intermediate translations are from cycloid movement using small-radius circle.
         float rotationDiff_rad = rotationCorrected_rad - oneThirtyFive_rad;
-        float xTranslationSmR = (rotationDiff_rad * rSmall) - (rSmall * sin(rotationDiff_rad));
-        float yTranslationSmR = rSmall - (rSmall * cos(rotationDiff_rad));
-        // Rotate up to 180 deg, which is 135 deg plus 45 deg. So only rotate an additional 45 deg.
-        // Rotation is about length 2.
-        // Translate to correct spot after second rotation (after 135 deg).
-        // Translate to account for rotation.
-        //model = glm::translate(model, glm::vec3{xTranslationSmallL45Deg, yTranslationSmallL45Deg, 0.0f});
-        //model = glm::translate(model, glm::vec3{+(xTranslation90 + 5.0f) + xTranslation10L45Deg, 0.0f, 0.0f});
-        //model = glm::rotate(model, rotationDiff_rad, glm::vec3{0.0f, 0.0f, -1.0f});
-    
-        // Translate back to (0, 0)
-        //model = glm::translate(model, glm::vec3{-(xTranslation90 + rMedium) - xTranslation10L45Deg, 0.0f, 0.0f});
-    
-        // Rotate up to 135 deg, which is 90 deg + 45d eg. So only rotate an additional 45 deg.
-        // Translate to correct spot.
-        //model = glm::translate(model, glm::vec3{+(xTranslation90 + rMedium), 0.0f, 0.0f}); // plus
-        //model = glm::translate(model, glm::vec3{xTranslation10L45Deg, yTranslation10L45Deg, 0.0f});
-        //model = glm::rotate(model, fortyFive_rad, glm::vec3{0.0f, 0.0f, -1.0f});
+        float xIntermediateTranslationSmR = (rotationDiff_rad * rSmall) - (rSmall * sin(rotationDiff_rad));
+        float yIntermediateTranslationSmR = rSmall - (rSmall * cos(rotationDiff_rad));
         
-        // Translate back to (0, 0)
-        //model = glm::translate(model, glm::vec3{-(xTranslation90 + rMedium), 0.0f, 0.0f}); //minus
-        
-        // Rotate to 90deg. And translate to correct spot.
-        //model = glm::translate(model, glm::vec3{xTranslation90, yTranslation90, 0.0f});
-        //model = glm::rotate(model, ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
-        
-        model = glm::translate(model, glm::vec3{xTranslationSmR, yTranslationSmR, 0.0f});
-        model = glm::translate(model, glm::vec3{+(xTranslation90 + rMedium), 0.0f, 0.0f});
-        model = glm::translate(model, glm::vec3{xTranslation10L45Deg, 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{xIntermediateTranslationSmR, yIntermediateTranslationSmR, 0.0f});
+        model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{xTranslationCycloid45LR, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{7.07f, 0.0f, 0.0f});
         model = glm::rotate(model, rotationDiff_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
-        //
-        // Move back to (0, 0)
+        // Move back to (0,0): Move bottom most point to (0, 0). Note no change in x-direction, just slide left.
         model = glm::translate(model, glm::vec3{-7.07f, 0.0f, 0.0f});
-        model = glm::translate(model, glm::vec3{-xTranslation10L45Deg, 0.0f, 0.0f});
-        model = glm::translate(model, glm::vec3{-(xTranslation90 + rMedium), 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{-xTranslationCycloid45LR, 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{-(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
         
-        // Rotate 45 deg about larget length. Move to correct spot.
-        model = glm::translate(model, glm::vec3{+(xTranslation90 + rMedium), 0.0f, 0.0f});
-        model = glm::translate(model, glm::vec3{xTranslation10L45Deg, yTranslation10L45Deg, 0.0f});
+        // Rotate 45 deg using large-radius. 
+        model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{xTranslationCycloid45LR, yTranslationCycloid45LR, 0.0f});
         model = glm::rotate(model, fortyFive_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
-        // Move back to (0, 0)
-        model = glm::translate(model, glm::vec3{-(xTranslation90 + rMedium), 0.0f, 0.0f});
+        // Move back to (0,0): Move bottom most point to (0, 0). Note no change in x-direction, just slide left.
+        model = glm::translate(model, glm::vec3{-(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
         
         // Rotate 90 deg about medium length. Move to correct spot.
-        model = glm::translate(model, glm::vec3{xTranslation90, yTranslation90, 0.0f});
+        model = glm::translate(model, glm::vec3{xTranslationCycloid90MR, yTranslationCycloid90MR, 0.0f});
         model = glm::rotate(model, ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
     else if(rotationCorrected_deg > 90.0f)
     {
+    
+        // Intermediate translations are from cycloid movement using large-radius circle.
         float rotationDiff_rad = rotationCorrected_rad - ninety_rad;
-        float xTranslation10L = (rotationDiff_rad * rLarge) - (rLarge * sin(rotationDiff_rad));
-        float yTranslation10L = rLarge - (rLarge * cos(rotationDiff_rad));
+        float xIntermediateTranslationLR = (rotationDiff_rad * rLarge) - (rLarge * sin(rotationDiff_rad));
+        float yIntermediateTranslationLR = rLarge - (rLarge * cos(rotationDiff_rad));
         
-        model = glm::translate(model, glm::vec3{+(xTranslation90 + rMedium), 0.0f, 0.0f});
-        model = glm::translate(model, glm::vec3{xTranslation10L, yTranslation10L, 0.0f});
+        model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
+        model = glm::translate(model, glm::vec3{xIntermediateTranslationLR, yIntermediateTranslationLR, 0.0f});
         model = glm::rotate(model, rotationDiff_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
-        // Move back to (0, 0)
-        model = glm::translate(model, glm::vec3{-(xTranslation90 + rMedium), 0.0f, 0.0f});
+        // Move back to (0,0): Move bottom most point to (0, 0). Note no change in x-direction, just slide left.
+        model = glm::translate(model, glm::vec3{-(xTranslationCycloid90MR + rMedium), 0.0f, 0.0f});
         
-        // Rotate 90 deg about medium length. Move to correct spot.
-        model = glm::translate(model, glm::vec3{xTranslation90, yTranslation90, 0.0f});
+        // Rotate 90 deg using medium-radius. Move to correct spot.
+        model = glm::translate(model, glm::vec3{xTranslationCycloid90MR, yTranslationCycloid90MR, 0.0f});
         model = glm::rotate(model, ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
     }
     else
     {
-        model = glm::translate(model, glm::vec3{xTranslation0, yTranslation0, 0.0f});
+        
+        // Intermediate translations due to cycloid rotation using medium-radius circle.
+        float xIntermediateTranslationMR = (rotationCorrected_rad * rMedium) - (rMedium * sin(rotationCorrected_rad));
+        float yIntermediateTranslationMR = rMedium - (rMedium * cos(rotationCorrected_rad));
+        
+        model = glm::translate(model, glm::vec3{xIntermediateTranslationMR, yIntermediateTranslationMR, 0.0f});
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
