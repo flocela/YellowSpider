@@ -4,16 +4,18 @@
 
 #include <iostream>
 
-const float  PI_F=3.14159265358979f;
-
-EggShape::EggShape()
+EggShape::EggShape(
+    uint32_t numOfSectionsAboutY,
+    uint32_t numOfSectionsAboutZ, // for medium radius, large and small radii will be sectioned accordingly
+    float mediumRadius
+):
+_numOfSectionsAboutY{numOfSectionsAboutY},
+_numOfSectionsAboutZ{numOfSectionsAboutZ},
+_rLarge{2.0f * mediumRadius},
+_rMedium{mediumRadius},
+_rSmall{_rLarge - (1.414f * _rMedium)}
 {
     std::cout << "Create EggShape" << std::endl;
-    _numOfSectionsAboutY = 20;
-    _numOfSectionsAboutZ = 10;
-    _rLarge              = 10.0f;
-    _rMedium             = _rLarge/2.0f;
-    _rSmall              = _rLarge - (1.414 * _rMedium);
     
     std::vector<glm::vec3> colors{{1.0f, 0.0f, 0.0f},
                                    {0.0f, 1.0f, 0.0f},

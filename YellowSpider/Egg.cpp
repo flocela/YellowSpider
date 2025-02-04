@@ -5,14 +5,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-const float  PI_F=3.14159265358979f;
-
 Egg::Egg(float time)
+: _eggShape{20, 10, 5.0f}
 {
-    EggShape eggShape{};
     ModelGeometry modelGeometry{};
-    modelGeometry.setVertices(eggShape.getVertices());
-    modelGeometry.setIndices(eggShape.getIndices());
+    modelGeometry.setVertices(_eggShape.getVertices());
+    modelGeometry.setIndices(_eggShape.getIndices());
     
     _modelGeometries.push_back(modelGeometry);
 }

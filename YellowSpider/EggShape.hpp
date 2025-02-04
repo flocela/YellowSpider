@@ -5,12 +5,20 @@
 #ifndef EggShape_hpp
 #define EggShape_hpp
 
+const float  PI_F=3.14159265358979f;
+
 class EggShape
 {
 
     public:
 
-    EggShape();
+    // Creates an egg whose small end is in the positive y direction.
+    // It's bottom larger end is centered at (0, 0, 0).
+    EggShape(
+        uint32_t numOfSectionsAboutY,
+        uint32_t numOfSectionsAboutZ, // medium radius, other radii will be sectioned accordingly
+        float mediumRadius
+    );
     EggShape(const EggShape& o)                 = default;
     EggShape(EggShape&& o) noexcept             = default;
     EggShape& operator= (const EggShape& o)     = default;
@@ -39,6 +47,11 @@ class EggShape
     std::vector<uint32_t>  _indices{};
     std::vector<float>     _rotations{};
     
+    
+    const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
+    const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
+    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
+    const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
     
 };
 

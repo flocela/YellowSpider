@@ -29,7 +29,7 @@ class Egg
     private:
     
     // TODO Make in initializer list (here I'm making it twice.
-    EggShape _eggShape{};
+    EggShape _eggShape;
     
     std::vector<ModelGeometry> _modelGeometries;
     
