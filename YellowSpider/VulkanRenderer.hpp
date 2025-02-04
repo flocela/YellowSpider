@@ -16,9 +16,10 @@
 class VulkanRenderer
 {
     public:
-        VulkanRenderer();
+        VulkanRenderer() = default;
+        int init(GLFWwindow * newWindow);
 
-        int init(GLFWwindow * newWindow, std::vector<ModelGeometry> modelGeometries);
+        void addGeometries(std::vector<ModelGeometry> modelGeometries);
         void updateModel(int modelId, glm::mat4 newModel);
         void draw();
         void cleanup();

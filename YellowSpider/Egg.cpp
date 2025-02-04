@@ -82,6 +82,7 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
         model = glm::rotate(model, ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
+    
     else if(rotationCorrected_deg > 90.0f)
     {
     

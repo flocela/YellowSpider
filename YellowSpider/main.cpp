@@ -44,10 +44,12 @@ int main()
     
     // Create Vulkan Renderer instance
     //if (vulkanRenderer.init(window, spiderGeometries) == EXIT_FAILURE)
-    if (vulkanRenderer.init(window, eggGeometries) == EXIT_FAILURE)
+    if (vulkanRenderer.init(window) == EXIT_FAILURE)
     {
         return EXIT_FAILURE;
     }
+    
+    vulkanRenderer.addGeometries(eggGeometries);
 
     float deltaTime = 0.0f;
     float lastTime  = 0.0f;
@@ -60,7 +62,7 @@ int main()
         now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         //std::vector<glm::mat4> models = spider.getModels(now, Direction::Forward);
         std::vector<glm::mat4> models = egg.getModels(now, Direction::Forward);
         for(int ii=0; ii<models.size(); ++ii)
@@ -69,6 +71,7 @@ int main()
         }
         
         vulkanRenderer.draw();
+        std::cout << now << std::endl;
     }
 
     vulkanRenderer.cleanup();

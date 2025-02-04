@@ -2,6 +2,7 @@
 #define Egg_hpp
 
 #include <vector>
+#include <unordered_map>
 #include "ModelGeometry.hpp"
 #include "Utilities.hpp"
 #include "Direction.hpp"
@@ -32,7 +33,7 @@ class Egg
     
     std::vector<ModelGeometry> _modelGeometries;
     
-    float _lastTime = -1;
+    float     _lastTime      = -1;
     Direction _lastDirection = Direction::None;
     int       _tempCounter   = 0;
     
