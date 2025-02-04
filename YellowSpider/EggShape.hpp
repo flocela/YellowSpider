@@ -45,13 +45,31 @@ class EggShape
     std::vector<glm::vec3> _eggOutline{};
     std::vector<Vertex>    _vertices{};
     std::vector<uint32_t>  _indices{};
-    std::vector<float>     _rotations{};
+    
+    // Think of the egg as being described by a form of polar coordinates.
+    // The bottom circular part of the egg is a radius rotating about the center of the circle. It
+    // creates an arc range [270, 360). The azimuths are the digital representation of those angles.
+    // The azimuths continue, but this time rotating about the center of the larger circle
+    // in the range [360, 45).
+    // Then finally from [45, 90) using the smallest radius.
+    // TODO create this in the initializer list to the correct size using _azimuths{correct size}.
+    std::vector<float>     _azimuths{};
     
     
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
     const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    
+    std::vector<glm::vec3> colors{{1.0f, 0.0f, 0.0f},
+                                  {0.0f, 1.0f, 0.0f},
+                                  {0.0f, 0.0f, 1.0f},
+                                  {1.0f, 0.0f, 0.0f},
+                                  {0.0f, 1.0f, 0.0f},
+                                  {0.0f, 0.0f, 1.0f}
+    };
+    
+    void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
     
 };
 
