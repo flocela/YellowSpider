@@ -6,7 +6,7 @@
 
 EggShape::EggShape(
     uint32_t numOfSectionsAboutY,
-    uint32_t numOfSectionsAboutZ, // medium radius, other radii will be sectioned accordingly
+    uint32_t numOfSectionsAboutZ,
     float mediumRadius
 ):
     _numOfSectionsAboutY{numOfSectionsAboutY},
@@ -20,51 +20,66 @@ EggShape::EggShape(
     glm::vec3 rotationAxis{0.0f, 1.0f, 0.0f};
     glm::mat4 transformMatrix{1.0f};
     
-    float deltaPolAng_deg = 0.0f;
-    float deltaPol_rad    = 0.0f;
-    float polarAngle_rad  = 0.0f + deltaPol_rad;
-    int level = 0;
-    int colorCount = 0;
+    // Total number of sections about z is _numOfSectionsAboutZ.
+    // medCount is number of sections using medium radius.
+    // lgCount is number of sections using only large radius.
+    // smCount is number of sections using only small radius.
+    // numOfSectionsAboutZ = medCount + lgCount + smCount.
+    // numOfSectionsAboutZ = medCount +
+    //                       1/2 * lgRadius/mdRadius * medCount +
+    //                       1/2 * smRadius/mdRadius * medCount.
+    // There is 1/2 the number of degrees that the lgRadius traverses vs the mdRadius.
+    // There is 1/2 the number of degrees that the smRadius traverses vs the mdRadius.
+    // That is, the mdRadius traverses [270, 360)deg, lgRadius traverses [0, 45) deg,
+    // smRadius traverses [45, 90).
+    // The distance the lgRadius traverses is 1/2 * (lgRadius/mdRadius) * (distance mdRadius traverses).
+    
+    int32_t numOfSectionsUsingMRadius = _numOfSectionsAboutZ / (4.0f + (_rSmall/_rMedium));
+    int32_t numOfSectionsUsingLRadius = numOfSectionsUsingMRadius;
+    int32_t numOfSectionsUsingSRadius = numOfSectionsUsingMRadius * _rSmall / _rMedium;
+    
+    std::cout << "numMR, numLR, numSR: " << numOfSectionsUsingMRadius << ", " << numOfSectionsUsingLRadius << ", " << numOfSectionsUsingSRadius << std::endl;
     
     // FIRST SECTION
-    //   Theta range is [270.0, 360.0).
-    
-    deltaPolAng_deg = (360.0f - 270.0f)/_numOfSectionsAboutZ;
-    deltaPol_rad    = deltaPolAng_deg * PI_F / 180.0f;
-    polarAngle_rad  = (270.0f * PI_F / 180.0f) + deltaPol_rad; // bottom level of points
-    level = 0;
-    
-    
-    //   Bottom circle of points.
-    //   TODO there is no tippy tippy bottom of the egg. The bottom keystone cap doesn't exist.
-    float radius    = (cos(polarAngle_rad) * _rMedium);
-    float y         = (sin(polarAngle_rad) * _rMedium) + _rMedium;
-    glm::vec3 point = {radius, y, 0.0f};
-    colorCount = 0;
-    
-    populateVerticesAboutZAxis(0.0f, _rMedium, polarAngle_rad, _threeSixty_rad, deltaPol_rad, 0, _rMedium, level);
+    //   Theta range is [270.0, 360.0). Polar radius is rMedium. Note point at 270.0 deg should be at (0, 0).
+    //   So, move center from (0, 0) to (0, rMedium), then bottom of egg is at (0, 0).
+    populateVerticesAboutZAxis(
+        0.0f,
+        _rMedium,
+        _twoSeventy_rad,
+        _threeSixty_rad,
+        numOfSectionsUsingMRadius,
+        _numOfSectionsAboutY,
+        _rMedium
+    );
     
     // SECOND SECTION
     // Theta is from theta = 0.0 to theta < 45.0 deg.
-    deltaPol_rad = (deltaPol_rad) * _rMedium / _rLarge;
-    colorCount = 0;
-    radius = cos(polarAngle_rad) * _rLarge - _rMedium;
-    y      = (sin(polarAngle_rad) * _rLarge) + _rMedium;
-    point = {radius, y, 0.0f};
-    
-    populateVerticesAboutZAxis(-_rMedium, _rMedium, polarAngle_rad,  (405.0f * PI_F / 180.0f), deltaPol_rad, 0, _rLarge, level);
+    populateVerticesAboutZAxis(
+        -_rMedium,
+        _rMedium,
+        _zero_rad,
+        _fortyFive_rad,
+        numOfSectionsUsingLRadius,
+        _numOfSectionsAboutY,
+        _rLarge
+    );                        
     
     // THIRD SECTION
     // Theta is from 45.0 to 90.0 deg.
-    deltaPol_rad = ((deltaPol_rad) * _rLarge / _rMedium) * (_rSmall / _rMedium);
-    colorCount = 0;
-    radius = cos(polarAngle_rad) * _rSmall;
-    y      = (sin(polarAngle_rad) * _rSmall) + (2 * _rMedium);
-    point = {radius, y, 0.0f};
+    populateVerticesAboutZAxis(
+        0.0f,
+        2 * _rMedium,
+        _fortyFive_rad,
+        _ninety_rad,
+        numOfSectionsUsingSRadius,
+        _numOfSectionsAboutY,
+        _rSmall
+    );
     
-    populateVerticesAboutZAxis(0.0f, 2*_rMedium, polarAngle_rad,  (450.0f * PI_F / 180.0f), deltaPol_rad, 0, _rSmall, level);
+    int numOfLevels = numOfSectionsUsingMRadius + numOfSectionsUsingLRadius + numOfSectionsUsingSRadius;
     
-    for(int lev=1; lev<=level; ++lev)
+    for(int lev=1; lev<=numOfLevels; ++lev)
     {
         for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
         {
@@ -107,34 +122,33 @@ void EggShape::populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color)
 void EggShape::populateVerticesAboutZAxis(
     float centerX,
     float centerY,
-    float& polarAngle_rad,
-    float polarAngleEnd_rad,
-    float deltaPol_rad,
-    int colorCount,
-    float radius,
-    int& level)
+    float startingPolarAngle_rad,
+    float endingPolarAngle_rad,
+    float numOfSectionsAboutZ,
+    float numOfSectionsAboutY,
+    float radius)
 {
-    float radiusMinor = (cos(polarAngle_rad) * radius);
-    float y           = (sin(polarAngle_rad) * radius) + centerY;
-    glm::vec3 point   = {radiusMinor + centerX, y, 0.0f};
+    int   colorCount        = 0;
+    float polarAngle_rad    = startingPolarAngle_rad;
+    float x                 = (cos(polarAngle_rad) * radius);
+    float y                 = (sin(polarAngle_rad) * radius) + centerY;
+    glm::vec3 point         = {x + centerX, y, 0.0f};
+    float deltaPolAngle_rad = (endingPolarAngle_rad - startingPolarAngle_rad) /  numOfSectionsAboutZ;
     
-    while(polarAngle_rad < polarAngleEnd_rad)
+    while(polarAngle_rad < endingPolarAngle_rad)
     {
-        
         _azimuths.push_back(polarAngle_rad);
         _eggOutline.push_back(point);
-        std::cout << "_rotations: " << _azimuths[_azimuths.size()-1] * 180.0f/PI_F << std::endl;
         
         populateVerticesAboutYAxis(point, _colors[colorCount]);
         
         ++colorCount;
         colorCount = (colorCount % _colors.size());
-        polarAngle_rad = polarAngle_rad + deltaPol_rad;
-        ++level;
+        polarAngle_rad = polarAngle_rad + deltaPolAngle_rad;
         
-        radiusMinor = cos(polarAngle_rad) * radius;
+        x = cos(polarAngle_rad) * radius;
         y      = (sin(polarAngle_rad) * radius) + centerY;
-        point  = {radiusMinor + centerX, y, 0.0f};
+        point  = {x + centerX, y, 0.0f};
     }
     
 }

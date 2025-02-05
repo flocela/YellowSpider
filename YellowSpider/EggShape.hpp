@@ -34,6 +34,7 @@ class EggShape
     
     private:
     
+    // 
     uint32_t _numOfSectionsAboutZ = 0.0f;
     uint32_t _numOfSectionsAboutY = 0.0f;
     
@@ -55,7 +56,7 @@ class EggShape
     // TODO create this in the initializer list to the correct size using _azimuths{correct size}.
     std::vector<float>     _azimuths{};
     
-    
+    const float _zero_rad          =  0.0f  * PI_F / 180.0f;
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
@@ -71,7 +72,15 @@ class EggShape
                                   {0.0f, 0.0f, 1.0f}
     };
     
-    void populateVerticesAboutZAxis(float centerX, float centerY, float& polarAngle_rad, float polarAngleEnd_rad, float deltaPol_rad, int colorCount, float _radius, int& level);
+    void populateVerticesAboutZAxis(
+        float centerX,
+        float centerY,
+        float startingPolarAngle_rad,
+        float endingPolarAngle_rad,
+        float nnumOfSectionsAboutZ,
+        float numOfSectionsAboutY,
+        float radius);
+        
     void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
     
 };

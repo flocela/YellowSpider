@@ -62,7 +62,7 @@ int main()
         now = glfwGetTime();
         deltaTime = now - lastTime;
         lastTime = now;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
         //std::vector<glm::mat4> models = spider.getModels(now, Direction::Forward);
         std::vector<glm::mat4> models = egg.getModels(now, Direction::Forward);
         for(int ii=0; ii<models.size(); ++ii)

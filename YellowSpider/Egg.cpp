@@ -6,7 +6,7 @@
 
 
 Egg::Egg(float time)
-: _eggShape{20, 10, 5.0f}
+: _eggShape{20, 100, 5.0f}
 {
     ModelGeometry modelGeometry{};
     modelGeometry.setVertices(_eggShape.getVertices());
@@ -14,7 +14,7 @@ Egg::Egg(float time)
     
     _modelGeometries.push_back(modelGeometry);
 }
-
+//
 std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
 {
     glm::mat4 model{1.0f};
