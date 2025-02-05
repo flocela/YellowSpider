@@ -17,9 +17,6 @@ EggShape::EggShape(
 {
     std::cout << "Create EggShape" << std::endl;
     
-    glm::vec3 rotationAxis{0.0f, 1.0f, 0.0f};
-    glm::mat4 transformMatrix{1.0f};
-    
     // Total number of sections about z is _numOfSectionsAboutZ.
     // medCount is number of sections using medium radius.
     // lgCount is number of sections using only large radius.

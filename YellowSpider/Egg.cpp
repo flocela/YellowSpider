@@ -14,7 +14,7 @@ Egg::Egg(float time)
     
     _modelGeometries.push_back(modelGeometry);
 }
-//
+
 std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
 {
     glm::mat4 model{1.0f};
@@ -27,15 +27,16 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
     // Taken from EggShape class. Must get these values in a more modular way.
     float rLarge  = 10.0f;
     float rMedium = rLarge/2.0f;
-    float rSmall  = rLarge - (1.414 * rMedium);
+    float rSmall  = rLarge - (1.414f * rMedium);
     
     float rotation_rad = _eggShape.getRotation(_tempCounter);
+    std::cout << "rotations_rad: " << rotation_rad << ", " << (rotation_rad * 180.0f / PI_F) << std::endl;
     
     float x = _eggShape.getPos(_tempCounter).x;
     float y = _eggShape.getPos(_tempCounter).y;
     float z = _eggShape.getPos(_tempCounter).z;
     
-    float rotationCorrected_rad = rotation_rad - twoSeventy_rad;
+    float rotationCorrected_rad = (rotation_rad >= twoSeventy_rad) ? (rotation_rad - twoSeventy_rad) : (rotation_rad + ninety_rad);
     float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F; 
     std::cout << "rotationCorrected, x, y , z: " << rotationCorrected_deg << ", " << x << ", "<< y << ", " << z << std::endl;
     
