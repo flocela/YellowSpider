@@ -58,10 +58,12 @@ class EggShape
     
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
-    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
+    const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
     
-    std::vector<glm::vec3> colors{{1.0f, 0.0f, 0.0f},
+    
+    std::vector<glm::vec3> _colors{{1.0f, 0.0f, 0.0f},
                                   {0.0f, 1.0f, 0.0f},
                                   {0.0f, 0.0f, 1.0f},
                                   {1.0f, 0.0f, 0.0f},
@@ -69,8 +71,10 @@ class EggShape
                                   {0.0f, 0.0f, 1.0f}
     };
     
+    void populateVerticesAboutZAxis(float centerX, float centerY, float& polarAngle_rad, float polarAngleEnd_rad, float deltaPol_rad, int colorCount, float _radius, int& level);
     void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
     
 };
 
 #endif /* EggShape_hpp */
+
