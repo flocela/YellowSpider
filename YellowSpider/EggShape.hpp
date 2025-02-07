@@ -31,17 +31,33 @@ class EggShape
     float                  getRotation(int index);
     int                    getNumOfRotations();
     std::vector<glm::vec3> getEggOutline();
+    float                  getEggCircumferenceAboutZ();
     
     private:
     
-    // 
-    uint32_t _numOfSectionsAboutZ = 0.0f;
-    uint32_t _numOfSectionsAboutY = 0.0f;
-    
     // radii
-    float _rLarge           = 0.0f;
     float _rMedium          = 0.0f;
+    float _rLarge           = 0.0f;
     float _rSmall           = 0.0f;
+    
+    // Total number of sections about z is _numOfSectionsAboutZ.
+    // medCount is number of sections using medium radius.
+    // lgCount is number of sections using only large radius.
+    // smCount is number of sections using only small radius.
+    // numOfSectionsAboutZ = medCount + lgCount + smCount.
+    // numOfSectionsAboutZ = medCount +
+    //                       1/2 * lgRadius/mdRadius * medCount +
+    //                       1/2 * smRadius/mdRadius * medCount.
+    // There is 1/2 the number of degrees that the lgRadius traverses vs the mdRadius.
+    // There is 1/2 the number of degrees that the smRadius traverses vs the mdRadius.
+    // That is, the mdRadius traverses [270, 360)deg, lgRadius traverses [0, 45) deg,
+    // smRadius traverses [45, 90).
+    // The distance the lgRadius traverses is 1/2 * (lgRadius/mdRadius) * (distance mdRadius traverses).
+    uint32_t _numOfSectionsAboutZ       = 0.0f;
+    uint32_t _numOfSectionsAboutY       = 0.0f;
+    uint32_t _numOfSectionsUsingMRadius = 0.0f;
+    uint32_t _numOfSectionsUsingLRadius = 0.0f;
+    uint32_t _numOfSectionsUsingSRadius = 0.0f;
     
     std::vector<glm::vec3> _eggOutline{};
     std::vector<Vertex>    _vertices{};
@@ -54,7 +70,10 @@ class EggShape
     // in the range [360, 45).
     // Then finally from [45, 90) using the smallest radius.
     // TODO create this in the initializer list to the correct size using _azimuths{correct size}.
-    std::vector<float>     _azimuths{};
+    std::vector<float>     _azimuthsAboutZ{};
+    
+    // Distances around the egg starting at 270 deg (which would be distance zero), and going counter clockwise.
+    std::vector<float>     _circumferenceTraveledAboutZ{};
     
     const float _zero_rad          =  0.0f  * PI_F / 180.0f;
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
@@ -71,6 +90,8 @@ class EggShape
                                   {0.0f, 1.0f, 0.0f},
                                   {0.0f, 0.0f, 1.0f}
     };
+    
+    void populateVerticesAboutZAxis();
     
     void populateVerticesAboutZAxis(
         float centerX,

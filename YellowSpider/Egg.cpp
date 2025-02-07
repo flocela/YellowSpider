@@ -15,6 +15,14 @@ Egg::Egg(float time)
     _modelGeometries.push_back(modelGeometry);
 }
 
+std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
+{
+    std::vector<glm::mat4> models{};
+    glm::mat4 model{1.0f};
+    models.push_back(model);
+    return models;
+}
+
 std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
 {
     glm::mat4 model{1.0f};
@@ -30,15 +38,13 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
     float rSmall  = rLarge - (1.414f * rMedium);
     
     float rotation_rad = _eggShape.getRotation(_tempCounter);
-    std::cout << "rotations_rad: " << rotation_rad << ", " << (rotation_rad * 180.0f / PI_F) << std::endl;
     
     float x = _eggShape.getPos(_tempCounter).x;
     float y = _eggShape.getPos(_tempCounter).y;
     float z = _eggShape.getPos(_tempCounter).z;
     
     float rotationCorrected_rad = (rotation_rad >= twoSeventy_rad) ? (rotation_rad - twoSeventy_rad) : (rotation_rad + ninety_rad);
-    float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F; 
-    std::cout << "rotationCorrected, x, y , z: " << rotationCorrected_deg << ", " << x << ", "<< y << ", " << z << std::endl;
+    float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F;
     
     // Translations are from cycloid movement
     float xTranslationCycloid90MR = (ninety_rad * rMedium) - (rMedium * sin(ninety_rad));
@@ -112,24 +118,6 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
-    
-    /*
-    (std::cout << "getRotation: " << _tempCounter << ", " << (180.0f/PI_F)*(-(_eggShape.getRotation(_tempCounter)-(270.0f * PI_F / 180.0f))) << std::endl;
-    model = glm::rotate(model, (-(_eggShape.getRotation(_tempCounter)-(270.0f * PI_F / 180.0f))), glm::vec3{0.0f, 0.0f, 1.0f});
-    float x = _eggShape.getPos(_tempCounter).x;
-    float y = _eggShape.getPos(_tempCounter).y;
-    float z = _eggShape.getPos(_tempCounter).z;
-    if ( (-(_eggShape.getRotation(_tempCounter)-(270.0f * PI_F / 180.0f))) > (PI_F/4.0f))
-    {
-        model = glm::translate(model, 5.0f + glm::vec3{0.0f, x, 0.0f});
-    }
-    else
-    {
-        model = glm::translate(model, glm::vec3{0.0f, y, 0.0f});
-    }
-    
-    std::cout << _eggShape.getPos(_tempCounter).x << ", " << _eggShape.getPos(_tempCounter).y << ", " << _eggShape.getPos(_tempCounter).z << std::endl;
-    */
     ++_tempCounter;
     _tempCounter = _tempCounter % (_eggShape.getNumOfRotations());
     

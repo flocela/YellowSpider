@@ -33,7 +33,7 @@ int main()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     // Create Window
-    initWindow("Test Window", 800, 600);
+    initWindow("Test Window", 1600, 600);
     std::cout << "main 36" << std::endl;
     float now = static_cast<float>(glfwGetTime());
     //Spider spider{now};

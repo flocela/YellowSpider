@@ -28,14 +28,15 @@ class Egg
     
     private:
     
-    // TODO Make in initializer list (here I'm making it twice.
-    EggShape _eggShape;
+    std::vector<glm::mat4> getModelsPerDistance(float dist);
     
+    // TODO Make in initializer list (here I'm making it twice.
+    EggShape                   _eggShape;
     std::vector<ModelGeometry> _modelGeometries;
     
-    float     _lastTime      = -1;
-    Direction _lastDirection = Direction::None;
-    int       _tempCounter   = 0;
+    float                      _lastTime      = -1;
+    Direction                  _lastDirection = Direction::None;
+    int                        _tempCounter   = 0;
     
 };
 
