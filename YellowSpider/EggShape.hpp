@@ -19,10 +19,12 @@ class EggShape
         uint32_t numOfSectionsAboutZ, // medium radius, other radii will be sectioned accordingly
         float mediumRadius
     );
+    EggShape()                                  = delete;
     EggShape(const EggShape& o)                 = default;
     EggShape(EggShape&& o) noexcept             = default;
     EggShape& operator= (const EggShape& o)     = default;
     EggShape& operator= (EggShape&& o) noexcept = default;
+    ~EggShape()                                 = default;
     
     std::vector<Vertex>    getVertices();
     std::vector<uint32_t>  getIndices();
@@ -35,10 +37,23 @@ class EggShape
     
     private:
     
+    // Easy to read constants
+    const float _zero_rad          =  0.0f  * PI_F / 180.0f;
+    const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
+    const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
+    const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
+    const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
+    
     // radii
     float _rMedium          = 0.0f;
     float _rLarge           = 0.0f;
     float _rSmall           = 0.0f;
+    
+    // Polar angle ranges used for each radii. Ranges are (,]. Exclusive and inclusive.
+    std::pair<float, float> angleRangeMediumRadius = {_twoSeventy_rad, _threeSixty_rad};
+    std::pair<float, float> angleRangeLargeRadius  = {_zero_rad, _fortyFive_rad};
+    std::pair<float, float> angleRangeSmallRadius  = {_fortyFive_rad, _ninety_rad};
     
     // Total number of sections about z is _numOfSectionsAboutZ.
     // medCount is number of sections using medium radius.
@@ -53,13 +68,16 @@ class EggShape
     // That is, the mdRadius traverses [270, 360)deg, lgRadius traverses [0, 45) deg,
     // smRadius traverses [45, 90).
     // The distance the lgRadius traverses is 1/2 * (lgRadius/mdRadius) * (distance mdRadius traverses).
-    uint32_t _numOfSectionsAboutZ       = 0.0f;
-    uint32_t _numOfSectionsAboutY       = 0.0f;
-    uint32_t _numOfSectionsUsingMRadius = 0.0f;
-    uint32_t _numOfSectionsUsingLRadius = 0.0f;
-    uint32_t _numOfSectionsUsingSRadius = 0.0f;
+    uint32_t _numOfSectionsAboutZ           = 0.0f;
+    uint32_t _numOfSectionsAboutY           = 0.0f;
+    uint32_t _numOfSectionsUsingMRadius     = 0.0f;
+    uint32_t _numOfSectionsUsingLRadius     = 0.0f;
+    uint32_t _numOfSectionsUsingSRadius     = 0.0f;
+    float    _polarAngleDeltaForMRadius_rad = 0.0f;
+    float    _polarAngleDeltaForLRadius_rad = 0.0f;
+    float    _polarAngleDeltaForSRadius_rad = 0.0f;
     
-    std::vector<glm::vec3> _eggOutline{};
+    std::vector<glm::vec3> _eggOutlineAboutZ{};
     std::vector<Vertex>    _vertices{};
     std::vector<uint32_t>  _indices{};
     
@@ -70,18 +88,10 @@ class EggShape
     // in the range [360, 45).
     // Then finally from [45, 90) using the smallest radius.
     // TODO create this in the initializer list to the correct size using _azimuths{correct size}.
-    std::vector<float>     _azimuthsAboutZ{};
+    std::vector<float>     _referenceAnglesAboutZ{};
     
     // Distances around the egg starting at 270 deg (which would be distance zero), and going counter clockwise.
     std::vector<float>     _circumferenceTraveledAboutZ{};
-    
-    const float _zero_rad          =  0.0f  * PI_F / 180.0f;
-    const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
-    const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
-    const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
-    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
-    const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
-    
     
     std::vector<glm::vec3> _colors{{1.0f, 0.0f, 0.0f},
                                   {0.0f, 1.0f, 0.0f},
@@ -98,7 +108,7 @@ class EggShape
         float centerY,
         float startingPolarAngle_rad,
         float endingPolarAngle_rad,
-        float nnumOfSectionsAboutZ,
+        float polarAngleDelta_rad,
         float numOfSectionsAboutY,
         float radius);
         
