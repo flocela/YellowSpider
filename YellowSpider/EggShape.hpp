@@ -42,6 +42,7 @@ class EggShape
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    const float _oneEighty_rad     = 180.0f * PI_F / 180.0f;
     const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
     const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
     
@@ -51,9 +52,9 @@ class EggShape
     float _rSmall           = 0.0f;
     
     // Polar angle ranges used for each radii. Ranges are (,]. Exclusive and inclusive.
-    std::pair<float, float> angleRangeMediumRadius = {_twoSeventy_rad, _threeSixty_rad};
-    std::pair<float, float> angleRangeLargeRadius  = {_zero_rad, _fortyFive_rad};
-    std::pair<float, float> angleRangeSmallRadius  = {_fortyFive_rad, _ninety_rad};
+    std::vector<std::pair<float, float>> _angleRangeMediumRadius = {{_twoSeventy_rad, _threeSixty_rad}, {_oneEighty_rad, _twoSeventy_rad}};
+    std::vector<std::pair<float, float>> _angleRangeLargeRadius  = {{_zero_rad, _fortyFive_rad}, {_oneThirtyFive_rad, _oneEighty_rad}};
+    std::vector<std::pair<float, float>> _angleRangeSmallRadius  = {{_fortyFive_rad, _ninety_rad}, {_ninety_rad, _oneThirtyFive_rad}};
     
     // Total number of sections about z is _numOfSectionsAboutZ.
     // medCount is number of sections using medium radius.

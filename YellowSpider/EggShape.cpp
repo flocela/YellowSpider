@@ -18,39 +18,37 @@ EggShape::EggShape(
     _numOfSectionsUsingMRadius{_numOfSectionsAboutZ / (4 + static_cast<uint32_t>(_rSmall/_rMedium))},
     _numOfSectionsUsingLRadius{_numOfSectionsUsingMRadius},
     _numOfSectionsUsingSRadius{_numOfSectionsUsingMRadius * static_cast<uint32_t>(_rSmall / _rMedium)},
-    _polarAngleDeltaForMRadius_rad{(angleRangeMediumRadius.second - angleRangeMediumRadius.first)/_numOfSectionsUsingMRadius},
-    _polarAngleDeltaForLRadius_rad{ (angleRangeLargeRadius.second - angleRangeLargeRadius.first) /_numOfSectionsUsingLRadius},
-    _polarAngleDeltaForSRadius_rad{ (angleRangeSmallRadius.second - angleRangeSmallRadius.first) /_numOfSectionsUsingSRadius}
+    _polarAngleDeltaForMRadius_rad{
+        (_angleRangeMediumRadius[0].second - _angleRangeMediumRadius[0].first)/_numOfSectionsUsingMRadius},
+    _polarAngleDeltaForLRadius_rad{
+        (_angleRangeLargeRadius[0].second  - _angleRangeLargeRadius[0].first) /_numOfSectionsUsingLRadius},
+    _polarAngleDeltaForSRadius_rad{
+        (_angleRangeSmallRadius[0].second  - _angleRangeSmallRadius[0].first) /_numOfSectionsUsingSRadius}
 {
     std::cout << "Create EggShape" << std::endl;
     
     populateVerticesAboutZAxis();
     
-    int numOfLevels = _numOfSectionsUsingMRadius + _numOfSectionsUsingLRadius + _numOfSectionsUsingSRadius;
+    int numOfLevels = _numOfSectionsUsingMRadius + _numOfSectionsUsingLRadius + _numOfSectionsUsingSRadius + 1;
     
-    for(int lev=1; lev<=numOfLevels; ++lev)
+    for(int lev=2; lev<numOfLevels; ++lev)
     {
         for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
         {
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)  );
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii-1));
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1));
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)  );
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1));
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii  ));
+            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)   + 1);
+            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii-1) + 1);
+            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1) + 1);
+            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)   + 1);
+            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1) + 1);
+            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii  ) + 1);
         }
         
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (0));
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (_numOfSectionsAboutY-1));
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1));
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (0));
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1));
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (0));
-    }
-    
-    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
-    {
-        //std::cout << "rotations: " << (_rotations[ii] * 180.0f / PI_F) << std::endl;
+        _indices.push_back((lev)   * _numOfSectionsAboutY + (0)                      + 1);
+        _indices.push_back((lev)   * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
+        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
+        _indices.push_back((lev)   * _numOfSectionsAboutY + (0)                      + 1);
+        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
+        _indices.push_back((lev-1) * _numOfSectionsAboutY + (0)                      + 1);
     }
 }
 
@@ -118,7 +116,56 @@ void EggShape::populateVerticesAboutZAxis()
         _rSmall
     );
     
-    std::cout << "end of populate vertices about Z." << std::endl;
+    // POPULATE angles about all of z.
+    int halfNumOfAngles = _referenceAnglesAboutZ.size();
+    
+    for(int ii=0; ii<halfNumOfAngles-1; ++ii)
+    {
+        std::cout << "EggShape 124" << std::endl;
+        float nextPolarAngle_rad = 
+            ( (_referenceAnglesAboutZ[ii] + PI_F) > (2*PI_F) ) ?
+            ( (_referenceAnglesAboutZ[ii] + PI_F) - (2*PI_F) ):
+            ( _referenceAnglesAboutZ[ii] + PI_F );
+            
+        float radius = 0.0f;
+        float centerX = 0.0f;
+        float centerY = 0.0f;
+        
+        if((nextPolarAngle_rad > _angleRangeMediumRadius[1].first) && (nextPolarAngle_rad <= _angleRangeMediumRadius[1].second))
+        {
+            radius = _rMedium;
+            centerX = 0.0f;
+            centerY = _rMedium;
+        }
+        else if ((nextPolarAngle_rad > _angleRangeLargeRadius[1].first) && (nextPolarAngle_rad <= _angleRangeLargeRadius[1].second))
+        {
+            radius = _rLarge;
+            centerX = 2 * _rMedium;
+            centerY = _rMedium;
+        }
+        else
+        {
+            radius = _rSmall;
+            centerX = 0.0f;
+            centerY = 2 * _rMedium;
+        }
+        
+        float x         = (cos(nextPolarAngle_rad) * radius);
+        float y         = (sin(nextPolarAngle_rad) * radius) + centerY;
+        glm::vec3 point = {x + centerX, y, 0.0f};
+        
+        std::cout << "EggShape 157" << std::endl;
+        _referenceAnglesAboutZ.push_back(nextPolarAngle_rad);
+        _eggOutlineAboutZ.push_back(point);
+        _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +
+        sin(nextPolarAngle_rad) * radius);
+    }
+    
+    std::cout << _referenceAnglesAboutZ.size() << ", " << _eggOutlineAboutZ.size() << ", " << _circumferenceTraveledAboutZ.size() << std::endl;
+    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        std::cout << (_referenceAnglesAboutZ[ii] * 180.0f/PI_F) << ", (" << _eggOutlineAboutZ[ii].x << ", " << _eggOutlineAboutZ[ii].y << "), " << _circumferenceTraveledAboutZ[ii] << std::endl;
+    }
 }
 
 void EggShape::populateVerticesAboutZAxis(
@@ -130,7 +177,6 @@ void EggShape::populateVerticesAboutZAxis(
     float numOfSectionsAboutY,
     float radius)
 {
-    std::cout << "polarAngleDelta_rad: " << polarAngleDelta_rad << std::endl;
     int   colorCount        = 0;
     
     float polarAngle_rad    = startingPolarAngle_rad + polarAngleDelta_rad;
@@ -153,7 +199,6 @@ void EggShape::populateVerticesAboutZAxis(
         x      = cos(polarAngle_rad) * radius;
         y      = (sin(polarAngle_rad) * radius) + centerY;
         point  = {x + centerX, y, 0.0f};
-        std::cout << "polarAngle: " << (polarAngle_rad * 180.0f / PI_F);
     }
     
 }
