@@ -91,7 +91,6 @@ void EggShape::populateVerticesAboutZAxis()
         _numOfSectionsAboutY,
         _rMedium
     );
-    std::cout << "EggShape 94" << std::endl;
     // SECOND SECTION
     //   Theta range is (0.0, 45.0). Note, range is exclusive.
     populateVerticesAboutZAxis(
@@ -118,10 +117,9 @@ void EggShape::populateVerticesAboutZAxis()
     
     // POPULATE angles about all of z.
     int halfNumOfAngles = _referenceAnglesAboutZ.size();
-    
-    for(int ii=0; ii<halfNumOfAngles-1; ++ii)
+    //
+    for(int ii=0; ii<halfNumOfAngles; ++ii)
     {
-        std::cout << "EggShape 124" << std::endl;
         float nextPolarAngle_rad = 
             ( (_referenceAnglesAboutZ[ii] + PI_F) > (2*PI_F) ) ?
             ( (_referenceAnglesAboutZ[ii] + PI_F) - (2*PI_F) ):
@@ -154,20 +152,29 @@ void EggShape::populateVerticesAboutZAxis()
         float y         = (sin(nextPolarAngle_rad) * radius) + centerY;
         glm::vec3 point = {x + centerX, y, 0.0f};
         
-        std::cout << "EggShape 157" << std::endl;
         _referenceAnglesAboutZ.push_back(nextPolarAngle_rad);
         _eggOutlineAboutZ.push_back(point);
         _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +
-        sin(nextPolarAngle_rad) * radius);
+        std::abs(sin(nextPolarAngle_rad)) * radius);
     }
     
-    std::cout << _referenceAnglesAboutZ.size() << ", " << _eggOutlineAboutZ.size() << ", " << _circumferenceTraveledAboutZ.size() << std::endl;
+    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (std::abs(sin(_twoSeventy_rad) * _rMedium));;
+    
+    for(int ii=0; ii<_circumferenceTraveledAboutZ.size(); ++ii)
+    {
+        
+        std::cout << ii << ": " << _circumferenceTraveledAboutZ[ii] <<  std::endl;
+    }
+    
     for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
     {
-        std::cout << (_referenceAnglesAboutZ[ii] * 180.0f/PI_F) << ", (" << _eggOutlineAboutZ[ii].x << ", " << _eggOutlineAboutZ[ii].y << "), " << _circumferenceTraveledAboutZ[ii] << std::endl;
+        
+        std::cout << ii << ": " << (_referenceAnglesAboutZ[ii] * 180.0 / PI_F) <<  std::endl;
     }
+
 }
 
+// first polar angle is startingPolarAngle_rad plus polarAngleDelta_rad
 void EggShape::populateVerticesAboutZAxis(
     float centerX,
     float centerY,
@@ -189,7 +196,7 @@ void EggShape::populateVerticesAboutZAxis(
         _referenceAnglesAboutZ      .push_back(polarAngle_rad);
         _eggOutlineAboutZ           .push_back(point);
         _circumferenceTraveledAboutZ.push_back(
-            _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + sin(polarAngleDelta_rad) * radius);
+            _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + std::abs(sin(polarAngleDelta_rad)) * radius);
         
         populateVerticesAboutYAxis(point, _colors[colorCount]);
         
@@ -200,9 +207,44 @@ void EggShape::populateVerticesAboutZAxis(
         y      = (sin(polarAngle_rad) * radius) + centerY;
         point  = {x + centerX, y, 0.0f};
     }
-    
+    std::cout << "last angle: " << (_referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] * 180.0f / PI_F)<< std::endl;
 }
+float EggShape::getRotationGivenCircumferenceDistance(float dist)
+{
+    dist = dist - static_cast<float>(floor(dist / _circumference) * _circumference);
+    if(dist == _circumference)
+    {
+        return _circumference;
+    }
+    if(dist == 0)
+    {
+        return 0;
+    }
+    auto lowerBoundDist_ptr = std::lower_bound(_circumferenceTraveledAboutZ.begin(), _circumferenceTraveledAboutZ.end(), dist);
+    int lowerBoundIdx = lowerBoundDist_ptr - _circumferenceTraveledAboutZ.begin();
+    if(_circumferenceTraveledAboutZ[lowerBoundIdx] == dist)
+    {
+        return _referenceAnglesAboutZ[lowerBoundIdx];
+    }
+    
+    int  lowerIndex =  lowerBoundIdx - 1;
+    std::cout << "dist, _circumferenceTraveledAboutZ[lowerIndex]: " << dist << ", " << _circumferenceTraveledAboutZ[lowerIndex] << std::endl;
+    float fractionalPartOfDistance =
+        (dist - _circumferenceTraveledAboutZ[lowerIndex])/
+        (_circumferenceTraveledAboutZ[lowerIndex+1] - _circumferenceTraveledAboutZ[lowerIndex]);
+        
+    float formerAngle = _referenceAnglesAboutZ[lowerIndex];
+    float latterAngle = _referenceAnglesAboutZ[lowerIndex+1];
+    std::cout << "fraction, lowerIndex, former, latter: " << fractionalPartOfDistance << ", " << lowerIndex << ", " << (formerAngle * 180.0f/PI_F) << ", " << (latterAngle * 180.0f/PI_F) << std::endl;
+    if(formerAngle > latterAngle)
+    {
+        latterAngle += _threeSixty_rad;
+    }
 
+    float finalAngle = formerAngle + ( fractionalPartOfDistance * (latterAngle - formerAngle));
+    std::cout << "finalAngle: " << (finalAngle * 180.0f / PI_F) << std::endl;
+    return (finalAngle > _threeSixty_rad) ? (finalAngle - _threeSixty_rad) : (finalAngle);
+}
 
 std::vector<Vertex> EggShape::getVertices()
 {
@@ -230,6 +272,6 @@ int EggShape::getNumOfRotations()
 
 float EggShape::getEggCircumferenceAboutZ()
 {
-    return _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1];
+    return _circumference;
 }
 

@@ -36,7 +36,7 @@ class Egg
     
     float                      _lastTime      = -1;
     Direction                  _lastDirection = Direction::None;
-    int                        _tempCounter   = 0;
+    float                        _tempCounter = 0.0f;
     
 };
 

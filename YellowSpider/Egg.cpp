@@ -17,33 +17,25 @@ Egg::Egg(float time)
 
 std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
 {
-    std::vector<glm::mat4> models{};
-    glm::mat4 model{1.0f};
-    models.push_back(model);
-    return models;
-}
-
-std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
-{
     glm::mat4 model{1.0f};
     
     float fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     float ninety_rad        = 90.0f  * PI_F / 180.0f;
     float twoSeventy_rad    = 270.0f * PI_F / 180.0f;
     float oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
-    
+    //
     // Taken from EggShape class. Must get these values in a more modular way.
     float rLarge  = 10.0f;
     float rMedium = rLarge/2.0f;
     float rSmall  = rLarge - (1.414f * rMedium);
     
-    float rotation_rad = _eggShape.getRotation(_tempCounter);
+    float circumference = _eggShape.getEggCircumferenceAboutZ();
+    float distOrig = dist;
+    dist = dist - static_cast<float>(floor(dist / circumference) * circumference);
     
-    float x = _eggShape.getPos(_tempCounter).x;
-    float y = _eggShape.getPos(_tempCounter).y;
-    float z = _eggShape.getPos(_tempCounter).z;
-    
+    float rotation_rad = _eggShape.getRotationGivenCircumferenceDistance(dist);
     float rotationCorrected_rad = (rotation_rad >= twoSeventy_rad) ? (rotation_rad - twoSeventy_rad) : (rotation_rad + ninety_rad);
+    std::cout << "orig, dist, rotations: " << distOrig << ", " << dist << ", " << (rotation_rad * 180.0f / PI_F) << std::endl;
     float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F;
     
     // Translations are from cycloid movement
@@ -87,10 +79,8 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
         model = glm::rotate(model, ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
-    
     else if(rotationCorrected_deg > 90.0f)
     {
-    
         // Intermediate translations are from cycloid movement using large-radius circle.
         float rotationDiff_rad = rotationCorrected_rad - ninety_rad;
         float xIntermediateTranslationLR = (rotationDiff_rad * rLarge) - (rLarge * sin(rotationDiff_rad));
@@ -109,7 +99,6 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
     }
     else
     {
-        
         // Intermediate translations due to cycloid rotation using medium-radius circle.
         float xIntermediateTranslationMR = (rotationCorrected_rad * rMedium) - (rMedium * sin(rotationCorrected_rad));
         float yIntermediateTranslationMR = rMedium - (rMedium * cos(rotationCorrected_rad));
@@ -118,15 +107,19 @@ std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
-    ++_tempCounter;
-    _tempCounter = _tempCounter % (_eggShape.getNumOfRotations());
     
     std::vector<glm::mat4> models{};
     models.push_back(model);
-    
     return models;
 }
-//
+
+std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
+{
+    
+    _tempCounter = _tempCounter + 1.0f;
+    return getModelsPerDistance(0.3f * _tempCounter);
+}
+
 std::vector<std::vector<Vertex>> Egg::getVertices()
 {
     std::vector<std::vector<Vertex>> vectorOfVectorOfVertices{};

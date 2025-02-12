@@ -34,6 +34,7 @@ class EggShape
     int                    getNumOfRotations();
     std::vector<glm::vec3> getEggOutline();
     float                  getEggCircumferenceAboutZ();
+    float                  getRotationGivenCircumferenceDistance(float dist);
     
     private:
     
@@ -93,6 +94,7 @@ class EggShape
     
     // Distances around the egg starting at 270 deg (which would be distance zero), and going counter clockwise.
     std::vector<float>     _circumferenceTraveledAboutZ{};
+    float                  _circumference = 0.0f;
     
     std::vector<glm::vec3> _colors{{1.0f, 0.0f, 0.0f},
                                   {0.0f, 1.0f, 0.0f},
