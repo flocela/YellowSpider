@@ -159,8 +159,9 @@ void EggShape::populateVerticesAboutZAxis()
                                                std::abs(sin(deltaPolarAngle)) * radius);
     }
     //
-    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +
-    (std::abs(sin( _twoSeventy_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] ) * _rMedium));;
+    //_circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (std::abs(sin( _twoSeventy_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] ) * _rMedium));
+    
+    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] - _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-2] + 0.4;
     std::cout << "circumference: " << _circumference << std::endl;
     std::cout << "sizes: " << _circumferenceTraveledAboutZ.size() << ", " << _referenceAnglesAboutZ.size() << std::endl;
     for(int ii=0; ii<_circumferenceTraveledAboutZ.size(); ++ii)
