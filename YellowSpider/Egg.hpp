@@ -36,8 +36,19 @@ class Egg
     
     float                      _lastTime      = -1;
     Direction                  _lastDirection = Direction::None;
-    float                        _tempCounter = 0.0f;
+    float                      _tempCounter = 0.0f;
     
+    float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
+    float _ninety_rad        = 90.0f  * PI_F / 180.0f;
+    float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
+    float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    float _twoTwentyFive_rad = 223.0f * PI_F / 180.0f;
+    
+    // Taken from EggShape class. Must get these values in a more modular way.
+    float _rLarge  = 10.0f;
+    float _rMedium = _rLarge/2.0f;
+    float _rSmall  = _rLarge - (1.414f * _rMedium);
+
 };
 
 #endif

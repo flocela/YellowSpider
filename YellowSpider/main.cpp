@@ -69,9 +69,8 @@ int main()
         {
             vulkanRenderer.updateModel(ii, models[ii]);
         }
-        
         vulkanRenderer.draw();
-        std::cout << now << std::endl;
+        //std::cout << now << std::endl;
     }
 
     vulkanRenderer.cleanup();
