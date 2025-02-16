@@ -21,8 +21,8 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
     
     float circumference = _eggShape.getEggCircumferenceAboutZ();
     float distOrig = dist;
-    dist = dist - static_cast<float>(floor(dist / circumference) * circumference);
-    float wholeCircumferences = static_cast<int>(dist/circumference)*circumference;
+    dist = distOrig - static_cast<float>(floor(distOrig / circumference) * circumference);
+    float wholeCircumferences = static_cast<int>(distOrig/circumference)*circumference;
     
     float rotation_rad = _eggShape.getRotationGivenCircumferenceDistance(dist);
     float rotationCorrected_rad = (rotation_rad >= _twoSeventy_rad) ? (rotation_rad - _twoSeventy_rad) : (rotation_rad + _ninety_rad);
@@ -51,6 +51,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         float xIntermediateTranslationMR1 = (rotationDiff_rad * _rMedium) - (_rMedium* sin(rotationDiff_rad));
         float yIntermediateTranslationMR1 = _rMedium - (_rMedium * cos(rotationDiff_rad));
         
+        model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR1, yIntermediateTranslationMR1, 0.0f});
         model = glm::translate(model, glm::vec3{(cos(_fortyFive_rad)*_rLarge), 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xTranslationCycloid45LR, 0.0f, 0.0f});
@@ -113,7 +114,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         float xIntermediateTranslationLR1 = (rotationDiff_rad * _rLarge) - (_rLarge* sin(rotationDiff_rad));
         float yIntermediateTranslationLR1 = _rLarge - (_rLarge * cos(rotationDiff_rad));
         
-        //
+        model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationLR1, yIntermediateTranslationLR1, 0.0f});
         model = glm::translate(model, glm::vec3{(xTranslateCycloid90SR + _rSmall), 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{(cos(_fortyFive_rad)*_rLarge), 0.0f, 0.0f});
@@ -158,6 +159,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         float xIntermediateTranslationSmR = (rotationDiff_rad * _rSmall) - (_rSmall * sin(rotationDiff_rad));
         float yIntermediateTranslationSmR = _rSmall - (_rSmall * cos(rotationDiff_rad));
         
+        model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationSmR, yIntermediateTranslationSmR, 0.0f});
         model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xTranslationCycloid45LR, 0.0f, 0.0f});
@@ -189,6 +191,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         float xIntermediateTranslationLR0 = (rotationDiff_rad * _rLarge) - (_rLarge * sin(rotationDiff_rad));
         float yIntermediateTranslationLR0 = _rLarge - (_rLarge * cos(rotationDiff_rad));
         
+        model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationLR0, yIntermediateTranslationLR0, 0.0f});
         model = glm::rotate(model, rotationDiff_rad, glm::vec3{0.0f, 0.0f, -1.0f});
@@ -205,7 +208,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         // Intermediate translations due to cycloid rotation using medium-radius circle.
         float xIntermediateTranslationMR0 = (rotationCorrected_rad * _rMedium) - (_rMedium * sin(rotationCorrected_rad));
         float yIntermediateTranslationMR0 = _rMedium - (_rMedium * cos(rotationCorrected_rad));
-        
+        std::cout << "Egg Less than 90" << (wholeCircumferences) << std::endl;
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR0, yIntermediateTranslationMR0, 0.0f});
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
