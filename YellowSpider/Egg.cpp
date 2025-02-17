@@ -178,7 +178,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         
         // Move back to (0,0): Move bottom most point to (0, 0). Note no change in x-direction, just slide left.
         model = glm::translate(model, glm::vec3{-(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
-        
+        //
         // Rotate 90 deg about medium length. Move to correct spot.
         model = glm::translate(model, glm::vec3{xTranslationCycloid90MR, yTranslationCycloid90MR, 0.0f});
         model = glm::rotate(model, _ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
@@ -208,7 +208,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         // Intermediate translations due to cycloid rotation using medium-radius circle.
         float xIntermediateTranslationMR0 = (rotationCorrected_rad * _rMedium) - (_rMedium * sin(rotationCorrected_rad));
         float yIntermediateTranslationMR0 = _rMedium - (_rMedium * cos(rotationCorrected_rad));
-        std::cout << "Egg Less than 90" << (wholeCircumferences) << std::endl;
+        
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR0, yIntermediateTranslationMR0, 0.0f});
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
@@ -218,7 +218,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
     models.push_back(model);
     return models;
 }
-
+//
 std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
 {
     

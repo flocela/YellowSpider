@@ -161,7 +161,10 @@ void EggShape::populateVerticesAboutZAxis()
     //
     //_circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (std::abs(sin( _twoSeventy_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] ) * _rMedium));
     
-    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] - _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-2] + 0.4;
+    //_circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] - _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-2];
+    
+    // TODO _circumference isn't calculated properly. Should be a continuation of circumferenceTraveledAboutZ.
+    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + 0.1692;
     std::cout << "circumference: " << _circumference << std::endl;
     std::cout << "sizes: " << _circumferenceTraveledAboutZ.size() << ", " << _referenceAnglesAboutZ.size() << std::endl;
     for(int ii=0; ii<_circumferenceTraveledAboutZ.size(); ++ii)
@@ -207,7 +210,7 @@ void EggShape::populateVerticesAboutZAxis(
     }
     std::cout << "last angle: " << (_referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] * 180.0f / PI_F)<< std::endl;
 }
-
+//
 float EggShape::getRotationGivenCircumferenceDistance(float dist)
 {
     int sizeCircVec = _circumferenceTraveledAboutZ.size();
