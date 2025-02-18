@@ -16,7 +16,7 @@ class EggShape
     // It's bottom larger end is centered at (0, 0, 0).
     EggShape(
         uint32_t numOfSectionsAboutY,
-        uint32_t numOfSectionsAboutZ, // medium radius, other radii will be sectioned accordingly
+        float    angleAboutZ, // medium radius, other radii will be sectioned accordingly
         float mediumRadius
     );
     EggShape()                                  = delete;
@@ -70,14 +70,11 @@ class EggShape
     // That is, the mdRadius traverses [270, 360)deg, lgRadius traverses [0, 45) deg,
     // smRadius traverses [45, 90).
     // The distance the lgRadius traverses is 1/2 * (lgRadius/mdRadius) * (distance mdRadius traverses).
-    uint32_t _numOfSectionsAboutZ           = 0.0f;
-    uint32_t _numOfSectionsAboutY           = 0.0f;
-    uint32_t _numOfSectionsUsingMRadius     = 0.0f;
-    uint32_t _numOfSectionsUsingLRadius     = 0.0f;
-    uint32_t _numOfSectionsUsingSRadius     = 0.0f;
-    float    _polarAngleDeltaForMRadius_rad = 0.0f;
-    float    _polarAngleDeltaForLRadius_rad = 0.0f;
-    float    _polarAngleDeltaForSRadius_rad = 0.0f;
+    uint32_t _numOfSectionsAboutY    = 0.0f;
+    float    _angleAboutZ            = 1.0f * PI_F / 180.0f;
+    float    _angleMultiplierMRadius = 0.0f;
+    float    _angleMultiplierLRadius = 0.0f;
+    float    _angleMultiplierSRadius = 0.0f;
     
     std::vector<glm::vec3> _eggOutlineAboutZ{};
     std::vector<Vertex>    _vertices{};
@@ -111,7 +108,7 @@ class EggShape
         float centerY,
         float startingPolarAngle_rad,
         float endingPolarAngle_rad,
-        float polarAngleDelta_rad,
+        float angleMultiplier,
         float numOfSectionsAboutY,
         float radius);
         

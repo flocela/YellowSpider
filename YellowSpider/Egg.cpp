@@ -6,7 +6,7 @@
 
 
 Egg::Egg(float time)
-: _eggShape{20, 100, 5.0f}
+: _eggShape{20, (1.0f * PI_F/180.0f), 5.0f}
 {
     ModelGeometry modelGeometry{};
     modelGeometry.setVertices(_eggShape.getVertices());
