@@ -25,6 +25,7 @@ class Egg
     std::vector<std::vector<Vertex>>   getVertices(); 
     std::vector<std::vector<uint32_t>> getIndices();
     std::vector<ModelGeometry>         getModelGeometries();
+    std::vector<glm::mat4>             getModelsPerRotation(float rotation_rad);
     
     private:
     
