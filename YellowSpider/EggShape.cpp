@@ -79,56 +79,14 @@ void EggShape::populateVerticesAboutZAxis()
     //   So, move center from (0, 0) to (0, rMedium), then bottom of egg is at (0, 0).
     //   Note, range is [inclusive, exclusive).
     populateVerticesAboutZAxis(
-        0.0f,
-        _rMedium,
         _twoSeventy_rad,
-        _threeSixty_rad,
-        _angleMultiplierMRadius,
-        _rMedium
-    );
+        _ninety_rad + (2 * PI_F));
+        
     // SECOND SECTION
     //   Theta range is [0.0, 45.0). Note, range is [inclusive, exclusive).
     populateVerticesAboutZAxis(
-        -_rMedium,
-        _rMedium,
-        _zero_rad,
-        _fortyFive_rad,
-        _angleMultiplierLRadius,
-        _rLarge
-    );                        
-    
-    // THIRD SECTION
-    //   Theta range is [45.0, 135.0). Note, range is [inclusive, exclusive).
-    populateVerticesAboutZAxis(
-        0.0f,
-        2 * _rMedium,
-        _fortyFive_rad,
-        _oneThirtyFive_rad,
-        _angleMultiplierSRadius,
-        _rSmall
-    );
-    
-    // FOURTH SECTION
-    //   Theta range is [135.0, 180.0). Note, range is [inclusive, exclusive).
-    populateVerticesAboutZAxis(
-        0.0f,
-        2 * _rMedium,
-        _oneThirtyFive_rad,
-        _oneEighty_rad,
-        _angleMultiplierLRadius,
-        _rLarge
-    );
-    
-    // FIFTH SECTION
-    //   Theta range is [180.0, 270.0). Note, range is [inclusive, exclusive).
-    populateVerticesAboutZAxis(
-        0.0f,
-        2 * _rMedium,
-        _oneEighty_rad,
-        _twoSeventy_rad,
-        _angleMultiplierMRadius,
-        _rMedium
-    );
+        _ninety_rad,
+        _twoSeventy_rad);                        
     
     size_t colorCount = 0;
     // Populate the Vertices about the Y axis. Only populate from (270, 0], (0, 90).
@@ -160,21 +118,19 @@ void EggShape::populateVerticesAboutZAxis()
 
 }
 
-void EggShape::populateVerticesAboutZAxis(
-    float centerX,
-    float centerY,
-    float startingPolarAngle_rad,
-    float endingPolarAngle_rad,
-    float angleMultiplier,
-    float radius)
+void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float endingPolarAngle_rad)
 {
-    float polarAngle_rad    = startingPolarAngle_rad;
-    float x                 = (cos(polarAngle_rad) * radius);
-    float y                 = (sin(polarAngle_rad) * radius) + centerY;
-    glm::vec3 point         = {x + centerX, y, 0.0f};
+    float polarAngle_rad  = startingPolarAngle_rad;
     
     while(polarAngle_rad < endingPolarAngle_rad)
     {
+        float radius          = getCorrespondingRadius(polarAngle_rad);
+        glm::vec2 center      = getCorrespondingCenter(polarAngle_rad);
+        float angleMultiplier = _rMedium/radius;
+        float x               = center.x + (cos(polarAngle_rad) * radius);
+        float y               = center.y + (sin(polarAngle_rad) * radius);
+        glm::vec3 point       = {x, y, 0.0f};
+    
         // If this is the first angle, then circumference traveled is zero.
         // Else take the difference between current polar angle and the last polar angle and find the circumference.
         if (_circumferenceTraveledAboutZ.size() == 0)
@@ -189,25 +145,23 @@ void EggShape::populateVerticesAboutZAxis(
         }
         
         // Push back angle. Push pack point on edge of egg.
-        _referenceAnglesAboutZ.push_back(polarAngle_rad);
+        float polarAngleReduced_rad = (polarAngle_rad >= (2 * PI_F)) ? (polarAngle_rad - (2 * PI_F)) : (polarAngle_rad);
+        _referenceAnglesAboutZ.push_back(polarAngleReduced_rad);
         _eggOutlineAboutZ.push_back(point);
-        
+        //std::cout << "angle, radius: " << (polarAngleReduced_rad * 180.0f/PI_F) << ", " << radius << std::endl;
         polarAngle_rad = polarAngle_rad + (_angleAboutZ * angleMultiplier);
         
         if(abs(polarAngle_rad - endingPolarAngle_rad) < (0.1 * PI_F/180.0f))
         {
             polarAngle_rad = endingPolarAngle_rad;
         }
-        x      = cos(polarAngle_rad) * radius;
-        y      = (sin(polarAngle_rad) * radius) + centerY;
-        point  = {x + centerX, y, 0.0f};
     }
 }
 
 float EggShape::getRotationGivenCircumferenceDistance(float dist)
 {
     int sizeCircVec = _circumferenceTraveledAboutZ.size();
-    float origDist = dist;
+    float origDist  = dist;
     dist = dist - static_cast<float>(floor(dist / _circumference) * _circumference);
     
     float lowerDist  = -1.0f;
@@ -270,5 +224,41 @@ int EggShape::getNumOfRotations()
 float EggShape::getEggCircumferenceAboutZ()
 {
     return _circumference;
+}
+
+float EggShape::getCorrespondingRadius(float polarAngle_rad)
+{
+    polarAngle_rad = (polarAngle_rad >= (2 * PI_F)) ? (polarAngle_rad - (2 * PI_F)) : (polarAngle_rad);
+        
+    if( (polarAngle_rad >= _oneEighty_rad) && (polarAngle_rad <_threeSixty_rad))
+    {
+        return _rMedium;
+    }
+    else if ( (polarAngle_rad >= _fortyFive_rad) && (polarAngle_rad < _oneThirtyFive_rad) )
+    {
+        return _rSmall;
+    }
+    else
+    {
+        return _rLarge;
+    }
+}
+
+glm::vec2 EggShape::getCorrespondingCenter(float polarAngle_rad)
+{
+    polarAngle_rad = (polarAngle_rad >= (2 * PI_F)) ? (polarAngle_rad - (2 * PI_F)) : (polarAngle_rad);
+        
+    if( (polarAngle_rad >= _oneEighty_rad) && (polarAngle_rad <_threeSixty_rad))
+    {
+        return glm::vec2{0.0f, _rMedium};
+    }
+    else if ( (polarAngle_rad >= _fortyFive_rad) && (polarAngle_rad < _oneThirtyFive_rad) )
+    {
+        return glm::vec2{0.0f, (2.0f * _rMedium)};
+    }
+    else
+    {
+        return glm::vec2{-_rMedium, _rMedium};
+    }
 }
 

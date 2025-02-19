@@ -103,15 +103,12 @@ class EggShape
     
     void populateVerticesAboutZAxis();
         
-    void populateVerticesAboutZAxis(
-        float centerX,
-        float centerY,
-        float startingPolarAngle_rad,
-        float endingPolarAngle_rad,
-        float angleMultiplier,
-        float radius);
+    void populateVerticesAboutZAxis( float startingPolarAngle_rad, float endingPolarAngle_rad);
         
     void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
+    
+    float getCorrespondingRadius(float polarAngle);
+    glm::vec2 getCorrespondingCenter(float polarAngle);
     
 };
 
