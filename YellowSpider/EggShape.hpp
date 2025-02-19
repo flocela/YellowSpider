@@ -52,11 +52,6 @@ class EggShape
     float _rLarge           = 0.0f;
     float _rSmall           = 0.0f;
     
-    // Polar angle ranges used for each radii. Ranges are (,]. Exclusive and inclusive.
-    std::vector<std::pair<float, float>> _angleRangeMediumRadius = {{_twoSeventy_rad, _threeSixty_rad}, {_oneEighty_rad, _twoSeventy_rad}};
-    std::vector<std::pair<float, float>> _angleRangeLargeRadius  = {{_zero_rad, _fortyFive_rad}, {_oneThirtyFive_rad, _oneEighty_rad}};
-    std::vector<std::pair<float, float>> _angleRangeSmallRadius  = {{_fortyFive_rad, _ninety_rad}, {_ninety_rad, _oneThirtyFive_rad}};
-    
     // Total number of sections about z is _numOfSectionsAboutZ.
     // medCount is number of sections using medium radius.
     // lgCount is number of sections using only large radius.
@@ -72,9 +67,6 @@ class EggShape
     // The distance the lgRadius traverses is 1/2 * (lgRadius/mdRadius) * (distance mdRadius traverses).
     uint32_t _numOfSectionsAboutY    = 0.0f;
     float    _angleAboutZ            = 1.0f * PI_F / 180.0f;
-    float    _angleMultiplierMRadius = 0.0f;
-    float    _angleMultiplierLRadius = 0.0f;
-    float    _angleMultiplierSRadius = 0.0f;
     
     std::vector<glm::vec3> _eggOutlineAboutZ{};
     std::vector<Vertex>    _vertices{};
@@ -92,6 +84,10 @@ class EggShape
     // Distances around the egg starting at 270 deg (which would be distance zero), and going counter clockwise.
     std::vector<float>     _circumferenceTraveledAboutZ{};
     float                  _circumference = 0.0f;
+    
+    std::vector<float>     _forwardWeights{};
+    std::vector<float>     _backwardWeights{};
+    float                  _startWeight = 34.97780;
     
     std::vector<glm::vec3> _colors{{1.0f, 0.0f, 0.0f},
                                   {0.0f, 1.0f, 0.0f},

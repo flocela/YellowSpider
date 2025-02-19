@@ -14,10 +14,7 @@ EggShape::EggShape(
     _rLarge{2.0f * mediumRadius},
     _rSmall{_rLarge - (1.414f * _rMedium)},
     _numOfSectionsAboutY{numOfSectionsAboutY},
-    _angleAboutZ{angleAboutZ},
-    _angleMultiplierMRadius{1.0f},
-    _angleMultiplierLRadius{_rMedium/_rLarge},
-    _angleMultiplierSRadius{_rMedium/_rSmall}
+    _angleAboutZ{angleAboutZ}
 {
     std::cout << "Create EggShape" << std::endl;
     populateVerticesAboutZAxis();
@@ -136,12 +133,29 @@ void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float en
         if (_circumferenceTraveledAboutZ.size() == 0)
         {
             _circumferenceTraveledAboutZ.push_back(0.0f);
+            _forwardWeights.push_back(_startWeight);
+            _backwardWeights.push_back(_startWeight);
         }
         else
         {   
+            float diffAngle = polarAngle_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1];
+            
+            float arcLengthAtAngle    = std::abs(sin(diffAngle) * radius);
+            
+            float oppRadius           = getCorrespondingRadius(polarAngle_rad + PI_F);
+            float arcLengthAtOppAngle = std::abs(sin(diffAngle) * oppRadius);
+            
             // Circumference at this angle is the last circumference plus (sin(difference in angle) * radius).
             _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +
-                std::abs(sin(polarAngle_rad - (_referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1]))) * radius);
+                                                   arcLengthAtAngle);
+                
+            _forwardWeights.push_back( _forwardWeights[_forwardWeights.size()-1] -
+                                       (0.5f * arcLengthAtAngle * radius) + 
+                                       (0.5f * arcLengthAtOppAngle * oppRadius) );
+                                       
+            _backwardWeights.push_back( _backwardWeights[_backwardWeights.size()-1] +
+                                        (0.5f * arcLengthAtAngle * radius) - 
+                                        (0.5f * arcLengthAtOppAngle * oppRadius) );
         }
         
         // Push back angle. Push pack point on edge of egg.
