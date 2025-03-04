@@ -14,7 +14,8 @@ EggShape::EggShape(
     _rLarge{2.0f * mediumRadius},
     _rSmall{_rLarge - (1.414f * _rMedium)},
     _numOfSectionsAboutY{numOfSectionsAboutY},
-    _angleAboutZ{angleAboutZ}
+    _angleAboutZ{angleAboutZ},
+    _halfWeight{ (1.0f/8.0f * PI_F * _rLarge * _rLarge) - (0.5f * _rMedium * _rMedium) + (1.0f/8.0f*PI_F*_rSmall * _rSmall) + 0.25f * PI_F * _rMedium * _rMedium}
 {
     std::cout << "Create EggShape" << std::endl;
     populateVerticesAboutZAxis();
@@ -64,6 +65,8 @@ void EggShape::populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color)
 
 void EggShape::populateVerticesAboutZAxis()
 {
+
+    std::cout << "68: radius: " << _rSmall << ", " << _rMedium << ", " << _rLarge << std::endl;
     // Egg sits with wide end at bottom. Bottom most point of egg is at 270 deg. Points will be designated
     // about the z-axis (traveling counter clock-wise). Vertices will be populated for each each of these points.
     // Vertices are a circle of points about the y-axis.
@@ -91,8 +94,6 @@ void EggShape::populateVerticesAboutZAxis()
     // Point at 90 is singular, doesn't represent a circle about Y.
     for(size_t ii = 0; ii<_referenceAnglesAboutZ.size(); ++ii)
     {
-        
-        
         if( !( _referenceAnglesAboutZ[ii] >= _ninety_rad && _referenceAnglesAboutZ[ii] <= _twoSeventy_rad) )
         {
             glm::vec3 point = _eggOutlineAboutZ[ii];
@@ -103,6 +104,8 @@ void EggShape::populateVerticesAboutZAxis()
     }
     
     _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (sin(_twoSeventy_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1]) * _rMedium);
+    
+    populateForwardAndBackwardsWeights();
     
     std::cout << "circumference: " << _circumference << std::endl;
     std::cout << "sizes: " << _circumferenceTraveledAboutZ.size() << ", " << _referenceAnglesAboutZ.size() << std::endl;
@@ -115,8 +118,129 @@ void EggShape::populateVerticesAboutZAxis()
 
 }
 
+void EggShape::populateForwardAndBackwardsWeights()
+{
+    std::vector<float> addForwardWeights(_referenceAnglesAboutZ.size(), 0.0f);
+    std::vector<float> subtrForwardWeights(_referenceAnglesAboutZ.size(), 0.0f);
+    
+    float betaCutOff_rad = atan( (cos(_fortyFive_rad)*_rSmall) / ( (cos(_fortyFive_rad)*_rSmall) + (_rMedium) ) );
+    std::cout << "eggshape 127  " << _referenceAnglesAboutZ.size() << std::endl;
+    for(int ii=1; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        float orig_rad = _referenceAnglesAboutZ[ii];
+        float deltaBeta_rad = orig_rad - _referenceAnglesAboutZ[ii-1];
+        std::cout << "eggshape 132" << std::endl;
+        if(orig_rad == _twoSeventy_rad)
+        {
+            addForwardWeights[ii] = 0;
+            subtrForwardWeights[ii] = 0;
+        }
+        else if ( (orig_rad >= _twoSeventy_rad) && (orig_rad < _twoSeventy_rad + betaCutOff_rad) )
+        {
+            float beta_rad = orig_rad - _twoSeventy_rad;
+            float theta_rad = beta_rad * _fortyFive_rad / betaCutOff_rad;
+            float radius = (_rMedium + (cos(theta_rad)*_rSmall)) / cos(beta_rad);
+            
+            addForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rMedium * _rMedium;
+        }
+        else if ( orig_rad >= _twoSeventy_rad + betaCutOff_rad && orig_rad < _threeSixty_rad)
+        {
+            float beta_rad = orig_rad - (_twoSeventy_rad + betaCutOff_rad);
+            float theta_rad = _fortyFive_rad - (beta_rad * _fortyFive_rad / (_ninety_rad - betaCutOff_rad));
+            float radius = sqrt(
+                                ( ((cos(theta_rad)*_rLarge) - _rMedium) * ((cos(theta_rad)*_rLarge) - _rMedium) ) +
+                                ( sin(theta_rad) * _rLarge * (sin(theta_rad) * _rLarge) )
+                            );
+            std::cout << "eggshape 161 beta_rad, r: " << (beta_rad * 180.0f/PI_F) << ", "<< radius << std::endl;
+            addForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rMedium * _rMedium;             
+        }
+        else if (orig_rad >= 0.0f && orig_rad < _fortyFive_rad)
+        {
+            addForwardWeights[ii] = 0.0f;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rLarge * _rLarge;
+        }
+        else if (orig_rad >= _fortyFive_rad && orig_rad < _ninety_rad)
+        {   std:: cout << "EggShape 176" << std::endl;
+            float beta_rad = orig_rad - _fortyFive_rad;
+            float rest_rad = (_fortyFive_rad - beta_rad);
+            float radius = 2 * cos(rest_rad) * _rMedium;
+            std::cout << "eggshape 189 angle, r: " << (beta_rad * 180.0f/ PI_F) << ", " << radius << std::endl;
+            addForwardWeights[ii] = 0.5 * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5 * sin(deltaBeta_rad) * _rSmall * _rSmall; 
+        }
+        else if (orig_rad >= _ninety_rad && orig_rad < _oneThirtyFive_rad)
+        {
+            float beta_rad = orig_rad - _ninety_rad;
+            float radius = cos(beta_rad) * 2 * _rMedium;
+            
+            addForwardWeights[ii] = 0.5 * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5 * sin(deltaBeta_rad) * _rSmall * _rSmall; 
+        }
+        else if (orig_rad >= _oneThirtyFive_rad && orig_rad < _oneEighty_rad)
+        {
+            addForwardWeights[ii] = 0.0f;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rLarge * _rLarge; 
+        }
+        else if (orig_rad >= _oneEighty_rad && orig_rad < (_twoSeventy_rad - betaCutOff_rad))
+        {
+            float beta_rad = orig_rad - _oneEighty_rad;
+            float theta_rad = beta_rad * _fortyFive_rad / (_ninety_rad - betaCutOff_rad);
+            float radius = sqrt(
+                            ( ( (cos(theta_rad) * _rLarge) - _rMedium ) * ((cos(theta_rad) * _rLarge) - _rMedium ) ) +
+                            ( ( sin(theta_rad)*_rLarge) * (sin(theta_rad) * _rLarge) )
+            );
+            std::cout <<"egg shape 229: r: " << (theta_rad * 180.0f/ PI_F) << ", " << (beta_rad * 180.0f/PI_F) << ", " << radius  << std::endl;
+            addForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rMedium * _rMedium;
+        }
+        else
+        {  
+            float beta_rad = orig_rad - (_twoSeventy_rad - betaCutOff_rad);
+            float theta_rad = _fortyFive_rad - (beta_rad * _fortyFive_rad/betaCutOff_rad);
+            float radius = (_rMedium + (cos(theta_rad) * _rSmall)) / cos(beta_rad);
+            
+            addForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * radius * radius;
+            subtrForwardWeights[ii] = 0.5f * sin(deltaBeta_rad) * _rMedium * _rMedium; 
+        }
+    }
+    
+    std:: cout << "EggShape 230" << std::endl;
+    float totalForwardArea  = 0.0f;
+    float totalBackwardArea = 0.0f;
+    
+    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        totalForwardArea  += addForwardWeights[ii];
+        totalBackwardArea += subtrForwardWeights[ii];
+        
+        std::cout << "245: totalForwardArea, totalBackwardArea: " << (_referenceAnglesAboutZ[ii]*180.0f/PI_F) << ", " << totalForwardArea << ", " << totalBackwardArea << std::endl;
+    }
+    
+    totalForwardArea = _halfWeight;
+    totalBackwardArea = _halfWeight;
+    std::cout << "totalForwardA, totalBackwardA: " << totalForwardArea << ", " << totalBackwardArea << std::endl;
+    
+    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        totalForwardArea += (addForwardWeights[ii] - subtrForwardWeights[ii]);
+        _forwardWeights.push_back(totalForwardArea);
+        
+        totalBackwardArea += (subtrForwardWeights[ii] - addForwardWeights[ii]);
+        _backwardWeights.push_back(totalBackwardArea);
+    }
+    
+    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        std::cout << "238: refAngle, forward, backward: " << (_referenceAnglesAboutZ[ii] * 180.0f / PI_F) << ", " << _forwardWeights[ii] << ", " << _backwardWeights[ii] << std::endl;
+    }
+    
+}
+
 void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float endingPolarAngle_rad)
 {
+    std::cout << "EggShape 266" << std::endl;
     float polarAngle_rad  = startingPolarAngle_rad;
     
     while(polarAngle_rad < endingPolarAngle_rad)
@@ -133,8 +257,6 @@ void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float en
         if (_circumferenceTraveledAboutZ.size() == 0)
         {
             _circumferenceTraveledAboutZ.push_back(0.0f);
-            _forwardWeights.push_back(_startWeight);
-            _backwardWeights.push_back(_startWeight);
         }
         else
         {   
@@ -148,14 +270,6 @@ void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float en
             // Circumference at this angle is the last circumference plus (sin(difference in angle) * radius).
             _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +
                                                    arcLengthAtAngle);
-                
-            _forwardWeights.push_back( _forwardWeights[_forwardWeights.size()-1] -
-                                       (0.5f * arcLengthAtAngle * radius) + 
-                                       (0.5f * arcLengthAtOppAngle * oppRadius) );
-                                       
-            _backwardWeights.push_back( _backwardWeights[_backwardWeights.size()-1] +
-                                        (0.5f * arcLengthAtAngle * radius) - 
-                                        (0.5f * arcLengthAtOppAngle * oppRadius) );
         }
         
         // Push back angle. Push pack point on edge of egg.
@@ -164,6 +278,17 @@ void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float en
         _eggOutlineAboutZ.push_back(point);
         //std::cout << "angle, radius: " << (polarAngleReduced_rad * 180.0f/PI_F) << ", " << radius << std::endl;
         polarAngle_rad = polarAngle_rad + (_angleAboutZ * angleMultiplier);
+        
+        if(abs(polarAngle_rad - (286.3f * PI_F/180.0f)) < (0.4f * PI_F/180.0f))
+        {
+            std::cout << "line 286" << std::endl;
+            polarAngle_rad = (286.3f * PI_F/180.0f);
+        }
+        
+        if(_referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1] == (286.3f * PI_F/180.0f))
+        {
+            polarAngle_rad = 287.0f * PI_F/180.0f;
+        }
         
         if(abs(polarAngle_rad - endingPolarAngle_rad) < (0.1 * PI_F/180.0f))
         {

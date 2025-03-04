@@ -48,9 +48,11 @@ class EggShape
     const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
     
     // radii
-    float _rMedium          = 0.0f;
-    float _rLarge           = 0.0f;
-    float _rSmall           = 0.0f;
+    float _rMedium  = 0.0f;
+    float _rLarge   = 0.0f;
+    float _rSmall   = 0.0f;
+    
+    float _halfWeight = 0.0f;
     
     // Total number of sections about z is _numOfSectionsAboutZ.
     // medCount is number of sections using medium radius.
@@ -102,6 +104,8 @@ class EggShape
     void populateVerticesAboutZAxis( float startingPolarAngle_rad, float endingPolarAngle_rad);
         
     void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
+    
+    void populateForwardAndBackwardsWeights();
     
     float getCorrespondingRadius(float polarAngle);
     glm::vec2 getCorrespondingCenter(float polarAngle);
