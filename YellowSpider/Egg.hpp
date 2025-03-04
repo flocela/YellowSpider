@@ -21,7 +21,7 @@ class Egg
     
     void setTime(float time);
     
-    std::vector<glm::mat4>             getModels(float time, Direction direction);
+    std::vector<glm::mat4>             getModels(float time_s, Direction direction);
     std::vector<std::vector<Vertex>>   getVertices(); 
     std::vector<std::vector<uint32_t>> getIndices();
     std::vector<ModelGeometry>         getModelGeometries();
@@ -35,7 +35,7 @@ class Egg
     EggShape                   _eggShape;
     std::vector<ModelGeometry> _modelGeometries;
     
-    float                      _lastTime      = -1;
+    float                      _lastTime_s   = -1.0f;
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
     
@@ -49,6 +49,10 @@ class Egg
     float _rLarge  = 10.0f;
     float _rMedium = _rLarge/2.0f;
     float _rSmall  = _rLarge - (1.414f * _rMedium);
+    
+    float _angle0_rad   = _twoSeventy_rad;
+    float _v0_radPerSec = 1.5f;
+    float _a0_radPerSec = 2.0f;
 
 };
 

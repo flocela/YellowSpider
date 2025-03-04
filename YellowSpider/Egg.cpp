@@ -24,7 +24,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
     float   wholeCircumferences  = numOfFullRotations * circumference;
     
     float rotationCorrected_rad = rotation_rad - (numOfFullRotations * 2 * PI_F);
-    std::cout << "rotation_rad, rotationCorrected_rad: " << (rotation_rad * 180.0f/PI_F) << ", " << (rotationCorrected_rad * 180.0f/PI_F)  << std::endl;
+    //std::cout << "rotation_rad, rotationCorrected_rad: " << (rotation_rad * 180.0f/PI_F) << ", " << (rotationCorrected_rad * 180.0f/PI_F)  << std::endl;
     //std::cout << "orig, dist, rotations: " << distOrig << ", " << dist << ", " << (rotation_rad * 180.0f / PI_F) << std::endl;
     float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F;
     
@@ -420,11 +420,29 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
     return models;
 }
 //
-std::vector<glm::mat4> Egg::getModels(float time, Direction direction)
+std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
+    if (_lastTime_s == -1.0f)
+    {
+        _lastTime_s = time_s;
+        return getModelsPerRotation(_angle0_rad);
+    }
+    else
+    {
+        float diffTime_s = time_s - _lastTime_s;
+        float angle_rad  = ( 0.5 * (_a0_radPerSec) * (diffTime_s) * (diffTime_s) ) + 
+                           ( _v0_radPerSec * diffTime_s) +
+                           ( _angle0_rad);
+                           
+        _lastTime_s = time_s;
+        _angle0_rad = angle_rad;
+        _a0_radPerSec = _a0_radPerSec + 0.0f;
+        _v0_radPerSec = _v0_radPerSec + (_a0_radPerSec * diffTime_s);
+        std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << _angle0_rad << ", " << diffTime_s << ", " << _v0_radPerSec << std::endl;
+    }
     
-    _tempCounter = _tempCounter + 1.0f;
-    return getModelsPerRotation(0.3f * _tempCounter);
+    
+    return getModelsPerRotation(_angle0_rad);
 }
 
 std::vector<std::vector<Vertex>> Egg::getVertices()
