@@ -436,9 +436,9 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
                            
         _lastTime_s = time_s;
         _angle0_rad = angle_rad;
-        _a0_radPerSec = _a0_radPerSec + 0.0f;
+        _a0_radPerSec = _a0_radPerSec + (0.01f * _eggShape.getForwardRotationWeight(moduloRotationsAsPositive(angle_rad)));
         _v0_radPerSec = _v0_radPerSec + (_a0_radPerSec * diffTime_s);
-        std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << _angle0_rad << ", " << diffTime_s << ", " << _v0_radPerSec << std::endl;
+        std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << (_angle0_rad* 180.0f/PI_F)<< ", " << diffTime_s << ", " << _v0_radPerSec << std::endl;
     }
     
     
@@ -466,5 +466,13 @@ std::vector<ModelGeometry> Egg::getModelGeometries()
     return _modelGeometries;
 }
 
+ float Egg::moduloRotationsAsPositive(float rotation_rad)
+ {
+    float moduloRotations = rotation_rad - ( (2 * PI_F) * ( static_cast<int>(rotation_rad/(2*PI_F)) ) );
+     
+    float ans = (moduloRotations < 0) ? ((2*PI_F)+moduloRotations) : (moduloRotations);
+     std::cout << "moduloRotations: " << (rotation_rad*180.0f/PI_F) << ", " << (moduloRotations*180.0f/PI_F) << ": " << (ans*180.0f/PI_F) << std::endl;
+    return ans;
+ }
 
 

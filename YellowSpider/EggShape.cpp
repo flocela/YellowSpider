@@ -1,5 +1,6 @@
 #include "EggShape.hpp"
 #include <cmath>
+#include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
@@ -105,30 +106,118 @@ void EggShape::populateVerticesAboutZAxis()
     
     _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (sin(_twoSeventy_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1]) * _rMedium);
     
+    int _angle0Index = 0; 
+    for(; _angle0Index<_referenceAnglesAboutZ.size(); ++_angle0Index)
+    {
+        if(_referenceAnglesAboutZ[_angle0Index] > _referenceAnglesAboutZ[_angle0Index+1])
+        {
+            break;
+        }
+    }
+    
+    for(int ii=_angle0Index; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        if(ii == _angle0Index)
+        {
+            _referenceAnglesForWeight.push_back(0.0f);
+        }
+        else
+        {
+            _referenceAnglesForWeight.push_back(_referenceAnglesAboutZ[ii]);
+        }
+        
+    }
+    for(int ii=0; ii<_angle0Index; ++ii)
+    {
+        _referenceAnglesForWeight.push_back(_referenceAnglesAboutZ[ii]);
+    }
+    
+    for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
+    {
+        //std::cout << "_refWeight: " << ii << ", " << (_referenceAnglesForWeight[ii] * 180.0f/PI_F) << std::endl;
+    }
+    
     populateForwardAndBackwardsWeights();
     
     //std::cout << "circumference: " << _circumference << std::endl;
     //std::cout << "sizes: " << _circumferenceTraveledAboutZ.size() << ", " << _referenceAnglesAboutZ.size() << std::endl;
     for(int ii=1; ii<_circumferenceTraveledAboutZ.size(); ++ii)
     {
-        
         //std::cout << ii << ", " << (_referenceAnglesAboutZ[ii] * 180.0 / PI_F) << ",  "<< _circumferenceTraveledAboutZ[ii] << ", " << 
        // _circumferenceTraveledAboutZ[ii] - _circumferenceTraveledAboutZ[ii-1] <<  std::endl;
     }
+    
+    
+}
 
+float EggShape::getForwardRotationWeight(float angle_rad)
+{
+    
+    size_t size = _referenceAnglesForWeight.size();
+    
+    std::cout << "egg shape getForwardRotationWeight for angle: " << (angle_rad * 180.0f/ PI_F) << std::endl;
+    
+    if (angle_rad >= _referenceAnglesForWeight[size-1] )
+    {
+        
+        float deltaForwardOverAngleDiff   = (_forwardWeights[0] - _forwardWeights[size-1]) /
+                                            (_threeSixty_rad - _referenceAnglesForWeight[size-1]);
+        
+        float deltaBackwardsOverAngleDiff = (_backwardWeights[0] - _backwardWeights[size-1]) /
+                                            (_threeSixty_rad - _referenceAnglesForWeight[size-1]);
+        
+        
+        float forwardWeight   = _forwardWeights[size-1] +
+                                ( (angle_rad-_referenceAnglesForWeight[size-1]) * deltaForwardOverAngleDiff );
+                              
+        float backwardsWeight = _backwardWeights[size-1] +
+                                ( (angle_rad-_referenceAnglesForWeight[size-1]) * deltaBackwardsOverAngleDiff );
+        
+        return forwardWeight - backwardsWeight;
+    }
+    else
+    {
+        int index = 0;
+        while(index < _referenceAnglesForWeight.size())
+        {
+            if(_referenceAnglesForWeight[index] > angle_rad)
+            {
+                break;
+            }
+            ++index;
+        }
+        //std::cout << "index: " << index << std::endl;
+        
+        float deltaForwardOverAngleDiff = (_forwardWeights[index] - _forwardWeights[index-1]) /
+                                          (_referenceAnglesAboutZ[index] - _referenceAnglesAboutZ[index-1]);
+        
+        float deltaBackwardsOverAngleDiff = (_backwardWeights[index] - _backwardWeights[index-1]) /
+                                            (_referenceAnglesAboutZ[index] - _referenceAnglesAboutZ[index-1]);
+        
+        
+        float forwardWeight   = _forwardWeights[index-1] +
+                                ( (angle_rad-_referenceAnglesAboutZ[index-1]) * deltaForwardOverAngleDiff );
+                              
+        float backwardsWeight = _backwardWeights[index-1] +
+                                ( (angle_rad-_referenceAnglesAboutZ[index-1]) * deltaBackwardsOverAngleDiff );
+        
+        //std::cout << "fW- bW: " << (angle_rad * 180.0f/ PI_F) << ": " << (forwardWeight - backwardsWeight) << std::endl;
+        return forwardWeight - backwardsWeight;
+    }
+    
 }
 
 void EggShape::populateForwardAndBackwardsWeights()
 {
-    std::vector<float> addForwardWeights(_referenceAnglesAboutZ.size(), 0.0f);
-    std::vector<float> subtrForwardWeights(_referenceAnglesAboutZ.size(), 0.0f);
+    std::vector<float> addForwardWeights(_referenceAnglesForWeight.size(), 0.0f);
+    std::vector<float> subtrForwardWeights(_referenceAnglesForWeight.size(), 0.0f);
     
     float betaCutOff_rad = atan( (cos(_fortyFive_rad)*_rSmall) / ( (cos(_fortyFive_rad)*_rSmall) + (_rMedium) ) );
     //std::cout << "eggshape 127  " << _referenceAnglesAboutZ.size() << std::endl;
-    for(int ii=1; ii<_referenceAnglesAboutZ.size(); ++ii)
+    for(int ii=1; ii<_referenceAnglesForWeight.size(); ++ii)
     {
-        float orig_rad = _referenceAnglesAboutZ[ii];
-        float deltaBeta_rad = orig_rad - _referenceAnglesAboutZ[ii-1];
+        float orig_rad = _referenceAnglesForWeight[ii];
+        float deltaBeta_rad = orig_rad - _referenceAnglesForWeight[ii-1];
         //std::cout << "eggshape 132" << std::endl;
         if(orig_rad == _twoSeventy_rad)
         {
@@ -210,7 +299,7 @@ void EggShape::populateForwardAndBackwardsWeights()
     float totalForwardArea  = 0.0f;
     float totalBackwardArea = 0.0f;
     
-    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
     {
         totalForwardArea  += addForwardWeights[ii];
         totalBackwardArea += subtrForwardWeights[ii];
@@ -218,11 +307,11 @@ void EggShape::populateForwardAndBackwardsWeights()
         //std::cout << "245: totalForwardArea, totalBackwardArea: " << (_referenceAnglesAboutZ[ii]*180.0f/PI_F) << ", " << totalForwardArea << ", " << totalBackwardArea << std::endl;
     }
     
-    totalForwardArea = _halfWeight;
-    totalBackwardArea = _halfWeight;
+    totalForwardArea = 60.28f;
+    totalBackwardArea = 39.27f;
     //std::cout << "totalForwardA, totalBackwardA: " << totalForwardArea << ", " << totalBackwardArea << std::endl;
-    
-    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    std::cout << "line 313: " << "_referenceAnglesForWeight.size(): " << _referenceAnglesForWeight.size() << std::endl;
+    for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
     {
         totalForwardArea += (addForwardWeights[ii] - subtrForwardWeights[ii]);
         _forwardWeights.push_back(totalForwardArea);
@@ -231,9 +320,9 @@ void EggShape::populateForwardAndBackwardsWeights()
         _backwardWeights.push_back(totalBackwardArea);
     }
     
-    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
     {
-        //std::cout << "238: refAngle, forward, backward: " << (_referenceAnglesAboutZ[ii] * 180.0f / PI_F) << ", " << _forwardWeights[ii] << ", " << _backwardWeights[ii] << std::endl;
+        std::cout << "325: refAngle, forward, backward: " << (_referenceAnglesAboutZ[ii] * 180.0f / PI_F) << ", " << _forwardWeights[ii] << ", " << _backwardWeights[ii] << std::endl;
     }
     
 }

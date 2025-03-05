@@ -30,6 +30,7 @@ class Egg
     private:
     
     std::vector<glm::mat4> getModelsPerDistance(float dist);
+    float moduloRotationsAsPositive(float rotation_rad);
     
     // TODO Make in initializer list (here I'm making it twice.
     EggShape                   _eggShape;
@@ -52,7 +53,7 @@ class Egg
     
     float _angle0_rad   = _twoSeventy_rad;
     float _v0_radPerSec = 1.5f;
-    float _a0_radPerSec = 2.0f;
+    float _a0_radPerSec = 0.0f;
 
 };
 
