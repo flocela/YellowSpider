@@ -52,8 +52,10 @@ class Egg
     float _rSmall  = _rLarge - (1.414f * _rMedium);
     
     float _angle0_rad   = _twoSeventy_rad;
-    float _v0_radPerSec = 1.5f;
-    float _a0_radPerSec = 0.0f;
+    float _v0_radPerSec = 5.0f;
+    float _a0_radPerSecSec = 0.0f;
+    float _va_radPerSec = 0.0f;
+    
 
 };
 

@@ -4,9 +4,8 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 Egg::Egg(float time)
-: _eggShape{20, (1.0f * PI_F/180.0f), 5.0f}
+: _eggShape{20, (5.0f * PI_F/180.0f), 5.0f}
 {
     ModelGeometry modelGeometry{};
     modelGeometry.setVertices(_eggShape.getVertices());
@@ -47,6 +46,8 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float rotationDiff_rad = rotationCorrected_rad - _twoSeventy_rad;
         float xIntermediateTranslationMR1 = (rotationDiff_rad * _rMedium) - (_rMedium* sin(rotationDiff_rad));
         float yIntermediateTranslationMR1 = _rMedium - (_rMedium * cos(rotationDiff_rad));
+        
+        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR1, yIntermediateTranslationMR1, 0.0f});
@@ -111,6 +112,8 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationLR1 = (rotationDiff_rad * _rLarge) - (_rLarge* sin(rotationDiff_rad));
         float yIntermediateTranslationLR1 = _rLarge - (_rLarge * cos(rotationDiff_rad));
         
+        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationLR1, yIntermediateTranslationLR1, 0.0f});
         model = glm::translate(model, glm::vec3{(xTranslateCycloid90SR + _rSmall), 0.0f, 0.0f});
@@ -156,6 +159,8 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationSmR = (rotationDiff_rad * _rSmall) - (_rSmall * sin(rotationDiff_rad));
         float yIntermediateTranslationSmR = _rSmall - (_rSmall * cos(rotationDiff_rad));
         
+        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationSmR, yIntermediateTranslationSmR, 0.0f});
         model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
@@ -179,7 +184,6 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         // Rotate 90 deg about medium length. Move to correct spot.
         model = glm::translate(model, glm::vec3{xTranslationCycloid90MR, yTranslationCycloid90MR, 0.0f});
         model = glm::rotate(model, _ninety_rad, glm::vec3{0.0f, 0.0f, -1.0f});
-        
     }
     else if(rotationCorrected_deg > 90.0f)
     {
@@ -187,6 +191,8 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float rotationDiff_rad = rotationCorrected_rad - _ninety_rad;
         float xIntermediateTranslationLR0 = (rotationDiff_rad * _rLarge) - (_rLarge * sin(rotationDiff_rad));
         float yIntermediateTranslationLR0 = _rLarge - (_rLarge * cos(rotationDiff_rad));
+        
+        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
@@ -205,6 +211,8 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         // Intermediate translations due to cycloid rotation using medium-radius circle.
         float xIntermediateTranslationMR0 = (rotationCorrected_rad * _rMedium) - (_rMedium * sin(rotationCorrected_rad));
         float yIntermediateTranslationMR0 = _rMedium - (_rMedium * cos(rotationCorrected_rad));
+        
+        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR0, yIntermediateTranslationMR0, 0.0f});
@@ -419,7 +427,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
     models.push_back(model);
     return models;
 }
-//
+
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
     if (_lastTime_s == -1.0f)
@@ -430,18 +438,22 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     else
     {
         float diffTime_s = time_s - _lastTime_s;
-        float angle_rad  = ( 0.5 * (_a0_radPerSec) * (diffTime_s) * (diffTime_s) ) + 
+        float angle_rad  = ( 0.5 * (_a0_radPerSecSec) * (diffTime_s) * (diffTime_s) ) + 
                            ( _v0_radPerSec * diffTime_s) +
                            ( _angle0_rad);
                            
         _lastTime_s = time_s;
         _angle0_rad = angle_rad;
-        _a0_radPerSec = _a0_radPerSec + (0.01f * _eggShape.getForwardRotationWeight(moduloRotationsAsPositive(angle_rad)));
-        _v0_radPerSec = _v0_radPerSec + (_a0_radPerSec * diffTime_s);
-        std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << (_angle0_rad* 180.0f/PI_F)<< ", " << diffTime_s << ", " << _v0_radPerSec << std::endl;
+        float moduloAngle = moduloRotationsAsPositive(angle_rad);
+        float fromWeight = (0.05f * _eggShape.getForwardRotationWeight(moduloAngle));
+        //_a0_radPerSecSec = _a0_radPerSecSec + fromWeight;
+        _v0_radPerSec = fromWeight + 4.0f;
+    
+        //std::cout << "orig ao, weight: " << _a0_radPerSecSec << ", " << fromWeight << std::endl;
+        
+        std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << (moduloAngle* 180.0f/PI_F)<< ", "  << fromWeight << ", " << diffTime_s << ", " << _v0_radPerSec << ", " << _a0_radPerSecSec << std::endl;
     }
-    
-    
+//
     return getModelsPerRotation(_angle0_rad);
 }
 
@@ -470,9 +482,7 @@ std::vector<ModelGeometry> Egg::getModelGeometries()
  {
     float moduloRotations = rotation_rad - ( (2 * PI_F) * ( static_cast<int>(rotation_rad/(2*PI_F)) ) );
      
-    float ans = (moduloRotations < 0) ? ((2*PI_F)+moduloRotations) : (moduloRotations);
-     std::cout << "moduloRotations: " << (rotation_rad*180.0f/PI_F) << ", " << (moduloRotations*180.0f/PI_F) << ": " << (ans*180.0f/PI_F) << std::endl;
-    return ans;
+    return (moduloRotations < 0) ? ((2*PI_F) + moduloRotations) : (moduloRotations);
  }
 
 
