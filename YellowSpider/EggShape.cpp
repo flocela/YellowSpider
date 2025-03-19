@@ -12,41 +12,117 @@ EggShape::EggShape(
 ):
 
     _rMedium{mediumRadius},
-    _rLarge{2.0f * mediumRadius},
+    _rLarge {2.0f * mediumRadius},
     _rSmall{_rLarge - (1.414f * _rMedium)},
     _numOfSectionsAboutY{numOfSectionsAboutY},
     _angleAboutZ{angleAboutZ},
     _halfWeight{ (1.0f/8.0f * PI_F * _rLarge * _rLarge) - (0.5f * _rMedium * _rMedium) + (1.0f/8.0f*PI_F*_rSmall * _rSmall) + 0.25f * PI_F * _rMedium * _rMedium}
 {
     std::cout << "Create EggShape" << std::endl;
-    populateVerticesAboutZAxis();
     
-    // Number of levels that use indices. Remove the bottom point. Remove the bottom point.
-    // Total number of levels = size/2 + 1. That is the number of reference angles divided by 2.
-    //                          0      1      2     3     4      5      6   
-    // Say reference angles are 270.0, 360.0, 45.0, 90.0, 135.0, 180.0, 225.0. Notice there's no ending 270.0
-    // But don't forget to subtract the top and bottom level, because they only have one point. Here
-    // that wouuld be 270.0 and 90.0
-    int numOfLevels = (static_cast<int32_t>(_referenceAnglesAboutZ.size())/2 + 1) - 2;
+    populateReferenceAnglesAboutZ();
     
-    for(int lev=2; lev<numOfLevels; ++lev)
+    std::cout << "eggshape line 25" << std::endl;
+    
+    outlineVerticesAboutZ();
+    
+    std::cout << "eggshape line 29" << std::endl;
+    
+    populateVertAboutYAxis();
+    
+    std::cout << "eggshape line 33" << std::endl;
+    
+    populateIndices();
+    
+    std::cout << "eggshape line 37" << std::endl;
+}
+
+void EggShape::populateIndices()
+{
+    int numVertInRow = _numOfSectionsAboutY + 1;
+    for(int ii=1; ii<_vertices.size() - numVertInRow; ++ii)
     {
-        for(int ii = 0; ii<_numOfSectionsAboutY; ++ii)
+        if (ii % numVertInRow == 0)
         {
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)   + 1);
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii-1) + 1);
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1) + 1);
-            _indices.push_back((lev)   * _numOfSectionsAboutY + (ii)   + 1);
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii-1) + 1);
-            _indices.push_back((lev-1) * _numOfSectionsAboutY + (ii  ) + 1);
+            _indices.push_back(ii);
+            _indices.push_back(ii - _numOfSectionsAboutY);
+            _indices.push_back(ii + 1);
+            _indices.push_back(ii);
+            _indices.push_back(ii + 1);
+            _indices.push_back(ii + numVertInRow);
+        }
+        else
+        {
+            _indices.push_back(ii);
+            _indices.push_back(ii+1);
+            _indices.push_back(ii+1 + numVertInRow);
+            _indices.push_back(ii);
+            _indices.push_back(ii+1 + numVertInRow);
+            _indices.push_back(ii   + numVertInRow);
         }
         
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (0)                      + 1);
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
-        _indices.push_back((lev)   * _numOfSectionsAboutY + (0)                      + 1);
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (_numOfSectionsAboutY-1) + 1);
-        _indices.push_back((lev-1) * _numOfSectionsAboutY + (0)                      + 1);
+    }
+}
+
+void EggShape::populateReferenceAnglesAboutZ()
+{
+    float delta = 1.0f * PI_F / 180.0f;
+
+    float angle = 0.0f;
+    while(angle < _threeSixty_rad)
+    {
+        std::cout << "angle: " << angle << std::endl;
+        if (angle > _oneEighty_rad - delta && angle < _oneEighty_rad + delta)
+        {
+            angle = _oneEighty_rad;
+        }
+        if (angle > _threeSixty_rad - delta)
+        {
+            break;
+        }
+        _referenceAnglesAboutZ.push_back(angle);
+        angle += _angleAboutZ;
+    }
+}
+
+void EggShape::outlineVerticesAboutZ()
+{
+    for(float x : _referenceAnglesAboutZ)
+    {
+        float radius     = getCorrespondingRadius(x);
+        glm::vec2 center = getCorrespondingCenter(x);
+        
+        _eggOutlineAboutZ.push_back({sin(x) * radius, _rMedium - (cos(x) * radius), 0.0f});
+    }
+}
+
+void EggShape::populateVertAboutYAxis()
+{
+    glm::mat4 transformMatrix{1.0f};
+    glm::vec3 rotationAxis{0.0f, 1.0f, 0.0f};
+    size_t    colorIndex = 0;
+    
+    for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
+    {
+        float angle = _referenceAnglesAboutZ[ii];
+        if (angle != _zero_rad && angle != _oneEighty_rad)
+        {
+            _vertices.push_back(Vertex{ _eggOutlineAboutZ[ii], _colors[colorIndex]});
+        }
+        else
+        {
+            for(int jj=0; jj<_numOfSectionsAboutY; ++jj)
+            {
+                glm::vec3 point = _eggOutlineAboutZ[ii];
+                _vertices.push_back(
+                Vertex{ glm::rotate(transformMatrix,
+                                    glm::radians(360.0f/(_numOfSectionsAboutY)) * ii, rotationAxis ) * glm::vec4(point, 1.0),
+                        _colors[colorIndex]
+                });
+            }
+        }
+        
+        colorIndex = ((colorIndex + 1) % _colors.size());
     }
 }
 
@@ -457,35 +533,48 @@ float EggShape::getCorrespondingRadius(float polarAngle_rad)
 {
     polarAngle_rad = (polarAngle_rad >= (2 * PI_F)) ? (polarAngle_rad - (2 * PI_F)) : (polarAngle_rad);
         
-    if( (polarAngle_rad >= _oneEighty_rad) && (polarAngle_rad <_threeSixty_rad))
+    if( ( polarAngle_rad == _zero_rad ) ||
+        ((polarAngle_rad >= _twoSeventy_rad) && (polarAngle_rad <=_threeSixty_rad)) ||
+        ((polarAngle_rad >= _zero_rad)       && (polarAngle_rad <=_ninety_rad))
+      )
     {
         return _rMedium;
     }
-    else if ( (polarAngle_rad >= _fortyFive_rad) && (polarAngle_rad < _oneThirtyFive_rad) )
+    else if ( ((polarAngle_rad >= _ninety_rad)        && (polarAngle_rad >= _oneThirtyFive_rad)) ||
+              ((polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad >= _twoSeventy_rad))
+    )
     {
-        return _rSmall;
+        return _rLarge;
     }
     else
     {
-        return _rLarge;
+        return _rSmall;
     }
 }
 
 glm::vec2 EggShape::getCorrespondingCenter(float polarAngle_rad)
 {
+
     polarAngle_rad = (polarAngle_rad >= (2 * PI_F)) ? (polarAngle_rad - (2 * PI_F)) : (polarAngle_rad);
         
-    if( (polarAngle_rad >= _oneEighty_rad) && (polarAngle_rad <_threeSixty_rad))
+    if( ( polarAngle_rad == _zero_rad ) ||
+        ((polarAngle_rad >= _twoSeventy_rad) && (polarAngle_rad <=_threeSixty_rad)) ||
+        ((polarAngle_rad >= _zero_rad)       && (polarAngle_rad <=_ninety_rad))
+      )
     {
         return glm::vec2{0.0f, _rMedium};
     }
-    else if ( (polarAngle_rad >= _fortyFive_rad) && (polarAngle_rad < _oneThirtyFive_rad) )
+    else if ( (polarAngle_rad >= _ninety_rad) && (polarAngle_rad >= _oneThirtyFive_rad))
     {
-        return glm::vec2{0.0f, (2.0f * _rMedium)};
+        return glm::vec2{-_rMedium, _rMedium};
+    }
+    else if ( (polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad >= _twoSeventy_rad))
+    {
+        return glm::vec2{_rMedium, _rMedium};
     }
     else
     {
-        return glm::vec2{-_rMedium, _rMedium};
+        return glm::vec2{0.0f, (2.0f * _rMedium)};
     }
 }
 

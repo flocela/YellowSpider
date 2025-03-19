@@ -45,6 +45,7 @@ class EggShape
     const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
     const float _oneEighty_rad     = 180.0f * PI_F / 180.0f;
+    const float _twoTwentyFive_rad = 225.0f * PI_F / 180.0f;
     const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
     const float _threeSixty_rad    = 360.0f * PI_F / 180.0f;
     
@@ -108,10 +109,19 @@ class EggShape
         
     void populateVerticesAboutYAxis(glm::vec3 point, glm::vec3 color);
     
+    void populateVertAboutYAxis();
+    
     void populateForwardAndBackwardsWeights();
     
     float getCorrespondingRadius(float polarAngle);
+    
     glm::vec2 getCorrespondingCenter(float polarAngle);
+    
+    void populateReferenceAnglesAboutZ();
+    
+    void outlineVerticesAboutZ();
+    
+    void populateIndices();
     
 };
 
