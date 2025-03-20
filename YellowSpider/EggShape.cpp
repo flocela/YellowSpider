@@ -26,6 +26,12 @@ EggShape::EggShape(
     
     outlineVerticesAboutZ();
     
+    std::cout << "_eggOutlineAboutZ.size(): " << _eggOutlineAboutZ.size() << std::endl;
+    for(auto v : _eggOutlineAboutZ)
+    {
+        std::cout << "{" << v.x << ", " << v.y << "}" << std::endl;
+    }
+    
     std::cout << "eggshape line 29" << std::endl;
     
     populateVertAboutYAxis();
@@ -35,12 +41,25 @@ EggShape::EggShape(
     populateIndices();
     
     std::cout << "eggshape line 37" << std::endl;
+    
+    
+    for(int ii=0; ii<_vertices.size(); ++ii)
+    {
+        std::cout << "vertices: " << ii <<": " << _vertices[ii].pos.x << ", " << _vertices[ii].pos.y << ", " << _vertices[ii] .pos.z<< std::endl;
+    }
+    
+    for(int ii=0; ii<_indices.size()-2; ii+=3)
+    {
+        std::cout << _indices[ii] <<", " << _indices[ii+1] << ", " << _indices[ii+2] << " :: " << _vertices[_indices[ii]].pos.x << ", " << _vertices[_indices[ii]].pos.y<< std::endl;
+    }
+    
+    std::cout << "egg shape line 50" << std::endl;
 }
 
 void EggShape::populateIndices()
 {
     int numVertInRow = _numOfSectionsAboutY + 1;
-    for(int ii=1; ii<_vertices.size() - numVertInRow; ++ii)
+    for(int ii=1; ii<(_vertices.size() - numVertInRow); ++ii)
     {
         if (ii % numVertInRow == 0)
         {
@@ -60,26 +79,31 @@ void EggShape::populateIndices()
             _indices.push_back(ii+1 + numVertInRow);
             _indices.push_back(ii   + numVertInRow);
         }
-        
     }
+    
+    
+    
+    
 }
 
 void EggShape::populateReferenceAnglesAboutZ()
 {
-    float delta = 1.0f * PI_F / 180.0f;
+    float delta = 2.0f * PI_F / 180.0f ;
 
     float angle = 0.0f;
     while(angle < _threeSixty_rad)
     {
-        std::cout << "angle: " << angle << std::endl;
-        if (angle > _oneEighty_rad - delta && angle < _oneEighty_rad + delta)
+        
+        if ( (angle > (_oneEighty_rad - delta)) && (angle < (_oneEighty_rad + delta)) )
         {
             angle = _oneEighty_rad;
         }
-        if (angle > _threeSixty_rad - delta)
+        else if ( (angle > (_threeSixty_rad - delta))  && (angle < (_threeSixty_rad + delta)) )
         {
             break;
         }
+        
+        //std::cout << "angle: " << angle << std::endl;
         _referenceAnglesAboutZ.push_back(angle);
         angle += _angleAboutZ;
     }
@@ -87,12 +111,24 @@ void EggShape::populateReferenceAnglesAboutZ()
 
 void EggShape::outlineVerticesAboutZ()
 {
-    for(float x : _referenceAnglesAboutZ)
+    float delta = 1.0f * PI_F / 180.0f;
+    
+    for(float angle : _referenceAnglesAboutZ)
     {
-        float radius     = getCorrespondingRadius(x);
-        glm::vec2 center = getCorrespondingCenter(x);
+        float radius     = getCorrespondingRadius(angle);
+        glm::vec2 center = getCorrespondingCenter(angle);
+        float cx = center[0];
+        float cy = center[1];
         
-        _eggOutlineAboutZ.push_back({sin(x) * radius, _rMedium - (cos(x) * radius), 0.0f});
+        if (angle > _oneEighty_rad - delta && angle < _oneEighty_rad + delta)
+        {
+            _eggOutlineAboutZ.push_back({0.0f, cy + (cos(angle) * radius), 0.0f});
+        }
+        else
+        {
+            _eggOutlineAboutZ.push_back({ (cx + (sin(angle) * radius)), cy - (cos(angle) * radius), 0.0f});
+        }
+        std::cout << "eggshape outline: " << radius << ", " << (angle * 180.0f/ PI_F) << ":  " << cx << ", " << cy << ", " << std::endl << (sin(angle)) << ", " << (cos(angle)) <<  ", " << _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][0] << ", " <<  _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][1] << std::endl;
     }
 }
 
@@ -105,24 +141,28 @@ void EggShape::populateVertAboutYAxis()
     for(int ii=0; ii<_referenceAnglesAboutZ.size(); ++ii)
     {
         float angle = _referenceAnglesAboutZ[ii];
-        if (angle != _zero_rad && angle != _oneEighty_rad)
+        if (angle == _zero_rad || angle == _threeSixty_rad)
         {
             _vertices.push_back(Vertex{ _eggOutlineAboutZ[ii], _colors[colorIndex]});
+            //std::cout << "AA _vertices.size() " << _vertices.size() << std::endl;
         }
         else
         {
-            for(int jj=0; jj<_numOfSectionsAboutY; ++jj)
+            for(int jj=0; jj<=_numOfSectionsAboutY; ++jj)
             {
                 glm::vec3 point = _eggOutlineAboutZ[ii];
+                
                 _vertices.push_back(
                 Vertex{ glm::rotate(transformMatrix,
-                                    glm::radians(360.0f/(_numOfSectionsAboutY)) * ii, rotationAxis ) * glm::vec4(point, 1.0),
+                                    glm::radians(360.0f/(_numOfSectionsAboutY)) * jj, rotationAxis ) * glm::vec4(point, 1.0),
                         _colors[colorIndex]
                 });
+                std::cout << "EggShape point: " << _vertices[_vertices.size()-1].pos.x << ", " << _vertices[_vertices.size()-1].pos.y<< ", " << _vertices[_vertices.size()-1].pos.z << std::endl;
+                //std::cout << "CC _vertices.size() " << _vertices.size() << std::endl;
             }
         }
         
-        colorIndex = ((colorIndex + 1) % _colors.size());
+        colorIndex = ((colorIndex + 1) % _colors.size()); 
     }
 }
 
@@ -540,8 +580,8 @@ float EggShape::getCorrespondingRadius(float polarAngle_rad)
     {
         return _rMedium;
     }
-    else if ( ((polarAngle_rad >= _ninety_rad)        && (polarAngle_rad >= _oneThirtyFive_rad)) ||
-              ((polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad >= _twoSeventy_rad))
+    else if ( ((polarAngle_rad >= _ninety_rad)        && (polarAngle_rad <= _oneThirtyFive_rad)) ||
+              ((polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad <= _twoSeventy_rad))
     )
     {
         return _rLarge;
@@ -564,11 +604,11 @@ glm::vec2 EggShape::getCorrespondingCenter(float polarAngle_rad)
     {
         return glm::vec2{0.0f, _rMedium};
     }
-    else if ( (polarAngle_rad >= _ninety_rad) && (polarAngle_rad >= _oneThirtyFive_rad))
+    else if ( (polarAngle_rad >= _ninety_rad) && (polarAngle_rad <= _oneThirtyFive_rad))
     {
         return glm::vec2{-_rMedium, _rMedium};
     }
-    else if ( (polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad >= _twoSeventy_rad))
+    else if ( (polarAngle_rad >= _twoTwentyFive_rad) && (polarAngle_rad <= _twoSeventy_rad))
     {
         return glm::vec2{_rMedium, _rMedium};
     }

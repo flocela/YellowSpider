@@ -39,7 +39,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
     
     float xTranslateCycloid90SR   = (_ninety_rad * _rSmall) - (_rSmall * sin(_ninety_rad));
     float yTranslationCycloid90SR = _rSmall - (_rSmall * cos(_ninety_rad));
-    
+    /*
     if(rotationCorrected_deg > 270.0f)
     {
         // Intermediate translations are from cycloid movement using small-radius circle.
@@ -218,7 +218,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR0, yIntermediateTranslationMR0, 0.0f});
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
-    }
+    }*/
     std::vector<glm::mat4> models{};
     models.push_back(model);
     return models;
@@ -430,6 +430,7 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
+    /*
     if (_lastTime_s == -1.0f)
     {
         _lastTime_s = time_s;
@@ -453,8 +454,9 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         
         std::cout << "_angle0_rad, diffTime_s, _v0_radPerSec: " << (moduloAngle* 180.0f/PI_F)<< ", "  << fromWeight << ", " << diffTime_s << ", " << _v0_radPerSec << ", " << _a0_radPerSecSec << std::endl;
     }
-//
-    return getModelsPerRotation(_angle0_rad);
+    */
+    //std::cout << "Egg 456 getModels() getModelsPerRotations(0.0f) " << std::endl;
+    return getModelsPerRotation(0.0f);
 }
 
 std::vector<std::vector<Vertex>> Egg::getVertices()

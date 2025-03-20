@@ -75,7 +75,7 @@ int VulkanRenderer::init(GLFWwindow * newWindow)
         _uboViewProjection.projection = glm::perspective(glm::radians(50.0f), (float)_swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 120.0f);
         
         // glm::lookAt(eye, center, up)
-        _uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 20.0f, 120.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        _uboViewProjection.view = glm::lookAt(glm::vec3(20.0f, 00.0f, 60.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         _uboViewProjection.projection[1][1] *= -1;
         
@@ -605,6 +605,7 @@ void VulkanRenderer::createGraphicsPipeline()
     rasterizerCI.rasterizerDiscardEnable = VK_FALSE;
     rasterizerCI.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizerCI.lineWidth               = 1.0f;
+    //rasterizerCI.cullMode                = VK_CULL_MODE_NONE;
     rasterizerCI.cullMode                = VK_CULL_MODE_BACK_BIT;
     rasterizerCI.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizerCI.depthBiasEnable         = VK_FALSE;
