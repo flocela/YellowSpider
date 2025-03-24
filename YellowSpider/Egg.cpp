@@ -16,17 +16,18 @@ Egg::Egg(float time)
 
 std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
 {
+
     glm::mat4 model{1.0f};
     
     float   circumference        = _eggShape.getEggCircumferenceAboutZ();
-    int32_t numOfFullRotations   = rotation_rad/(2*PI_F);
+    int32_t numOfFullRotations   = rotation_rad/(2.0f*PI_F);
     float   wholeCircumferences  = numOfFullRotations * circumference;
+    //float   wholeCircumferences  = 0.0f;
     
     float rotationCorrected_rad = rotation_rad - (numOfFullRotations * 2 * PI_F);
     //std::cout << "rotation_rad, rotationCorrected_rad: " << (rotation_rad * 180.0f/PI_F) << ", " << (rotationCorrected_rad * 180.0f/PI_F)  << std::endl;
     //std::cout << "orig, dist, rotations: " << distOrig << ", " << dist << ", " << (rotation_rad * 180.0f / PI_F) << std::endl;
     float rotationCorrected_deg = rotationCorrected_rad * 180.0f/ PI_F;
-    
     // Translations are from cycloid movement
     float xTranslationCycloid90MR = (_ninety_rad * _rMedium) - (_rMedium * sin(_ninety_rad));
     float yTranslationCycloid90MR = _rMedium - (_rMedium * cos(_ninety_rad));
@@ -39,7 +40,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
     
     float xTranslateCycloid90SR   = (_ninety_rad * _rSmall) - (_rSmall * sin(_ninety_rad));
     float yTranslationCycloid90SR = _rSmall - (_rSmall * cos(_ninety_rad));
-    /*
+    
     if(rotationCorrected_deg > 270.0f)
     {
         // Intermediate translations are from cycloid movement using small-radius circle.
@@ -47,7 +48,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationMR1 = (rotationDiff_rad * _rMedium) - (_rMedium* sin(rotationDiff_rad));
         float yIntermediateTranslationMR1 = _rMedium - (_rMedium * cos(rotationDiff_rad));
         
-        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        //model = glm::translate(model, glm::vec3{numOfFullRotations*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR1, yIntermediateTranslationMR1, 0.0f});
@@ -112,7 +113,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationLR1 = (rotationDiff_rad * _rLarge) - (_rLarge* sin(rotationDiff_rad));
         float yIntermediateTranslationLR1 = _rLarge - (_rLarge * cos(rotationDiff_rad));
         
-        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        //model = glm::translate(model, glm::vec3{numOfFullRotations*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationLR1, yIntermediateTranslationLR1, 0.0f});
@@ -159,7 +160,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationSmR = (rotationDiff_rad * _rSmall) - (_rSmall * sin(rotationDiff_rad));
         float yIntermediateTranslationSmR = _rSmall - (_rSmall * cos(rotationDiff_rad));
         
-        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        //model = glm::translate(model, glm::vec3{numOfFullRotations*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationSmR, yIntermediateTranslationSmR, 0.0f});
@@ -192,7 +193,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationLR0 = (rotationDiff_rad * _rLarge) - (_rLarge * sin(rotationDiff_rad));
         float yIntermediateTranslationLR0 = _rLarge - (_rLarge * cos(rotationDiff_rad));
         
-        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        //model = glm::translate(model, glm::vec3{numOfFullRotations*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{+(xTranslationCycloid90MR + _rMedium), 0.0f, 0.0f});
@@ -212,22 +213,23 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
         float xIntermediateTranslationMR0 = (rotationCorrected_rad * _rMedium) - (_rMedium * sin(rotationCorrected_rad));
         float yIntermediateTranslationMR0 = _rMedium - (_rMedium * cos(rotationCorrected_rad));
         
-        model = glm::translate(model, glm::vec3{-4*circumference, 0.0f, 0.0f});
+        //model = glm::translate(model, glm::vec3{numOfFullRotations*circumference, 0.0f, 0.0f});
         
         model = glm::translate(model, glm::vec3{wholeCircumferences, 0.0f, 0.0f});
         model = glm::translate(model, glm::vec3{xIntermediateTranslationMR0, yIntermediateTranslationMR0, 0.0f});
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
-    }*/
+    }
     std::vector<glm::mat4> models{};
     models.push_back(model);
     return models;
 }
-
+//
 std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
 {
+
     glm::mat4 model{1.0f};
-    
+    /*
     float circumference = _eggShape.getEggCircumferenceAboutZ();
     float distOrig = dist;
     dist = distOrig - static_cast<float>(floor(distOrig / circumference) * circumference);
@@ -423,9 +425,11 @@ std::vector<glm::mat4> Egg::getModelsPerDistance(float dist)
         model = glm::rotate(model, rotationCorrected_rad, glm::vec3{0.0f, 0.0f, -1.0f});
         
     }
+    */
     std::vector<glm::mat4> models{};
     models.push_back(model);
     return models;
+    
 }
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
@@ -456,7 +460,11 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     }
     */
     //std::cout << "Egg 456 getModels() getModelsPerRotations(0.0f) " << std::endl;
-    return getModelsPerRotation(0.0f);
+    
+    _tempCounter += (5.0f * PI_F / 180.0f);
+    
+    
+    return getModelsPerRotation(_tempCounter);
 }
 
 std::vector<std::vector<Vertex>> Egg::getVertices()

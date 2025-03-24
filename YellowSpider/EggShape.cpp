@@ -32,6 +32,8 @@ EggShape::EggShape(
         std::cout << "{" << v.x << ", " << v.y << "}" << std::endl;
     }
     
+    populateCircumferece();
+    
     std::cout << "eggshape line 29" << std::endl;
     
     populateVertAboutYAxis();
@@ -80,10 +82,6 @@ void EggShape::populateIndices()
             _indices.push_back(ii   + numVertInRow);
         }
     }
-    
-    
-    
-    
 }
 
 void EggShape::populateReferenceAnglesAboutZ()
@@ -113,8 +111,9 @@ void EggShape::outlineVerticesAboutZ()
 {
     float delta = 1.0f * PI_F / 180.0f;
     
-    for(float angle : _referenceAnglesAboutZ)
+    for(int aa=0; aa<_referenceAnglesAboutZ.size(); ++aa)
     {
+        float angle = _referenceAnglesAboutZ[aa];
         float radius     = getCorrespondingRadius(angle);
         glm::vec2 center = getCorrespondingCenter(angle);
         float cx = center[0];
@@ -129,8 +128,28 @@ void EggShape::outlineVerticesAboutZ()
             _eggOutlineAboutZ.push_back({ (cx + (sin(angle) * radius)), cy - (cos(angle) * radius), 0.0f});
         }
         std::cout << "eggshape outline: " << radius << ", " << (angle * 180.0f/ PI_F) << ":  " << cx << ", " << cy << ", " << std::endl << (sin(angle)) << ", " << (cos(angle)) <<  ", " << _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][0] << ", " <<  _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][1] << std::endl;
+        
+        if (angle == 0.0f)
+        {
+            _circumferenceTraveledAboutZ.push_back(0.0f);
+        }
+        else
+        {
+            float diffAngle = angle - _referenceAnglesAboutZ[aa-1];
+            _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + abs(sin(diffAngle) * radius));
+        }
     }
+    
+    float angle = (2.0f * PI_F) - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1];
+    _circumference = _circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] + (abs(sin(angle) * _rMedium));
 }
+
+// TODO _circumference should match the outline about z vertices.
+void EggShape::populateCircumferece()
+{
+    //_circumference = (2 * PI_F * _rMedium / 2) + (2 * PI_F * _rLarge / 4) + ( 2 * PI_F * _rSmall / 4);
+}
+
 
 void EggShape::populateVertAboutYAxis()
 {
@@ -468,9 +487,6 @@ void EggShape::populateVerticesAboutZAxis(float startingPolarAngle_rad, float en
             float diffAngle = polarAngle_rad - _referenceAnglesAboutZ[_referenceAnglesAboutZ.size()-1];
             
             float arcLengthAtAngle    = std::abs(sin(diffAngle) * radius);
-            
-            float oppRadius           = getCorrespondingRadius(polarAngle_rad + PI_F);
-            float arcLengthAtOppAngle = std::abs(sin(diffAngle) * oppRadius);
             
             // Circumference at this angle is the last circumference plus (sin(difference in angle) * radius).
             _circumferenceTraveledAboutZ.push_back(_circumferenceTraveledAboutZ[_circumferenceTraveledAboutZ.size()-1] +

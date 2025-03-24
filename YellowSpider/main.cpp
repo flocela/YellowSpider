@@ -84,10 +84,6 @@ int main()
     modelA = glm::rotate   (modelA, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // a rotate
     */
     
-    
-    
-    
-
     // Destroy GLFW window and stop GLFW
     glfwDestroyWindow(window);
     glfwTerminate();

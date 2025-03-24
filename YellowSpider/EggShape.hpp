@@ -123,6 +123,8 @@ class EggShape
     
     void populateIndices();
     
+    void populateCircumferece();
+    
 };
 
 #endif /* EggShape_hpp */
