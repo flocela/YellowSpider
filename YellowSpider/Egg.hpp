@@ -34,12 +34,19 @@ class Egg
     
     // TODO Make in initializer list (here I'm making it twice.
     EggShape                   _eggShape;
+    std::vector<float> _times;
+    std::vector<float> _radians;
+    std::vector<float> _velocities;
     std::vector<ModelGeometry> _modelGeometries;
     
-    float                      _lastTime_s   = -1.0f;
+    float                      _lastTime_s     = -1.0f;
+    float                      _lastVelocity_s = -1.0f;
+    float                      _lastRadians_r  = -1.0f;
+    
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
     
+    float _zero_rad          = 0.0f   * PI_F / 180.0f;
     float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
     float _ninety_rad        = 90.0f  * PI_F / 180.0f;
     float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
@@ -51,10 +58,13 @@ class Egg
     float _rMedium = _rLarge/2.0f;
     float _rSmall  = _rLarge - (1.414f * _rMedium);
     
-    float _angle0_rad   = _twoSeventy_rad;
     float _v0_radPerSec = 5.0f;
     float _a0_radPerSecSec = 0.0f;
     float _va_radPerSec = 0.0f;
+    
+    void setTimes();
+    
+    
     
 
 };

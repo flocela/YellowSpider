@@ -88,7 +88,7 @@ class EggShape
     
     // Distances around the egg starting at 270 deg (which would be distance zero), and going counter clockwise.
     std::vector<float>     _circumferenceTraveledAboutZ{};
-    float                  _circumference = 0.0f;
+    float                  _circumference = 0.0f ;
     
     std::vector<float>     _forwardWeights{};
     std::vector<float>     _backwardWeights{};

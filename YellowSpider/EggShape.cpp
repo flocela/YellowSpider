@@ -44,18 +44,21 @@ EggShape::EggShape(
     
     std::cout << "eggshape line 37" << std::endl;
     
-    
+    /*
     for(int ii=0; ii<_vertices.size(); ++ii)
     {
         std::cout << "vertices: " << ii <<": " << _vertices[ii].pos.x << ", " << _vertices[ii].pos.y << ", " << _vertices[ii] .pos.z<< std::endl;
     }
+    */
     
+    /*
     for(int ii=0; ii<_indices.size()-2; ii+=3)
     {
         std::cout << _indices[ii] <<", " << _indices[ii+1] << ", " << _indices[ii+2] << " :: " << _vertices[_indices[ii]].pos.x << ", " << _vertices[_indices[ii]].pos.y<< std::endl;
     }
+    */
     
-    std::cout << "egg shape line 50" << std::endl;
+    //std::cout << "egg shape line 61" << std::endl;
 }
 
 void EggShape::populateIndices()
@@ -127,7 +130,7 @@ void EggShape::outlineVerticesAboutZ()
         {
             _eggOutlineAboutZ.push_back({ (cx + (sin(angle) * radius)), cy - (cos(angle) * radius), 0.0f});
         }
-        std::cout << "eggshape outline: " << radius << ", " << (angle * 180.0f/ PI_F) << ":  " << cx << ", " << cy << ", " << std::endl << (sin(angle)) << ", " << (cos(angle)) <<  ", " << _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][0] << ", " <<  _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][1] << std::endl;
+        /*std::cout << "eggshape outline: " << radius << ", " << (angle * 180.0f/ PI_F) << ":  " << cx << ", " << cy << ", " << std::endl << (sin(angle)) << ", " << (cos(angle)) <<  ", " << _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][0] << ", " <<  _eggOutlineAboutZ[_eggOutlineAboutZ.size()-1][1] << std::endl;*/
         
         if (angle == 0.0f)
         {
@@ -176,7 +179,7 @@ void EggShape::populateVertAboutYAxis()
                                     glm::radians(360.0f/(_numOfSectionsAboutY)) * jj, rotationAxis ) * glm::vec4(point, 1.0),
                         _colors[colorIndex]
                 });
-                std::cout << "EggShape point: " << _vertices[_vertices.size()-1].pos.x << ", " << _vertices[_vertices.size()-1].pos.y<< ", " << _vertices[_vertices.size()-1].pos.z << std::endl;
+                /*std::cout << "EggShape point: " << _vertices[_vertices.size()-1].pos.x << ", " << _vertices[_vertices.size()-1].pos.y<< ", " << _vertices[_vertices.size()-1].pos.z << std::endl;*/
                 //std::cout << "CC _vertices.size() " << _vertices.size() << std::endl;
             }
         }
@@ -445,7 +448,7 @@ void EggShape::populateForwardAndBackwardsWeights()
     totalForwardArea = 60.28f;
     totalBackwardArea = 39.27f;
     //std::cout << "totalForwardA, totalBackwardA: " << totalForwardArea << ", " << totalBackwardArea << std::endl;
-    std::cout << "line 313: " << "_referenceAnglesForWeight.size(): " << _referenceAnglesForWeight.size() << std::endl;
+    //std::cout << "line 313: " << "_referenceAnglesForWeight.size(): " << _referenceAnglesForWeight.size() << std::endl;
     for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
     {
         totalForwardArea += (addForwardWeights[ii] - subtrForwardWeights[ii]);
@@ -454,11 +457,12 @@ void EggShape::populateForwardAndBackwardsWeights()
         totalBackwardArea += (subtrForwardWeights[ii] - addForwardWeights[ii]);
         _backwardWeights.push_back(totalBackwardArea);
     }
-    
+    /*
     for(int ii=0; ii<_referenceAnglesForWeight.size(); ++ii)
     {
         std::cout << "325: refAngle, forward, backward: " << (_referenceAnglesForWeight[ii] * 180.0f / PI_F) << ", " << _forwardWeights[ii] << ", " << _backwardWeights[ii] << " = " << (_forwardWeights[ii] - _backwardWeights[ii]) << std::endl;
     }
+    */
     
 }
 
