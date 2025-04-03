@@ -488,11 +488,8 @@ void Egg::setTimes()
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
-    std::cout << std::endl;
-    std::cout << "time_s: " << time_s << std::endl;
     if (_lastTime_s == -1.0f)
     {
-        std::cout << "egg getModels _angle0_Rad" << std::endl;
         _lastTime_s     = time_s;
         _lastVelocity_s = 0.0f;
         _lastRadians_r  = 0.0f;
@@ -500,65 +497,25 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     }
     else
     {
-        // TODO urIdx and utIdx can not be zero because I subtract by one and then look up the index in the array.
-        // Get radians at last time radians0_r
         float timeDiff_s     = time_s - _lastTime_s;
-        std::cout << "timeDiff: " << timeDiff_s << ": " << time_s << ", " << _lastTime_s << std::endl;
         float numOfRotations = std::floor(_lastRadians_r / (2*PI_F));
         float radians0_r     = _lastRadians_r - (numOfRotations * (2*PI_F));
-        std::cout << "radians0_r: " << radians0_r << std::endl;
         // Index on _radians vector below radians0_r
-        size_t urIdx  = std::distance(
-                        _radians.begin(),
-                        std::lower_bound(_radians.begin(), _radians.end(), radians0_r));
-        std::cout << "urIdx: " << urIdx << std::endl;
-        // time corresponding to radians0_r 
-        float time0_s = (urIdx == 0) ?
-                         (0.0f) :
-                         (_times[urIdx] -
-                          ( ( _radians[urIdx] - radians0_r) *
-                          ((_times[urIdx] - _times[urIdx-1])/(_radians[urIdx] - _radians[urIdx-1]))
-                         ));
-        if (urIdx != 0)
-        {
-            std::cout << "time0s: " << time0_s << ": " << _times[urIdx] << ", " << _radians[urIdx] << ", " << radians0_r << ", " << _times[urIdx] << ", " << _times[urIdx-1] << ", " << radians0_r << ", " << _radians[urIdx-1] << std:: endl;
-            std::cout << _times[urIdx] << std::endl;
-            std::cout << ( _radians[urIdx] - radians0_r) << std::endl;
-            std::cout << ((_times[urIdx] - _times[urIdx-1])/(_radians[urIdx] - _radians[urIdx-1])) << std::endl << std::endl;
-        }
+        
+        float time0_s = getCorrespondingTime(radians0_r);
         
         float complete_time1 = time0_s + timeDiff_s;
-        std::cout << "complete_time: " << complete_time1 << std::endl;
-        // reduce time1 so, it is in _times vector.
+        
         float numRotations = std::floor(complete_time1 / _times[_times.size()-1]);
         float time1_s   = complete_time1 - (numRotations * _times[_times.size()-1]);
         
-        // index in _times vector that is below time1_s
-        size_t utIdx  = std::distance(
-                        _times.begin(),
-                        std::lower_bound(_times.begin(), _times.end(), time1_s));
-        std::cout << "utIdx: " << utIdx << std::endl;               
-        // rotation corresponding to time1_s
-        float radians1_r = (utIdx == 0) ?
-                           (0.0f) :
-                           (_radians[utIdx] -
-                            ( (_times[utIdx] - time1_s) *
-                             ((_radians[utIdx] - _radians[utIdx-1])/(_times[utIdx] - _times[utIdx-1]))
-                            ));
-        std::cout << radians1_r << ": " << _radians[utIdx] << ", " << time1_s << ", " << _times[utIdx] << ", " << _radians[utIdx-1] << _times[utIdx-1] << std::endl;
-        std::cout << "radians: " << radians1_r << ", " << radians0_r << std::endl;
+        float radians1_r = getCorrespondingRadians(time1_s);
         
         _lastRadians_r += ( (radians1_r >=  radians0_r) ? (radians1_r -  radians0_r) : ((2*PI_F) - radians0_r + radians1_r) );
-        std::cout << "lastRadians: " << _lastRadians_r << std::endl;
         _lastTime_s = time_s;
         
-        return getModelsPerRotation(radians1_r);
+        return getModelsPerRotation(_lastRadians_r);
     }
-    
-    //std::cout << "Egg 456 getModels() getModelsPerRotations(0.0f) " << std::endl;
-    //_tempCounter += (1.0f * PI_F / 180.0f);
-    
-    
     
 }
 
@@ -589,5 +546,35 @@ std::vector<ModelGeometry> Egg::getModelGeometries()
      
     return (moduloRotations < 0) ? ((2*PI_F) + moduloRotations) : (moduloRotations);
  }
+ 
+ float Egg::getCorrespondingRadians(float time)
+ {
+    size_t utIdx  = std::distance(_times.begin(),
+                                  std::lower_bound(_times.begin(), _times.end(),
+                                  time));
+                    
+    return (utIdx == 0) ?
+           (0.0f) :
+           ( _radians[utIdx] -
+             ( (_times[utIdx] - time) *
+               ( (_radians[utIdx] - _radians[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
+             )
+           );
+ }
+
+float Egg::getCorrespondingTime(float radians)
+{
+    size_t urIdx  = std::distance(
+                        _radians.begin(),
+                        std::lower_bound(_radians.begin(), _radians.end(), radians));
+    
+    return (urIdx == 0) ?
+           (0.0f) :
+           ( _times[urIdx] -
+             ( ( _radians[urIdx] - radians) *
+               ( (_times[urIdx] - _times[urIdx-1]) / (_radians[urIdx] - _radians[urIdx-1]) )
+             )
+           );
+}
 
 

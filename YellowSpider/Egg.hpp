@@ -63,7 +63,8 @@ class Egg
     float _va_radPerSec = 0.0f;
     
     void setTimes();
-    
+    float getCorrespondingRadians(float time);
+    float getCorrespondingTime(float radians);
     
     
 
