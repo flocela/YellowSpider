@@ -36,12 +36,14 @@ class Egg
     EggShape                   _eggShape;
     std::vector<float> _times;
     std::vector<float> _radians;
-    std::vector<float> _velocities;
+    std::vector<float> _velocities; 
+    std::vector<float> _negVelocities;
     std::vector<ModelGeometry> _modelGeometries;
     
-    float                      _lastTime_s     = -1.0f;
-    float                      _lastVelocity_s = -1.0f;
-    float                      _lastRadians_r  = -1.0f;
+    float _firstTime_s    = -1.0f;              
+    float _lastTime_s     = -1.0f;
+    float _lastVelocity_s = -1.0f;
+    float _lastRadians_r  = -1.0f;
     
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
@@ -64,7 +66,12 @@ class Egg
     
     void setTimes();
     float getCorrespondingRadians(float time);
-    float getCorrespondingTime(float radians);
+    float getCorrespondingVelocity(float time, const std::vector<float>& velocities);
+    float getCorrespondingTimePerRadians(float radians);
+    float getCorrespondingTimePerVelocity(float velocity, float time0_s, float time_s);
+    std::tuple<int, float> getModRadians(float radians);
+    float getModTime(float time);
+    std::tuple<float, float, float> getTimeRadiansAndV(float velocity_rps, float time0, float timeDiffRT_s);
     
     
 
