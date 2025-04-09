@@ -444,7 +444,7 @@ void Egg::setTimes()
     std::vector<float> time_sections_s{.3f, .6f, .6f, .3f, .3f, .6f, .6f, .3f};
     std::vector<float> acc_rs2(time_sections_s.size(), 0.0f);
     acc_rs2[0] = (50.0f * PI_F / 180.0f) * (2) / (time_sections_s[0] * time_sections_s[0]);
-    float velocity = acc_rs2[0] * time_sections_s[2];
+    float velocity = acc_rs2[0] * time_sections_s[0];
     acc_rs2[1] = ( (130.0f * PI_F / 180.0f) - (velocity* time_sections_s[1]) ) * 2 / (time_sections_s[1] * time_sections_s[1]);
     acc_rs2[2] = -acc_rs2[1];
     acc_rs2[3] = -acc_rs2[0];
@@ -452,34 +452,45 @@ void Egg::setTimes()
     acc_rs2[5] =  acc_rs2[1];
     acc_rs2[6] =  acc_rs2[2];
     acc_rs2[7] =  acc_rs2[3];
-
+    
+    std::cout << "acc-rs2: ";
+    for(float x : acc_rs2)
+    {
+        std::cout << x << ", ";
+    }
+    std::cout << std::endl;
+    
     _times[0]      = -0.9f;
-    _radians[0]    = 0.0f;
+    _radians[0]    = -PI_F;
     _velocities[0] = 0.0f;
     
     int intervals = 25;
-
+    
     for(int ts=0; ts<time_sections_s.size(); ++ts)
     {
         float deltaTime = time_sections_s[ts]/intervals;
         for(int ii=1; ii<=intervals; ++ii)
         {
             float idx = (ts*intervals)+ii;
-            
+            if (idx == 48)
+            {
+            std::cout << "";
+            }
             _times[idx] = _times[idx-1] + deltaTime;
             
             float tDiff = _times[idx] - _times[idx-1];
             _radians[idx] = (_radians[idx-1]) +
                             (_velocities[idx-1] * tDiff) +
                             (0.5 * acc_rs2[ts] * tDiff * tDiff);
+            std::cout << "v: " << idx << ": " << _velocities[idx-1] << " + " << acc_rs2[ts] << " * " << tDiff;
             _velocities[idx] = _velocities[idx-1] + (acc_rs2[ts] * tDiff);
+            std::cout << " = " << _velocities[idx] << std::endl;
             if (abs(_velocities[idx]) < .0001)
             {
                 _velocities[idx] = 0.0f;
             }
         } 
     }
-    
     for(size_t ii=0; ii<_velocities.size(); ++ii)
     {
         _negVelocities[ii] = -_velocities[ii];
@@ -502,8 +513,8 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        //_lastVelocity_s = _velocities[0];
-        _lastVelocity_s = 0.01f;
+        _lastVelocity_s = _velocities[50];
+        //_lastVelocity_s = 0.002f;
         _lastRadians_r  = 0.0f;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -523,7 +534,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         float timeDiff_s  = curTime_s - _lastTime_s;
         auto [numRotations, baseRadians0_r] = getModRadians(_lastRadians_r);
         float baseTime0_s    = getModTime(_lastTime_s);
-    
+
         auto [time1, radians1_r, velocity1_rps] = getTimeRadiansAndV(_lastVelocity_s, baseTime0_s, timeDiff_s);
         
         // TODO DOn't add to last radians. add whole radians. Add whole revolutions.
@@ -535,7 +546,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     
         if (std::abs(velocity1_rps) < 0.0001f)
         {
-            std::cout << "changed to 0.02" << std::endl;
+            std::cout << "changed to +-0.02" << std::endl;
             _lastVelocity_s = (_lastVelocity_s > 0.0f) ? (-0.02f) : (0.02f);
         }
         else
@@ -543,7 +554,6 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
             _lastVelocity_s = velocity1_rps;
         }
         
-        //std::cout << "velocity: " << velocity1_rps << std::endl;
         return getModelsPerRotation(_lastRadians_r);
     }
 }
@@ -630,7 +640,6 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
              )
            );
  }
- 
  std::tuple<int, float> Egg::getModRadians(float radians)
  {
     // TODO combine into one line.
@@ -661,7 +670,7 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
         float baseTime0_s       = getCorrespondingTimePerRadians(lastRadians);
         float baseVelocity0_rps = getCorrespondingVelocity(baseTime0_s, _velocities);
         float baseTimeDiff      = timeDiffRT_s * (_lastVelocity_s/baseVelocity0_rps); // TODO baseTimeDiff < 1 rotation.
-        float baseTime1_s       = getModTime(baseTime0_s + baseTimeDiff ); // TODO may have rotated to index 0
+        float baseTime1_s       = baseTime0_s + baseTimeDiff; // TODO may have rotated to index 0
         
         float dirbaseVelocity0_rps = origDir * baseVelocity0_rps;
         
@@ -693,7 +702,6 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
                     finalRealVelocity};
         }
  }
-
 
  float Egg::getCorrespondingTimePerVelocity(float velocity, float time0_s, float time1_s)
  {
