@@ -630,31 +630,15 @@ std::vector<ModelGeometry> Egg::getModelGeometries()
      
     return (moduloRotations < 0) ? ((2*PI_F) + moduloRotations) : (moduloRotations);
  }
- 
+
  float Egg::getCorrespondingRadians(float targetTime)
  {
     size_t utIdx  = std::distance(_times.begin(),
                                   std::lower_bound(_times.begin(), _times.end(),
                                   targetTime));
-    
-    float tempVal = (utIdx == 50) ?
-           (0.0f) :
-           ( (_radians[utIdx]) -
-             ( (_times[utIdx] - targetTime) *
-               ( (_radians[utIdx] - _radians[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
-             )
-           );
-           
-    if (tempVal > 6.2)
-    {
-        std::cout << "";
-    }
-    return (utIdx == 0) ?
-           (0.0f) :
-           ( (_radians[utIdx]) -
-             ( (_times[utIdx] - targetTime) *
-               ( (_radians[utIdx] - _radians[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
-             )
+    return (_radians[utIdx]) -
+           ( (_times[utIdx] - targetTime) *
+             ( (_radians[utIdx] - _radians[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
            );
  }
  
@@ -663,13 +647,11 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
     // urvidx is index at targetRadians, or index before targetRadians.
     size_t urIdx  = std::distance(_radians.begin(),
                                   std::lower_bound(_radians.begin(), _radians.end(), targetRadians));
-    return (urIdx == 50) ?
-           (0.0f) :
-           ( _times[urIdx] -
-             ( ( _radians[urIdx] - targetRadians) *
-               ( (_times[urIdx] - _times[urIdx-1]) / (_radians[urIdx] - _radians[urIdx-1]) )
-             )
+    return (_times[urIdx]) -
+           ( (_radians[urIdx] - targetRadians) *
+             ( (_times[urIdx] - _times[urIdx-1]) / (_radians[urIdx] - _radians[urIdx-1]) )
            );
+           
 }
 
  float Egg::getCorrespondingVelocity(float time, const std::vector<float>& velocities)
@@ -678,12 +660,9 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
                                   std::lower_bound(_times.begin(), _times.end(),
                                   time));
                     
-    return (utIdx == 50) ?
-           (velocities[50]) :
-           ( velocities[utIdx] -
-             ( (_times[utIdx] - time) *
-               ( (velocities[utIdx] - velocities[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
-             )
+    return (velocities[utIdx]) -
+           ( (_times[utIdx] - time) *
+             ( (velocities[utIdx] - velocities[utIdx-1]) / (_times[utIdx] - _times[utIdx-1]) )
            );
  }
  std::tuple<int, float> Egg::getModRadians(float radians)
@@ -718,12 +697,9 @@ float Egg::getCorrespondingTimePerRadians(float targetRadians)
                         _velocities.begin(),
                         std::lower_bound(_velocities.begin()+utIdx0, _velocities.begin()+utIdx1, velocity));
     
-    return (uvIdx == 50) ?
-           (0.0f) :
-           ( _times[uvIdx] -
-             ( ( _velocities[uvIdx] - velocity) *
-               ( (_times[uvIdx] - _times[uvIdx-1]) / (_velocities[uvIdx] - _velocities[uvIdx-1]) )
-             )
+    return (_times[uvIdx]) -
+           ( ( _velocities[uvIdx] - velocity) *
+             ( (_times[uvIdx] - _times[uvIdx-1]) / (_velocities[uvIdx] - _velocities[uvIdx-1]) )
            );
  }
 
