@@ -508,13 +508,13 @@ void Egg::setTimes()
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
-    //std::cout << "last Velocity: " << _lastVelocity_s << std::endl;
+    
     if (_lastTime_s == -1.0f)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        _lastVelocity_s = _velocities[50];
-        //_lastVelocity_s = 10.2f;
+        //_lastVelocity_s = _velocities[50];
+        _lastVelocity_s = 10.2f;
         _lastRadians_r  = 0.0f;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -560,6 +560,15 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
  // time0_s is less than time for one rotation.
  std::tuple<float, float, float> Egg::getTimeRadiansAndV(float velocity_rps, float time0_s, float timeDiffRT_s)
  {
+        ++_tempCounter;
+        
+        if (_tempCounter == 100 ||
+            _tempCounter == 200 ||
+            _tempCounter == 500)
+        {
+            velocity_rps = -velocity_rps;
+        }
+        
         float origVelocity0_rps = velocity_rps;
         int   origDir  = (origVelocity0_rps > 0.0f) ? 1 : -1;
         if (origDir == -1)
