@@ -33,7 +33,12 @@ class Egg
     float moduloRotationsAsPositive(float rotation_rad);
     
     // TODO Make in initializer list (here I'm making it twice.
-    EggShape                   _eggShape;
+    
+    uint32_t _eggShapeNumOfSectionsAboutY      = 20;
+    float    _eggShapeAngleIncrementAboutZ_deg = 5.0f;
+    float    _eggShapeMediumRadius             = 5.0f;
+    EggShape _eggShape;
+    
     std::vector<float> _times;
     std::vector<float> _radians;
     std::vector<float> _velocities; 

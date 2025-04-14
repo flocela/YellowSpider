@@ -5,7 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Egg::Egg(float time)
-: _eggShape{20, (5.0f * PI_F/180.0f), 5.0f},
+: _eggShapeNumOfSectionsAboutY{20},
+  _eggShapeAngleIncrementAboutZ_deg{5.0f},
+  _eggShapeMediumRadius{5.0f},
+  _eggShape{_eggShapeNumOfSectionsAboutY, (_eggShapeAngleIncrementAboutZ_deg* PI_F/180.0f), _eggShapeMediumRadius},
   _times(201, 0.0f),
   _radians(201, 0.0f),
   _velocities(201, 0.0f),
@@ -491,6 +494,12 @@ void Egg::setTimes()
             }
         } 
     }
+    std::cout << "radians, velocities, times: " << std::endl;
+    for(int ii=0; ii<_times.size(); ++ii)
+    {
+        std::cout << _radians[ii] << ": " << _velocities[ii] << ":: " << _times[ii] << std::endl;
+    }
+    
     for(size_t ii=0; ii<_velocities.size(); ++ii)
     {
         _negVelocities[ii] = -_velocities[ii];
@@ -513,8 +522,8 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        //_lastVelocity_s = _velocities[50];
-        _lastVelocity_s = 10.2f;
+        _lastVelocity_s = _velocities[50];
+        //_lastVelocity_s = 10.2f;
         _lastRadians_r  = 0.0f;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -566,7 +575,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
             _tempCounter == 200 ||
             _tempCounter == 500)
         {
-            velocity_rps = -velocity_rps;
+            //velocity_rps = -velocity_rps;
         }
         
         float origVelocity0_rps = velocity_rps;
