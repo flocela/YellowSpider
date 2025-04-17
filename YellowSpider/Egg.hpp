@@ -39,10 +39,14 @@ class Egg
     float    _eggShapeMediumRadius             = 5.0f;
     EggShape _eggShape;
     
+    double _deltaTime = 0.01;
+    std::vector<float> _time_sections_s;
+    int _timesSize = 0; // TODO change back to a size_t
     std::vector<float> _times;
     std::vector<float> _radians;
     std::vector<float> _velocities; 
     std::vector<float> _negVelocities;
+    std::vector<float> _acc_rs2;
     std::vector<ModelGeometry> _modelGeometries;
     
     float _firstTime_s    = -1.0f;              
