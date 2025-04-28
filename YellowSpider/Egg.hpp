@@ -53,6 +53,7 @@ class Egg
     float _lastTime_s     = -1.0f;
     float _lastVelocity_s = -1.0f;
     float _lastRadians_r  = -1.0f;
+    float _lastAcc_rps2   = -1.0f;
     
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;

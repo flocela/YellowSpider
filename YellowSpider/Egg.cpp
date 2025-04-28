@@ -593,8 +593,9 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
         //_lastVelocity_s = _velocities[50];
-        _lastVelocity_s = 5.0f;
+        _lastVelocity_s = 25.0f;
         _lastRadians_r  = -PI_F;
+        _lastAcc_rps2   = 0.0f;
         std::cout << "545 _lastRadians_r: " << _lastRadians_r << std::endl;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -623,16 +624,8 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         //_lastRadians_r += ( (radians1_r >=  baseRadians0_r) ? (radians1_r -  baseRadians0_r) : ((2*PI_F) - baseRadians0_r + radians1_r) );
         //_lastRadians_r = radians1_r;
         _lastTime_s = curTime_s;
-    
-        if (std::abs(velocity1_rps) < 0.0001f)
-        {
-            std::cout << "changed to +-0.02" << std::endl;
-            _lastVelocity_s = (_lastVelocity_s > 0.0f) ? (-0.02f) : (0.02f);
-        }
-        else
-        {
-            _lastVelocity_s = velocity1_rps;
-        }
+        
+        _lastVelocity_s = velocity1_rps;
         
         auto [temp_numRotations, temp_baseRadians0_r] = getModRadians(_lastRadians_r);
         if ( (std::abs(temp_baseRadians0_r - PI_F) < 0.01f) && (_lastVelocity_s > 0.0f))
@@ -647,34 +640,6 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
  // time0_s is less than time for one rotation.
  std::tuple<float, float, float> Egg::getTimeRadiansAndV(float velocity0_rps, float time0_s, float timeDiffRT_s)
  {
-    /*
-    std::vector<float> acc_rps2(11, 0.0f);
-    acc_rps2[0]   = 0.0f;
-    acc_rps2[1]   = 116.2f;
-    acc_rps2[2]   = 0.0f;
-    acc_rps2[3]   = -5000.4f;
-    acc_rps2[4]   = -3000.4f;
-    acc_rps2[5]   = 0.0f;
-    acc_rps2[6]   = -acc_rps2[4];
-    acc_rps2[7]   = -acc_rps2[3];
-    acc_rps2[8]   = -acc_rps2[2];  
-    acc_rps2[9]   = -acc_rps2[1]; 
-    acc_rps2[10]  = -acc_rps2[0];
-    
-    std::vector<float> aRadians(11, 0.0f);
-    aRadians[0] = 0.0f;
-    aRadians[1] = 76.917f;
-    aRadians[2] = 103.083f;
-    aRadians[3] = 160.685f;
-    aRadians[4] = 179.99f;
-    aRadians[5] = PI_F;
-    aRadians[6] = 180.01f;
-    aRadians[7] = 199.315f;
-    aRadians[8] = 256.917f;
-    aRadians[9] = 283.083f;
-    aRadians[10] = 2 * PI_F;
-    */
-    
     std::vector<float> acc_rps2(9, 0.0f);
     acc_rps2[0]   = 0.0f;
     acc_rps2[1]   = 116.2f;
@@ -705,6 +670,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     {
         //std::cout << "stop" << std::endl;
     }
+    
     size_t ar0Idx = std::distance(aRadians.begin(),
                                   std::lower_bound(aRadians.begin(), aRadians.end(),
                                   radians0)
@@ -715,6 +681,25 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
                                    (acc_rps2[ar0Idx] - acc_rps2[ar0Idx-1]) /
                                    (aRadians[ar0Idx] - aRadians[ar0Idx-1])
                                   );
+                                
+    std::cout << "acc0, _lastVelocity_s: " << acc0 << ", " << _lastVelocity_s << ", " << radians0 << std::endl;
+    
+    if ( ((std::abs(acc0) < 0.01) || ((_lastAcc_rps2 * acc0) < 0.0)) &&
+         (std::abs(_lastVelocity_s) < 1.0f))
+    {
+        _lastAcc_rps2 = 0.0f;
+        if (std::abs(radians0 - (103.083f* (PI_F / 180.0f))) < .1f)
+        {
+            std::cout << "end 1" << std::endl;
+            return {time0_s + timeDiffRT_s, (103.083f* (PI_F / 180.0f)), 0.0f};
+        }
+        else if (std::abs(radians0 - (256.917f * (PI_F / 180.0f))) < .1f)
+        {
+            std::cout << "end 2" << std::endl;
+            return {time0_s + timeDiffRT_s, (256.917f* (PI_F / 180.0f)), 0.0f};
+        }
+        
+    }
                             
     float radiansTry1 = radians0 +
                        (velocity0_rps * timeDiffRT_s) +
@@ -737,7 +722,6 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
                                    (aRadians[ar1Idx] - aRadians[ar1Idx-1])
                                   );
                                   
-                                  
     float aveVel = (velocity1_rps + velocity0_rps)/2.0f;
     
     float aveAcc = (acc1+acc0)/2.0f;
@@ -745,18 +729,34 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     float radiansTry2 = radians0 +
                        (aveVel * timeDiffRT_s) +
                        (0.5f * timeDiffRT_s * timeDiffRT_s * aveAcc);
-    std::cout << radiansTry2 << std::endl;
     
      if (_tempCounter == 100 ||
         _tempCounter == 200 ||
         _tempCounter == 500)
     {
-            velocity1_rps = -velocity1_rps;
-            std::cout << "change in Velocity" << std::endl;
+            //velocity1_rps = -velocity1_rps;
+            //std::cout << "change in Velocity" << std::endl;
     }
     ++_tempCounter;
+    
+    if ( (((_lastAcc_rps2 * acc0) < 0.0)) &&
+         (std::abs(_lastVelocity_s) < 3.0f))
+    {
+    
+        std::cout << "change 0.08" << std::endl;
+        //velocity1_rps = 0.8f * velocity1_rps;
+    }
+    else
+    {
+        //velocity1_rps = 0.99f * velocity1_rps;
+    }
+    
+    std::cout << radiansTry2 << ", " << velocity1_rps << std::endl;
+    
     //std::cout << "radians: " << radiansTry2 << ", " << radiansT1 << ", " << (radiansTry2 - radiansTry1) << ", " << aveAcc << std::endl;
     //std::cout << rotations << ", " << rotationsT1 << std::endl;
+    
+    _lastAcc_rps2 = acc1;
     return {time0_s + timeDiffRT_s,((rotations) * 2 * PI_F) + radiansTry2, velocity1_rps};
                      
         
