@@ -593,7 +593,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
         //_lastVelocity_s = _velocities[50];
-        _lastVelocity_s = 20.0f;
+        _lastVelocity_s = 0.5f;
         _lastRadians_r  = -PI_F;
         std::cout << "545 _lastRadians_r: " << _lastRadians_r << std::endl;
         return getModelsPerRotation(_lastRadians_r);
@@ -619,7 +619,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     
         // TODO DOn't add to last radians. add whole radians. Add whole revolutions.
         _lastRadians_r = numRotations * (2*PI_F) + radians1_r;
-        std::cout << "lastRadians: " << _lastRadians_r << " = " << numRotations << " + " << radians1_r << std::endl;
+        //std::cout << "lastRadians: " << _lastRadians_r << " = " << numRotations << " + " << radians1_r << std::endl;
         //_lastRadians_r += ( (radians1_r >=  baseRadians0_r) ? (radians1_r -  baseRadians0_r) : ((2*PI_F) - baseRadians0_r + radians1_r) );
         //_lastRadians_r = radians1_r;
         _lastTime_s = curTime_s;
@@ -639,15 +639,114 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         {
             //_lastVelocity_s += 0.05f;
         }
-        std::cout << "_lastRadians_r" << _lastRadians_r << std::endl;
+       // std::cout << "_lastRadians_r" << _lastRadians_r << std::endl;
         return getModelsPerRotation(_lastRadians_r);
     }
 }
 
  // time0_s is less than time for one rotation.
- std::tuple<float, float, float> Egg::getTimeRadiansAndV(float velocity_rps, float time0_s, float timeDiffRT_s)
+ std::tuple<float, float, float> Egg::getTimeRadiansAndV(float velocity0_rps, float time0_s, float timeDiffRT_s)
  {
-        ++_tempCounter;
+    /*
+    std::vector<float> acc_rps2(11, 0.0f);
+    acc_rps2[0]   = 0.0f;
+    acc_rps2[1]   = 116.2f;
+    acc_rps2[2]   = 0.0f;
+    acc_rps2[3]   = -5000.4f;
+    acc_rps2[4]   = -3000.4f;
+    acc_rps2[5]   = 0.0f;
+    acc_rps2[6]   = -acc_rps2[4];
+    acc_rps2[7]   = -acc_rps2[3];
+    acc_rps2[8]   = -acc_rps2[2];  
+    acc_rps2[9]   = -acc_rps2[1]; 
+    acc_rps2[10]  = -acc_rps2[0];
+    
+    std::vector<float> aRadians(11, 0.0f);
+    aRadians[0] = 0.0f;
+    aRadians[1] = 76.917f;
+    aRadians[2] = 103.083f;
+    aRadians[3] = 160.685f;
+    aRadians[4] = 179.99f;
+    aRadians[5] = PI_F;
+    aRadians[6] = 180.01f;
+    aRadians[7] = 199.315f;
+    aRadians[8] = 256.917f;
+    aRadians[9] = 283.083f;
+    aRadians[10] = 2 * PI_F;
+    */
+    
+    std::vector<float> acc_rps2(9, 0.0f);
+    acc_rps2[0]   = 0.0f;
+    acc_rps2[1]   = 116.2f;
+    acc_rps2[2]   = 0.0f;
+    acc_rps2[3]   = -271.4f;
+    acc_rps2[4]   = 0.0f;
+    acc_rps2[5]   = -acc_rps2[3];
+    acc_rps2[6]   = -acc_rps2[2];  
+    acc_rps2[7]   = -acc_rps2[1]; 
+    acc_rps2[8]  = -acc_rps2[0];
+    
+    std::vector<float> aRadians(9, 0.0f);
+    aRadians[0] = 0.0f     * (PI_F / 180.0f);
+    aRadians[1] = 76.917f  * (PI_F / 180.0f);
+    aRadians[2] = 103.083f * (PI_F / 180.0f);
+    aRadians[3] = 160.685f * (PI_F / 180.0f);
+    aRadians[4] = PI_F;
+    aRadians[5] = 199.315f * (PI_F / 180.0f);
+    aRadians[6] = 256.917f * (PI_F / 180.0f);
+    aRadians[7] = 283.083f * (PI_F / 180.0f);
+    aRadians[8] = 2 * PI_F;
+    
+    auto [rotations, radians0] = getModRadians(_lastRadians_r);
+    if (radians0 > 6.24f)
+    {
+        std::cout << "stop" << std::endl;
+    }
+    size_t ar0Idx = std::distance(aRadians.begin(),
+                                  std::lower_bound(aRadians.begin(), aRadians.end(),
+                                  radians0)
+                                 );
+                        
+    float acc0 = acc_rps2[ar0Idx] - (
+                                   (aRadians[ar0Idx] - radians0) *
+                                   (acc_rps2[ar0Idx] - acc_rps2[ar0Idx-1]) /
+                                   (aRadians[ar0Idx] - aRadians[ar0Idx-1])
+                                  );
+                                  
+    float radiansTry1 = radians0 +
+                       (velocity0_rps * timeDiffRT_s) +
+                       (0.5f * timeDiffRT_s * timeDiffRT_s * acc0);
+                       
+    auto [rotationsT1, radiansT1] = getModRadians(radiansTry1);
+                     
+    float velocity1_rps = velocity0_rps + (acc0 * timeDiffRT_s);
+    
+    size_t ar1Idx = std::distance(aRadians.begin(),
+                                  std::lower_bound(aRadians.begin(), aRadians.end(),
+                                  radiansT1)
+                                 );
+                                 
+    float acc1 = acc_rps2[ar1Idx] - (
+                                   (aRadians[ar1Idx] - radians0) *
+                                   (acc_rps2[ar1Idx] - acc_rps2[ar1Idx-1]) /
+                                   (aRadians[ar1Idx] - aRadians[ar1Idx-1])
+                                  );
+                                  
+    float aveVel = (velocity1_rps + velocity0_rps)/2.0f;
+    float aveAcc = (acc1+acc0)/2.0f;
+                                  
+    float radiansTry2 = radians0 +
+                       (aveVel * timeDiffRT_s) +
+                       (0.5f * timeDiffRT_s * timeDiffRT_s * aveAcc);
+    
+    std::cout << "radians: " << radiansTry2 << ", " << radiansT1 << ", " << (radiansTry2 - radiansTry1) << ", " << aveAcc << std::endl;
+    
+    return {time0_s + timeDiffRT_s, radiansTry2, velocity1_rps};
+                     
+    
+        
+ 
+        /*++_tempCounter;
         
         if (_tempCounter == 100 ||
             _tempCounter == 200 ||
@@ -700,7 +799,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
             return {finalBaseTime,
                     getCorrespondingRadians(finalBaseTime),
                     finalRealVelocity};
-        }
+        }*/
  }
 
 std::vector<std::vector<Vertex>> Egg::getVertices()
