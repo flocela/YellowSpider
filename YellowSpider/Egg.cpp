@@ -232,7 +232,7 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
-    time_s = time_s/2.0f;
+    time_s = time_s/1.0f;
     
     if (_lastTime_s == -1.0f)
     {
@@ -305,13 +305,13 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
     float radiansTry2 = radians0 +
                        (aveVel * timeDiff_s) +
                        (0.5f * timeDiff_s * timeDiff_s * aveAcc);
-                       
-    if( (std::abs(radiansTry2 - 2.809) < 1.0f) && (finalVel < 2.0f) && (finalVel > 0.0f))
+                    
+    if( (std::abs(radiansTry2 - 2.809) < 0.3f) && (std::abs(radiansTry2 - 2.809) > 0.1f) && (finalVel < 1.0f) && (finalVel > 0.0f))
     {
         std::cout << "line 316" << std::endl;
-        finalVel += 1.0f;
+        finalVel += 0.3f;
     }
-    
+
     _acc_r = acc1;
 
      if (_tempCounter == 100 ||
