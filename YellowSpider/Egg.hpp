@@ -53,7 +53,6 @@ class Egg
     float _lastTime_s     = -1.0f;
     float _lastVelocity_s = -1.0f;
     float _lastRadians_r  = -1.0f;
-    float _lastAcc_rps2   = -1.0f;
     
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
@@ -81,7 +80,10 @@ class Egg
     float getCorrespondingTimePerVelocity(float velocity, float time0_s, float time_s);
     std::tuple<int, float> getModRadians(float radians);
     float getModTime(float time);
-    std::tuple<float, float, float> getTimeRadiansAndV(float velocity_rps, float time0, float timeDiffRT_s);
+    std::tuple<float, float, float> getTimeRadiansAndV(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);
+    std::tuple<float, float, float> getTimeRadiansAndVSuper(float radians0_r, float velocity_rps, float time0, float timeDiffRT_s);
+    float getDeltaTimeTo(float r0, float r1, float v0, float a0);
+    bool between(float first, float mid, float last);
     
     
 
