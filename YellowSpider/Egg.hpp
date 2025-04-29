@@ -29,25 +29,19 @@ class Egg
     
     private:
     
-    std::vector<glm::mat4> getModelsPerDistance(float dist);
-    float moduloRotationsAsPositive(float rotation_rad);
+    std::vector<ModelGeometry> _modelGeometries;
     
     // TODO Make in initializer list (here I'm making it twice.
     
-    uint32_t _eggShapeNumOfSectionsAboutY      = 20;
-    float    _eggShapeAngleIncrementAboutZ_deg = 5.0f;
-    float    _eggShapeMediumRadius             = 5.0f;
-    EggShape _eggShape;
+    const uint32_t _eggShapeNumOfSectionsAboutY      = 20;
+    const float    _eggShapeAngleIncrementAboutZ_deg = 5.0f;
+    const float    _eggShapeMediumRadius             = 5.0f;
     
-    double _deltaTime = 0.01;
-    std::vector<float> _time_sections_s;
-    int _timesSize = 0; // TODO change back to a size_t
-    std::vector<float> _times;
-    std::vector<float> _radians;
-    std::vector<float> _velocities; 
-    std::vector<float> _negVelocities;
-    std::vector<float> _acc_rs2;
-    std::vector<ModelGeometry> _modelGeometries;
+    const float _rLarge  = 10.0f;
+    const float _rMedium = _rLarge/2.0f;
+    const float _rSmall  = _rLarge - (1.414f * _rMedium);
+    
+    EggShape _eggShape;
     
     float _firstTime_s    = -1.0f;              
     float _lastTime_s     = -1.0f;
@@ -57,36 +51,41 @@ class Egg
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
     
-    float _zero_rad          = 0.0f   * PI_F / 180.0f;
-    float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
-    float _ninety_rad        = 90.0f  * PI_F / 180.0f;
-    float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
-    float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
-    float _twoTwentyFive_rad = 223.0f * PI_F / 180.0f;
+    const float _zero_rad          = 0.0f   * PI_F / 180.0f;
+    const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
+    const float _ninety_rad        = 90.0f  * PI_F / 180.0f;
+    const float _twoSeventy_rad    = 270.0f * PI_F / 180.0f;
+    const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
+    const float _twoTwentyFive_rad = 223.0f * PI_F / 180.0f;
     
-    // Taken from EggShape class. Must get these values in a more modular way.
-    float _rLarge  = 10.0f;
-    float _rMedium = _rLarge/2.0f;
-    float _rSmall  = _rLarge - (1.414f * _rMedium);
+    const std::vector<float> _aPoints_r {
+        0.0f     * (PI_F / 180.0f),
+        76.917f  * (PI_F / 180.0f),
+        103.083f * (PI_F / 180.0f),
+        160.685f * (PI_F / 180.0f),
+        PI_F,
+        199.315f * (PI_F / 180.0f),
+        256.917f * (PI_F / 180.0f),
+        283.083f * (PI_F / 180.0f),
+        2 * PI_F
+    };
     
-    float _v0_radPerSec = 5.0f;
-    float _a0_radPerSecSec = 0.0f;
-    float _va_radPerSec = 0.0f;
+    const std::vector<float> _acc_rps2 {
+        0.0f,
+        116.2f,
+        0.0f,
+        -271.4f,
+        0.0f,
+        271.4f,
+        0.0f,
+        -116.2f, 
+        0.0f
+    };
     
-    void setTimes();
-    float getCorrespondingRadians(float time);
-    float getCorrespondingVelocity(float time, const std::vector<float>& velocities);
-    float getCorrespondingTimePerRadians(float radians);
-    float getCorrespondingTimePerVelocity(float velocity, float time0_s, float time_s);
-    std::tuple<int, float> getModRadians(float radians);
-    float getModTime(float time);
-    std::tuple<float, float, float> getTimeRadiansAndV(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);
-    std::tuple<float, float, float> getTimeRadiansAndVSuper(float radians0_r, float velocity_rps, float time0, float timeDiffRT_s);
-    float getDeltaTimeTo(float r0, float r1, float v0, float a0);
-    bool between(float first, float mid, float last);
-    
-    
-
+    std::tuple<float, float, float> getEggState(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);
+    std::tuple<float, float, float> getNextEggStateSuper(float radians0_r, float velocity_rps, float time0, float timeDiffRT_s);
+    std::tuple<int, float> abbrRadians(float radians);
+    float getAcc(float radians);
 };
 
 #endif
