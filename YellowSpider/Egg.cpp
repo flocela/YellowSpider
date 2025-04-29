@@ -230,16 +230,15 @@ std::vector<glm::mat4> Egg::getModelsPerRotation(float rotation_rad)
     return models;
 }
 
-
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
-    time_s = time_s/1.0f;
+    time_s = time_s/2.0f;
     
     if (_lastTime_s == -1.0f)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        _lastVelocity_s = 2.0f;
+        _lastVelocity_s = 0.1f;
         _lastRadians_r  = -PI_F;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -278,13 +277,14 @@ std::tuple<float, float, float> Egg::getNextEggStateSuper(float radians0_r, floa
         curVelocity = resultVelocity;
     }
     
+    std::cout << curTime << ":: " << curRadians << ", " << _acc_r << ", " << curVelocity << std::endl;
+    
     return {curTime, curRadians, curVelocity};
 }
 
 // Return the state at time1_s. time1_s = time0_s + timeDiff_s.
 std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocity0_rps, float time0_s, float timeDiff_s)
 {
-
     auto [rotations, radians0] = abbrRadians(radians0_r);
     
     float acc0 = getAcc(radians0_r);
@@ -294,24 +294,25 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
                         (0.5f * timeDiff_s * timeDiff_s * acc0);
 
     auto [rotationsT1, radiansT1] = abbrRadians(radiansTry1);
-
-    size_t ar1Idx = std::distance( _aPoints_r.begin(),
-                                   std::lower_bound(_aPoints_r.begin(), _aPoints_r.end(),
-                                   radiansT1)
-                                 );
-                                 
-    float acc1 = _acc_rps2[ar1Idx] - ( (_aPoints_r[ar1Idx] - radians0) *
-                                       (_acc_rps2[ar1Idx] - _acc_rps2[ar1Idx-1]) /
-                                       (_aPoints_r[ar1Idx] - _aPoints_r[ar1Idx-1]) );
-                                
+    
+    float acc1 = getAcc(radiansT1);
+    
     float aveAcc = (acc1+acc0)/2.0f;
     
-    float finalVel = (aveAcc * timeDiff_s/2.0f) + velocity0_rps;
+    float finalVel = (aveAcc * timeDiff_s) + velocity0_rps;
     float aveVel = (finalVel + velocity0_rps)/2.0f;
                                   
     float radiansTry2 = radians0 +
                        (aveVel * timeDiff_s) +
                        (0.5f * timeDiff_s * timeDiff_s * aveAcc);
+                       
+    if( (std::abs(radiansTry2 - 2.809) < 1.0f) && (finalVel < 2.0f) && (finalVel > 0.0f))
+    {
+        std::cout << "line 316" << std::endl;
+        finalVel += 1.0f;
+    }
+    
+    _acc_r = acc1;
 
      if (_tempCounter == 100 ||
         _tempCounter == 200 ||
@@ -322,6 +323,8 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
     }
     ++_tempCounter;
 
+    //std::cout << "radians: " << radiansTry1 << ", " << radiansTry2 << ": " << (radiansTry2 - radiansTry1) << std::endl;
+    
     return {time0_s + timeDiff_s,((rotations) * 2.0f * PI_F) + radiansTry2, finalVel};
 }
 
@@ -348,25 +351,26 @@ std::vector<ModelGeometry> Egg::getModelGeometries()
 std::tuple<int, float> Egg::abbrRadians(float radians)
 {
     // TODO combine into one line.
-    float numTemp = radians / (2.0f * PI_F);
-    float numTemp2 = radians / (2*PI_F);
-    int numOfRotations = std::floor(radians / (2*PI_F));
-    float modRadians = radians - (numOfRotations * (2*PI_F));
+    int numOfRotations = std::floor(radians / (2.0*PI_F));
+    float modRadians = radians - (numOfRotations * (2.0*PI_F));
     
     return {numOfRotations, modRadians};
 }
 
-float Egg::getAcc(float radians)
+float Egg::getAcc(float targetRadians)
 {
-    auto [numOfRotations, modRadians] = abbrRadians(radians);
+    auto [numOfRotations, modRadians] = abbrRadians(targetRadians);
 
-    size_t rad0Idx = std::distance( _aPoints_r.begin(),
-                                    std::lower_bound(_aPoints_r.begin(), _aPoints_r.end(),
+    size_t radIdx = std::distance( _aRads_r.begin(),
+                                    std::lower_bound(_aRads_r.begin(), _aRads_r.end(),
                                     modRadians)
                                   );
                         
-    return _acc_rps2[rad0Idx] - ( (_aPoints_r[rad0Idx] - modRadians) *
-                                  (_acc_rps2[rad0Idx] - _acc_rps2[rad0Idx-1]) /
-                                  (_aPoints_r[rad0Idx] - _aPoints_r[rad0Idx-1]) );
+    float acc = _acc_rps2[radIdx] - ( (_aRads_r[radIdx] - modRadians) *
+                                      (_acc_rps2[radIdx] - _acc_rps2[radIdx-1]) /
+                                      (_aRads_r[radIdx] - _aRads_r[radIdx-1]) );
+    
+    return acc;
+                                  
 }
 

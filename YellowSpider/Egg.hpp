@@ -47,6 +47,7 @@ class Egg
     float _lastTime_s     = -1.0f;
     float _lastVelocity_s = -1.0f;
     float _lastRadians_r  = -1.0f;
+    float _acc_r = -1.0f;
     
     Direction                  _lastDirection = Direction::None;
     float                      _tempCounter = 0.0f;
@@ -58,7 +59,7 @@ class Egg
     const float _oneThirtyFive_rad = 135.0f * PI_F / 180.0f;
     const float _twoTwentyFive_rad = 223.0f * PI_F / 180.0f;
     
-    const std::vector<float> _aPoints_r {
+    const std::vector<float> _aRads_r {
         0.0f     * (PI_F / 180.0f),
         76.917f  * (PI_F / 180.0f),
         103.083f * (PI_F / 180.0f),
@@ -67,20 +68,34 @@ class Egg
         199.315f * (PI_F / 180.0f),
         256.917f * (PI_F / 180.0f),
         283.083f * (PI_F / 180.0f),
-        2 * PI_F
+        2.0f* PI_F
     };
     
     const std::vector<float> _acc_rps2 {
-        0.0f,
-        116.2f,
-        0.0f,
-        -271.4f,
-        0.0f,
-        271.4f,
-        0.0f,
-        -116.2f, 
-        0.0f
+           0.0f,
+         58.1f,
+           0.0f,
+        -135.7f,
+           0.0f,
+         135.7f,
+           0.0f,
+        -58.1f, 
+           0.0f
     };
+    
+    /*
+    const std::vector<float> _acc_rps2 {
+           0.0f,
+         116.2f,
+           0.0f,
+        -271.4f,
+           0.0f,
+         271.4f,
+           0.0f,
+        -116.2f, 
+           0.0f
+    };
+    */
     
     std::tuple<float, float, float> getEggState(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);
     std::tuple<float, float, float> getNextEggStateSuper(float radians0_r, float velocity_rps, float time0, float timeDiffRT_s);
