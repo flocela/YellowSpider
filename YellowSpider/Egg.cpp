@@ -587,52 +587,32 @@ void Egg::setTimes()
 
 std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
 {
-    time_s = time_s/3.0f;
+    time_s = time_s/2.0f;
     if (_lastTime_s == -1.0f)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        //_lastVelocity_s = _velocities[50];
-        _lastVelocity_s = 25.0f;
+        _lastVelocity_s = 3.0f;
         _lastRadians_r  = -PI_F;
         _lastAcc_rps2   = 0.0f;
-        std::cout << "545 _lastRadians_r: " << _lastRadians_r << std::endl;
         return getModelsPerRotation(_lastRadians_r);
     }
     else
     {
-        if (_lastVelocity_s == -0.02f)
-        {
-            std::cout << "-0.02 *******************************" << std::endl;
-        }
-        
-        if (_lastVelocity_s == 0.02f)
-        {
-            std::cout << "0.02 *******************************" << std::endl;
-        }
-    
-        float curTime_s   = time_s - _firstTime_s;
-        float timeDiff_s  = curTime_s - _lastTime_s;
+        float curTime_s                     = time_s - _firstTime_s;
+        float timeDiff_s                    = curTime_s - _lastTime_s;
         auto [numRotations, baseRadians0_r] = getModRadians(_lastRadians_r);
-        float baseTime0_s    = getModTime(_lastTime_s);
+        float baseTime0_s                   = getModTime(_lastTime_s);
 
-        auto [time1, radians1_r, velocity1_rps] = getTimeRadiansAndV(_lastVelocity_s, baseTime0_s, timeDiff_s);
+        auto [time1, radians1_r, velocity1_rps] = getTimeRadiansAndV(_lastVelocity_s, curTime_s , timeDiff_s);
     
-        // TODO DOn't add to last radians. add whole radians. Add whole revolutions.
         _lastRadians_r = radians1_r;
-        //std::cout << "lastRadians: " << _lastRadians_r << " = " << numRotations << " + " << radians1_r << std::endl;
-        //_lastRadians_r += ( (radians1_r >=  baseRadians0_r) ? (radians1_r -  baseRadians0_r) : ((2*PI_F) - baseRadians0_r + radians1_r) );
-        //_lastRadians_r = radians1_r;
         _lastTime_s = curTime_s;
         
         _lastVelocity_s = velocity1_rps;
         
         auto [temp_numRotations, temp_baseRadians0_r] = getModRadians(_lastRadians_r);
-        if ( (std::abs(temp_baseRadians0_r - PI_F) < 0.01f) && (_lastVelocity_s > 0.0f))
-        {
-            //_lastVelocity_s += 0.05f;
-        }
-       // std::cout << "_lastRadians_r" << _lastRadians_r << std::endl;
+       
         return getModelsPerRotation(_lastRadians_r);
     }
 }
