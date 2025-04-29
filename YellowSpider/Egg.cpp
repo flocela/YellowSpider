@@ -286,15 +286,8 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
 {
 
     auto [rotations, radians0] = abbrRadians(radians0_r);
-
-    size_t rad0Idx = std::distance( _aPoints_r.begin(),
-                                    std::lower_bound(_aPoints_r.begin(), _aPoints_r.end(),
-                                    radians0)
-                                  );
-                        
-    float acc0 = _acc_rps2[rad0Idx] - ( (_aPoints_r[rad0Idx] - radians0) *
-                                        (_acc_rps2[rad0Idx] - _acc_rps2[rad0Idx-1]) /
-                                        (_aPoints_r[rad0Idx] - _aPoints_r[rad0Idx-1]) );
+    
+    float acc0 = getAcc(radians0_r);
                             
     float radiansTry1 = radians0 +
                         (velocity0_rps * timeDiff_s) +
@@ -329,7 +322,7 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
     }
     ++_tempCounter;
 
-    return {time0_s + timeDiff_s,((rotations) * 2 * PI_F) + radiansTry2, finalVel};
+    return {time0_s + timeDiff_s,((rotations) * 2.0f * PI_F) + radiansTry2, finalVel};
 }
 
 std::vector<std::vector<Vertex>> Egg::getVertices()
@@ -361,5 +354,19 @@ std::tuple<int, float> Egg::abbrRadians(float radians)
     float modRadians = radians - (numOfRotations * (2*PI_F));
     
     return {numOfRotations, modRadians};
+}
+
+float Egg::getAcc(float radians)
+{
+    auto [numOfRotations, modRadians] = abbrRadians(radians);
+
+    size_t rad0Idx = std::distance( _aPoints_r.begin(),
+                                    std::lower_bound(_aPoints_r.begin(), _aPoints_r.end(),
+                                    modRadians)
+                                  );
+                        
+    return _acc_rps2[rad0Idx] - ( (_aPoints_r[rad0Idx] - modRadians) *
+                                  (_acc_rps2[rad0Idx] - _acc_rps2[rad0Idx-1]) /
+                                  (_aPoints_r[rad0Idx] - _aPoints_r[rad0Idx-1]) );
 }
 
