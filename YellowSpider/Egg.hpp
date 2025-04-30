@@ -50,7 +50,7 @@ class Egg
     float _acc_r = -1.0f;
     
     Direction                  _lastDirection = Direction::None;
-    float                      _tempCounter = 0.0f;
+    int                        _tempCounter = 0;
     
     const float _zero_rad          = 0.0f   * PI_F / 180.0f;
     const float _fortyFive_rad     = 45.0f  * PI_F / 180.0f;
@@ -72,14 +72,14 @@ class Egg
     };
     
     const std::vector<float> _acc_rps2 {
+            0.0f,
+         11.62f,
            0.0f,
-         58.1f,
+        -27.14f,
            0.0f,
-        -135.7f,
+         27.14f,
            0.0f,
-         135.7f,
-           0.0f,
-        -58.1f, 
+        -11.62f, 
            0.0f
     };
     
@@ -95,6 +95,7 @@ class Egg
         -116.2f, 
            0.0f
     };
+    
     */
     
     std::tuple<float, float, float> getEggState(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);

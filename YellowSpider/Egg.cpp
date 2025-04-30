@@ -238,7 +238,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        _lastVelocity_s = 0.1f;
+        _lastVelocity_s = 7.0f;
         _lastRadians_r  = -PI_F;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -257,6 +257,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         return getModelsPerRotation(_lastRadians_r);
     }
 }
+
 
 std::tuple<float, float, float> Egg::getNextEggStateSuper(float radians0_r, float velocity0_rps, float time0_s, float timeDiff_s)
 {
@@ -301,27 +302,57 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
     
     float finalVel = (aveAcc * timeDiff_s) + velocity0_rps;
     float aveVel = (finalVel + velocity0_rps)/2.0f;
-                                  
+                                
     float radiansTry2 = radians0 +
                        (aveVel * timeDiff_s) +
                        (0.5f * timeDiff_s * timeDiff_s * aveAcc);
                     
-    if( (std::abs(radiansTry2 - 2.809) < 0.3f) && (std::abs(radiansTry2 - 2.809) > 0.1f) && (finalVel < 1.0f) && (finalVel > 0.0f))
+    if( (std::abs(radiansTry2 - 2.809f) < 0.4f) && (std::abs(radiansTry2 - 2.809f) > 0.3f) && (finalVel < 2.7f) && (finalVel > 0.0f))
     {
         std::cout << "line 316" << std::endl;
-        finalVel += 0.3f;
+        //finalVel = finalVel * ( 1 + (std::abs(radiansTry2 - 2.809f)/2.809f));
     }
-
+    
     _acc_r = acc1;
 
-     if (_tempCounter == 100 ||
-        _tempCounter == 200 ||
-        _tempCounter == 500)
+     if (//_tempCounter == 100 ||
+        //_tempCounter == 200  ||
+        (_tempCounter % 200) == 0)
     {
-            //velocity1_rps = -velocity1_rps;
-            //std::cout << "change in Velocity" << std::endl;
+            
+            std::cout << "change in Velocity" << std::endl;
+            //finalVel = finalVel * 1.7f;
     }
+    
+    if ( (finalVel * velocity0_rps) < 0.0f)
+    {
+        std::cout << "reduce" << std::endl;
+        //finalVel = finalVel * .1f;
+    }
+
     ++_tempCounter;
+    
+    auto [rotationsT2, modRadT2] = abbrRadians(radiansTry2);
+    
+    if (finalVel > 0.0f)
+    {
+        if ( ( (modRadT2 > (103.083f * (PI_F / 180.0f)) ) && (modRadT2 < (PI_F)) ) ||
+             ( (modRadT2 > (256.917f * (PI_F / 180.0f)) ) && (modRadT2 > (2.0f * PI_F)) )
+           )
+        {
+            finalVel = 0.99 * finalVel;
+        }
+    }
+    else
+    {
+        if (! (( (modRadT2 > (103.083f * (PI_F / 180.0f)) ) && (modRadT2 < (PI_F)) ) ||
+                 ( (modRadT2 > (256.917f * (PI_F / 180.0f)) ) && (modRadT2 > (2.0f * PI_F)) ))
+        )
+        {
+            finalVel = 0.99 * finalVel;
+        }
+    }
+    
 
     //std::cout << "radians: " << radiansTry1 << ", " << radiansTry2 << ": " << (radiansTry2 - radiansTry1) << std::endl;
     
