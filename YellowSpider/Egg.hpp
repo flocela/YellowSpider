@@ -73,13 +73,13 @@ class Egg
     
     const std::vector<float> _acc_rps2 {
             0.0f,
-         11.62f,
+         30.1f,
            0.0f,
-        -27.14f,
+        -135.7f,
            0.0f,
-         27.14f,
+         135.7f,
            0.0f,
-        -11.62f, 
+        -30.1f, 
            0.0f
     };
     
@@ -95,8 +95,9 @@ class Egg
         -116.2f, 
            0.0f
     };
-    
     */
+    
+    
     
     std::tuple<float, float, float> getEggState(float radians0_r, float velocity0_rps, float time0, float timeDiffRT_s);
     std::tuple<float, float, float> getNextEggStateSuper(float radians0_r, float velocity_rps, float time0, float timeDiffRT_s);

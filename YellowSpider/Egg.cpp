@@ -238,7 +238,7 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
     {
         _firstTime_s    = time_s;
         _lastTime_s     = 0.0f;
-        _lastVelocity_s = 7.0f;
+        _lastVelocity_s = 20.0f;
         _lastRadians_r  = -PI_F;
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -248,11 +248,20 @@ std::vector<glm::mat4> Egg::getModels(float time_s, Direction direction)
         float timeDiff_s = curTime_s - _lastTime_s;
 
         // finalTime_s returned will equal curTime_s. 
-        auto [finalTime_s, curRadians_r, curVelocity_rps] = getNextEggStateSuper(_lastRadians_r, _lastVelocity_s, curTime_s , timeDiff_s);
+        auto [finalTime_s, curRadians_r, curVelocity_rps] = getNextEggStateSuper(_lastRadians_r, _lastVelocity_s, curTime_s , timeDiff_s/2);
     
         _lastRadians_r  = curRadians_r;
         _lastTime_s     = curTime_s;
         _lastVelocity_s = curVelocity_rps;
+        
+        if ( (_tempCounter > 500) && (_tempCounter < 505) && (_tempCounter%2 == 0))
+        {
+                
+                std::cout << "change in Velocity" << std::endl;
+                _lastVelocity_s -= 12.0f;
+        }
+        
+        ++_tempCounter;
        
         return getModelsPerRotation(_lastRadians_r);
     }
@@ -306,55 +315,48 @@ std::tuple<float, float, float> Egg::getEggState(float radians0_r, float velocit
     float radiansTry2 = radians0 +
                        (aveVel * timeDiff_s) +
                        (0.5f * timeDiff_s * timeDiff_s * aveAcc);
-                    
-    if( (std::abs(radiansTry2 - 2.809f) < 0.4f) && (std::abs(radiansTry2 - 2.809f) > 0.3f) && (finalVel < 2.7f) && (finalVel > 0.0f))
-    {
-        std::cout << "line 316" << std::endl;
-        //finalVel = finalVel * ( 1 + (std::abs(radiansTry2 - 2.809f)/2.809f));
-    }
-    
+          
     _acc_r = acc1;
 
-     if (//_tempCounter == 100 ||
-        //_tempCounter == 200  ||
-        (_tempCounter % 200) == 0)
-    {
-            
-            std::cout << "change in Velocity" << std::endl;
-            //finalVel = finalVel * 1.7f;
-    }
-    
-    if ( (finalVel * velocity0_rps) < 0.0f)
-    {
-        std::cout << "reduce" << std::endl;
-        //finalVel = finalVel * .1f;
-    }
-
-    ++_tempCounter;
-    
     auto [rotationsT2, modRadT2] = abbrRadians(radiansTry2);
+    
+    
+    if ( ( std::abs(finalVel) < 0.5f ) &&
+         ( std::abs(modRadT2 - (256.917f * (PI_F / 180.0f))) < 0.03 ) 
+    )
+    {
+        float friction = 0.992f;
+            finalVel = friction * finalVel;
+    }
+    
+    else if  ( ( std::abs(finalVel) < 0.5f ) &&
+             ( std::abs(modRadT2 - (103.083f * (PI_F / 180.0f))) < 0.03 ) 
+    )
+    {
+        float friction = 0.992f;
+            finalVel = friction * finalVel;
+    }
     
     if (finalVel > 0.0f)
     {
         if ( ( (modRadT2 > (103.083f * (PI_F / 180.0f)) ) && (modRadT2 < (PI_F)) ) ||
-             ( (modRadT2 > (256.917f * (PI_F / 180.0f)) ) && (modRadT2 > (2.0f * PI_F)) )
+             ( (modRadT2 > (256.917f * (PI_F / 180.0f)) ) && (modRadT2 < (2.0f * PI_F)) )
            )
         {
-            finalVel = 0.99 * finalVel;
+            float friction = 0.9945f;
+            finalVel = friction * finalVel;
         }
     }
-    else
+    else if (finalVel < 0.0f)
     {
-        if (! (( (modRadT2 > (103.083f * (PI_F / 180.0f)) ) && (modRadT2 < (PI_F)) ) ||
-                 ( (modRadT2 > (256.917f * (PI_F / 180.0f)) ) && (modRadT2 > (2.0f * PI_F)) ))
+        if ( (( (modRadT2 < (103.083f * (PI_F / 180.0f)) ) && (modRadT2 > 0.0f) ) ||
+                 ( (modRadT2 < (256.917f * (PI_F / 180.0f)) ) && (modRadT2 > (PI_F)) ))
         )
         {
-            finalVel = 0.99 * finalVel;
+            float friction = 0.9945f;
+            finalVel = friction * finalVel;
         }
     }
-    
-
-    //std::cout << "radians: " << radiansTry1 << ", " << radiansTry2 << ": " << (radiansTry2 - radiansTry1) << std::endl;
     
     return {time0_s + timeDiff_s,((rotations) * 2.0f * PI_F) + radiansTry2, finalVel};
 }
